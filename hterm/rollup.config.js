@@ -6,21 +6,21 @@
  * @fileoverview Bundle up for release.
  */
 
-import string from '@bkuri/rollup-plugin-string';
-import image from '@rollup/plugin-image';
-import resolve from '@rollup/plugin-node-resolve';
-import terser from '@rollup/plugin-terser';
-import url from '@rollup/plugin-url';
-import gitInfo from 'rollup-plugin-git-info';
+import string from "@bkuri/rollup-plugin-string";
+import image from "@rollup/plugin-image";
+import resolve from "@rollup/plugin-node-resolve";
+import terser from "@rollup/plugin-terser";
+import url from "@rollup/plugin-url";
+import gitInfo from "rollup-plugin-git-info";
 
 const plugins = [
   resolve({
-    mainFields: ['module', 'jsnext:main'],
+    mainFields: ["module", "jsnext:main"],
     preferBuiltins: false
   }),
 ];
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   plugins.push(terser());
 }
 
@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'production') {
 const output = {
   // This only disables the '__esModule' symbol hack.
   esModule: false,
-  format: 'es',
+  format: "es",
   indent: false,
   preferConst: true,
 };
@@ -54,34 +54,34 @@ function dep(name) {
 let targets = [
   // Resources.
   {
-    input: 'js/deps_resources.shim.js',
+    input: "js/deps_resources.shim.js",
     output: {
       ...output,
-      file: 'dist/js/hterm_resources.js',
+      file: "dist/js/hterm_resources.js",
     },
     external: [
-      '../../../libdot/index.js',
+      "../../../libdot/index.js",
     ],
     plugins: [
       ...plugins,
       // Always run terser on these files as it's all generated anyways.
       terser(),
       gitInfo(),
-      string({include: ['**/*.html', '**/*.svg']}),
+      string({include: ["**/*.html", "**/*.svg"]}),
       image({exclude: "**/*.svg"}),
-      url({include: ['**/*.ogg']}),
+      url({include: ["**/*.ogg"]}),
     ],
   },
 
   // 3rd party deps.
-  dep('punycode'),
+  dep("punycode"),
 
   // Main lib.
   {
-    input: 'index.js',
+    input: "index.js",
     output: {
       ...output,
-      file: 'dist/js/hterm.js',
+      file: "dist/js/hterm.js",
     },
     plugins,
   },

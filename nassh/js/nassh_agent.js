@@ -8,18 +8,18 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 import {
   IMG_VISIBILITY_URI, IMG_VISIBILITY_OFF_URI,
-} from './deps_resources.rollup.js';
+} from "./deps_resources.rollup.js";
 
-import {Backend} from './nassh_agent_backend.js';
-import {GSC} from './nassh_agent_backend_gsc.js';
-import {Message} from './nassh_agent_message.js';
+import {Backend} from "./nassh_agent_backend.js";
+import {GSC} from "./nassh_agent_backend_gsc.js";
+import {Message} from "./nassh_agent_message.js";
 import {FAILURE, MessageNumbers,
-        writeMessage} from './nassh_agent_message_types.js';
+        writeMessage} from "./nassh_agent_message_types.js";
 
 /**
  * Map backend IDs to the respective classes inheriting from Backend.
@@ -66,7 +66,7 @@ export function checkBackendIDs(backendIDs) {
  * @constructor
  */
 export function Agent(backendIDs, term, isForwarded) {
-  console.log('agent.Agent: registered backends:', registeredBackends);
+  console.log("agent.Agent: registered backends:", registeredBackends);
 
   /**
    * The collection of instantiated backends that the agent is using to respond
@@ -89,7 +89,7 @@ export function Agent(backendIDs, term, isForwarded) {
           })
           .filter((backend) => backend);
   if (!this.backends_) {
-    throw new Error('agent.Agent: no backends loaded');
+    throw new Error("agent.Agent: no backends loaded");
   }
 
   /**
@@ -133,7 +133,7 @@ Agent.prototype.ping = async function() {
 Agent.prototype.handleRequest = function(rawRequest) {
   const request = Message.fromRawMessage(rawRequest);
   if (!request) {
-    console.error('Agent.handleRequest: invalid request', rawRequest);
+    console.error("Agent.handleRequest: invalid request", rawRequest);
     return Promise.resolve(FAILURE);
   } else {
     return this.handleRequest_(request);
@@ -209,13 +209,13 @@ Agent.prototype.requestHandlers_[MessageNumbers.AGENTC_REQUEST_IDENTITIES] =
                       // Turn the key blob into a string to be able to
                       // use it as a key of an object.
                       const keyBlobStr =
-                          new TextDecoder('utf-8').decode(identity.keyBlob);
+                          new TextDecoder("utf-8").decode(identity.keyBlob);
                       // Print the public key blob (in the format used
                       // for ~/.authorized_keys) to the console as a
                       // courtesy to the user.
                       console.log(
-                          'Public key to be added as a new line to ' +
-                          '~/.ssh/authorized_keys on the server:\n' +
+                          "Public key to be added as a new line to " +
+                          "~/.ssh/authorized_keys on the server:\n" +
                           keyBlobToAuthorizedKeysFormat(identity.keyBlob));
                       // Remember the backend the identity was
                       // requested from.
@@ -244,10 +244,10 @@ Agent.prototype.requestHandlers_[MessageNumbers.AGENTC_REQUEST_IDENTITIES] =
  */
 Agent.prototype.requestHandlers_[MessageNumbers.AGENTC_SIGN_REQUEST] =
     function(request) {
-  const keyBlobStr = new TextDecoder('utf-8').decode(request.fields.keyBlob);
+  const keyBlobStr = new TextDecoder("utf-8").decode(request.fields.keyBlob);
   if (!this.identityToBackendID_.hasOwnProperty(keyBlobStr)) {
     return Promise.reject(new Error(
-        'AGENTC_SIGN_REQUEST: keyBlob could not be mapped to a backend'));
+        "AGENTC_SIGN_REQUEST: keyBlob could not be mapped to a backend"));
   }
   const backendId = this.identityToBackendID_[keyBlobStr];
   return this.idToBackend_[backendId]
@@ -304,30 +304,30 @@ UserIO.prototype.promptUser = async function(backendID, promptMessage) {
     this.term_.focus();
   };
 
-  const container = document.createElement('div');
-  const header = document.createElement('div');
-  header.style.fontWeight = 'bold';
-  header.style.textAlign = 'center';
+  const container = document.createElement("div");
+  const header = document.createElement("div");
+  header.style.fontWeight = "bold";
+  header.style.textAlign = "center";
   header.textContent = `agent '${backendID}'`;
   container.appendChild(header);
-  const prompt = document.createElement('div');
+  const prompt = document.createElement("div");
   prompt.textContent = promptMessage;
   container.appendChild(prompt);
-  const input = document.createElement('input');
-  input.type = 'password';
+  const input = document.createElement("input");
+  input.type = "password";
   input.ariaLabel = promptMessage;
   container.appendChild(input);
 
-  const toggle = document.createElement('img');
+  const toggle = document.createElement("img");
   toggle.src = IMG_VISIBILITY_URI;
-  toggle.style.cursor = 'pointer';
-  toggle.style.verticalAlign = 'middle';
-  toggle.addEventListener('click', (e) => {
-    if (input.type === 'text') {
-      input.type = 'password';
+  toggle.style.cursor = "pointer";
+  toggle.style.verticalAlign = "middle";
+  toggle.addEventListener("click", (e) => {
+    if (input.type === "text") {
+      input.type = "password";
       toggle.src = IMG_VISIBILITY_URI;
     } else {
-      input.type = 'text';
+      input.type = "text";
       toggle.src = IMG_VISIBILITY_OFF_URI;
     }
   });
@@ -339,8 +339,8 @@ UserIO.prototype.promptUser = async function(backendID, promptMessage) {
   setTimeout(() => input.focus());
 
   // The terminal will eat all key events, so make sure we stop that.
-  input.addEventListener('keyup', (e) => e.stopPropagation(), true);
-  input.addEventListener('keypress', (e) => e.stopPropagation(), true);
+  input.addEventListener("keyup", (e) => e.stopPropagation(), true);
+  input.addEventListener("keypress", (e) => e.stopPropagation(), true);
 
   // If the terminal becomes active for some reason, force back to the input.
   io.onVTKeystroke = io.sendString = (string) => {
@@ -349,12 +349,12 @@ UserIO.prototype.promptUser = async function(backendID, promptMessage) {
 
   return new Promise((resolve, reject) => {
     // Keep accepting input until they press Enter or Escape.
-    input.addEventListener('keydown', (e) => {
+    input.addEventListener("keydown", (e) => {
       e.stopPropagation();
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         cleanup();
         resolve(input.value);
-      } else if (e.key === 'Escape') {
+      } else if (e.key === "Escape") {
         cleanup();
         reject();
       }

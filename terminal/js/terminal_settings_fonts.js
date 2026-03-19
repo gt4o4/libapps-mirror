@@ -8,12 +8,12 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, html, ifDefined} from './lit.js';
+import {LitElement, html, ifDefined} from "./lit.js";
 import {SUPPORTED_FONT_FAMILIES, fontFamilyToCSS, fontManager}
-    from './terminal_common.js';
-import './terminal_dropdown.js';
+    from "./terminal_common.js";
+import "./terminal_dropdown.js";
 
 export class TerminalSettingsFonts extends LitElement {
   /**
@@ -71,12 +71,12 @@ export class TerminalSettingsFonts extends LitElement {
         <terminal-settings-dropdown
             ariaLabel="${ifDefined(this.ariaLabel)}"
             preference="font-family"
-            title="${hterm.messageManager.get('HTERM_PREF_FONT_FAMILY')}"
+            title="${hterm.messageManager.get("HTERM_PREF_FONT_FAMILY")}"
             .options="${options}">
         </terminal-settings-dropdown>
     `;
   }
 }
 
-customElements.define('terminal-settings-fonts',
+customElements.define("terminal-settings-fonts",
     TerminalSettingsFonts);

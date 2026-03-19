@@ -6,34 +6,34 @@
  * @fileoverview Export an element: terminal-ssh-dialog
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
 import {
   deleteIdentityFiles, getIdentityFileNames, getIndexeddbFileSystem,
   importIdentityFiles,
-} from './nassh_fs.js';
+} from "./nassh_fs.js";
 
-import {LitElement, createRef, css, html, live, ref} from './lit.js';
-import './terminal_button.js';
-import './terminal_dialog.js';
-import './terminal_dropdown.js';
-import './terminal_label.js';
+import {LitElement, createRef, css, html, live, ref} from "./lit.js";
+import "./terminal_button.js";
+import "./terminal_dialog.js";
+import "./terminal_dropdown.js";
+import "./terminal_label.js";
 import {ProfileType, deleteProfile, getProfileIds, getProfileValues,
-  setProfileIds, setProfileValues} from './terminal_profiles.js';
-import './terminal_textfield.js';
+  setProfileIds, setProfileValues} from "./terminal_profiles.js";
+import "./terminal_textfield.js";
 
 const GOOGLE_HOST_REGEXP = new RegExp(
-    '\\.(' +
-    'corp\\.google\\.com|' +
-    'c\\.googlers\\.com|' +
-    'cloud\\.googlecorp\\.com|' +
-    '(internal|proxy)\\.gcpnode\\.com' +
-    ')$');
+    "\\.(" +
+    "corp\\.google\\.com|" +
+    "c\\.googlers\\.com|" +
+    "cloud\\.googlecorp\\.com|" +
+    "(internal|proxy)\\.gcpnode\\.com" +
+    ")$");
 // SSH options (e.g. '-4') that do not accept a value. Note that all SSH options
 // only has one letter (following a hyphen), so we can just use a string to
 // store all of them.
-const SSH_FLAG_OPTIONS = '46AaCfGgKkMNnqsTtVvXxYy@';
+const SSH_FLAG_OPTIONS = "46AaCfGgKkMNnqsTtVvXxYy@";
 
 /**
  * This represents a parsed SSH command. If the SSH command has a destination
@@ -65,8 +65,8 @@ export function parseCommand(command) {
     }
 
     // Remove the the double quotes if they are there.
-    const arg = match[0].replace(/(^"|"$)/g, '');
-    if (!arg.startsWith('-')) {
+    const arg = match[0].replace(/(^"|"$)/g, "");
+    if (!arg.startsWith("-")) {
       // Found the destination argument.
       return {
         destination: arg,
@@ -141,7 +141,7 @@ export function parseSSHDestination(destination) {
     let hostname = match[2];
     // This is to remove the possible "[]" surrounding the ipv6 address.
     // Openssh does not seem to support this format though.
-    if (hostname.startsWith('[') && hostname.endsWith(']')) {
+    if (hostname.startsWith("[") && hostname.endsWith("]")) {
       hostname = hostname.slice(1, -1);
     }
     return {username, hostname, port: null};
@@ -212,24 +212,24 @@ export class TerminalSSHDialog extends LitElement {
     super();
 
     // The title manually set by the user.
-    this.userTitle_ = '';
+    this.userTitle_ = "";
     /**
      * This should be in sync with `this.commandRef_.value.value`.
      *
      * @private {!ParsedCommand}
      */
-    this.parsedCommand_ = {argstr: '', destination: null};
+    this.parsedCommand_ = {argstr: "", destination: null};
     // We suppress the command error for new ssh connection at the beginning
     // because we don't want to show the error immediately when (or before) the
     // user just start typing.
     this.suppressCommandError_ = true;
     // This is set in Show(). Empty string means we are creating a new SSH
     // connection.
-    this.nasshProfileId_ = '';
+    this.nasshProfileId_ = "";
 
     this.DEFAULT_IDENTITY = {
-      label: hterm.messageManager.get('TERMINAL_HOME_DEFAULT_IDENTITY'),
-      value: '',
+      label: hterm.messageManager.get("TERMINAL_HOME_DEFAULT_IDENTITY"),
+      value: "",
     };
     this.identities_ = [this.DEFAULT_IDENTITY];
     /** @private {?IndexeddbFs} */
@@ -254,7 +254,7 @@ export class TerminalSSHDialog extends LitElement {
     if (this.parsedCommand_.destination) {
       return this.parsedCommand_.destination;
     }
-    return hterm.messageManager.get('TERMINAL_HOME_NEW_SSH_CONNECTION');
+    return hterm.messageManager.get("TERMINAL_HOME_NEW_SSH_CONNECTION");
   }
 
   /**
@@ -264,31 +264,31 @@ export class TerminalSSHDialog extends LitElement {
   render() {
     const msg = (id) => hterm.messageManager.get(id);
 
-    let commandError = '';
+    let commandError = "";
     if (!parseSSHDestination(this.parsedCommand_.destination)) {
-      commandError = msg('TERMINAL_HOME_SSH_SPECIFY_DESTINATION');
+      commandError = msg("TERMINAL_HOME_SSH_SPECIFY_DESTINATION");
     } else {
       this.suppressCommandError_ = false;
     }
 
-    const identityLabel = msg('IDENTITY_LABEL');
-    const settingsProfileLabel = msg('TERMINAL_PROFILE_LABEL');
+    const identityLabel = msg("IDENTITY_LABEL");
+    const settingsProfileLabel = msg("TERMINAL_PROFILE_LABEL");
 
-    const example = 'username@hostname -p <port> -R 1234:localhost:5678';
+    const example = "username@hostname -p <port> -R 1234:localhost:5678";
     return html`
         <terminal-dialog ${ref(this.dialogRef_)}
             @close="${this.onDialogClose_}">
           <div slot="title">
             <terminal-textfield blendIn fitContent
-                ariaLabel="${msg('TERMINAL_HOME_SSH_CONNECTION_NAME')}"
+                ariaLabel="${msg("TERMINAL_HOME_SSH_CONNECTION_NAME")}"
                 value="${live(this.getTitle_())}"
                 @keydown="${this.onTextfieldKeydown_}"
                 @input="${(e) => this.userTitle_ = e.target.value}">
             </terminal-textfield>
           </div>
           <terminal-textfield ${ref(this.commandRef_)}
-              error="${this.suppressCommandError_ ? '' : commandError}"
-              label="${msg('TERMINAL_HOME_SSH_COMMAND')}"
+              error="${this.suppressCommandError_ ? "" : commandError}"
+              label="${msg("TERMINAL_HOME_SSH_COMMAND")}"
               @keydown="${this.onTextfieldKeydown_}"
               @change="${() => this.suppressCommandError_ = false}"
               @input="${this.onCommandUpdated_}"
@@ -297,7 +297,7 @@ export class TerminalSSHDialog extends LitElement {
             <span slot="inline-prefix">ssh&nbsp</span>
           </terminal-textfield>
           <div id="settings-profile-container"
-              class="${this.settingsProfiles_.length <= 1 ? 'hide' : ''}">
+              class="${this.settingsProfiles_.length <= 1 ? "hide" : ""}">
             <terminal-label>${settingsProfileLabel}</terminal-label>
             <terminal-dropdown ${ref(this.settingsProfileDropdownRef_)}
                 .options="${this.settingsProfiles_.map((value) => ({value}))}"
@@ -314,30 +314,30 @@ export class TerminalSSHDialog extends LitElement {
                 .options="${this.identities_}">
             </terminal-dropdown>
             <terminal-button @click=${this.onImportButtonClick_}>
-              ${msg('TERMINAL_HOME_IMPORT_IDENTITY')}
+              ${msg("TERMINAL_HOME_IMPORT_IDENTITY")}
             </terminal-button>
             <input id="identity-input" type="file" multiple
                 @change=${this.onIdentityInputChange_}>
           </div>
           <terminal-textfield ${ref(this.relayArgsRef_)} id="relay-args"
-              label="${msg('FIELD_NASSH_OPTIONS_PLACEHOLDER')}"
+              label="${msg("FIELD_NASSH_OPTIONS_PLACEHOLDER")}"
               @keydown="${this.onTextfieldKeydown_}">
           </terminal-textfield>
           <terminal-textfield ${ref(this.mountPathRef_)} id="mount-path"
-              label="${msg('MOUNT_PATH_LABEL')}"
-              placeholder="${msg('FIELD_MOUNT_PATH_PLACEHOLDER')}"
+              label="${msg("MOUNT_PATH_LABEL")}"
+              placeholder="${msg("FIELD_MOUNT_PATH_PLACEHOLDER")}"
               @keydown="${this.onTextfieldKeydown_}">
           </terminal-textfield>
           <div slot="buttons">
             <span></span>
             <terminal-button class="cancel"
                 @click="${(e) => this.dialogRef_.value.cancel()}">
-              ${msg('CANCEL_BUTTON_LABEL')}
+              ${msg("CANCEL_BUTTON_LABEL")}
             </terminal-button>
             <terminal-button  ${ref(this.okRef_)} class="action"
                 ?disabled="${commandError}"
                 @click="${this.onOkClick_}">
-              ${msg('SAVE_LABEL')}
+              ${msg("SAVE_LABEL")}
             </terminal-button>
           </div>
         </terminal-dialog>
@@ -350,7 +350,7 @@ export class TerminalSSHDialog extends LitElement {
    * @param {string=} nasshProfileId A non-empty value means editing an existing
    *     connection with the id. An empty value means creating a new connection.
    */
-  async show(nasshProfileId = '') {
+  async show(nasshProfileId = "") {
     // Since this dialog can be reused, we need to be careful here and make sure
     // we update all state (including member variables and also child HTML
     // elements that have internal state (e.g. `terminal-textfield`)).
@@ -362,12 +362,12 @@ export class TerminalSSHDialog extends LitElement {
 
     this.nasshProfileId_ = nasshProfileId;
 
-    let command = '';
-    let relayArgs = '';
+    let command = "";
+    let relayArgs = "";
     let identity = this.DEFAULT_IDENTITY.value;
-    let settingsProfile = '';
-    let mountPath = '';
-    this.userTitle_ = '';
+    let settingsProfile = "";
+    let mountPath = "";
+    this.userTitle_ = "";
 
     if (this.nasshProfileId_) {
       [command,
@@ -377,32 +377,32 @@ export class TerminalSSHDialog extends LitElement {
        settingsProfile,
        mountPath] =
           await getProfileValues(ProfileType.NASSH, this.nasshProfileId_, [
-            'terminalSSHDialogCommand',
-            'description',
-            'nassh-options',
-            'identity',
-            'terminal-profile',
-            'mount-path',
-          ], '');
+            "terminalSSHDialogCommand",
+            "description",
+            "nassh-options",
+            "identity",
+            "terminal-profile",
+            "mount-path",
+          ], "");
 
       // We might have some old SSH profile without the "command". In this case,
       // we construct it from the other profile values.
       if (!command) {
-        console.warn('Construct command string from other profile values.');
+        console.warn("Construct command string from other profile values.");
         const [username, hostname, port, argstr] =
             await getProfileValues(ProfileType.NASSH, this.nasshProfileId_, [
-              'username',
-              'hostname',
-              'port',
-              'argstr',
-            ], '');
+              "username",
+              "hostname",
+              "port",
+              "argstr",
+            ], "");
         command = `${username}@${hostname}`;
         if (port) {
           command += ` -p ${port}`;
         }
 
         if (argstr) {
-          command += ' ' + argstr;
+          command += " " + argstr;
         }
       }
     }
@@ -418,8 +418,8 @@ export class TerminalSSHDialog extends LitElement {
     this.settingsProfileDropdownRef_.value.value =
         settingsProfile || hterm.Terminal.DEFAULT_PROFILE_ID;
 
-    this.shadowRoot.querySelector('terminal-dialog').show();
-    this.shadowRoot.querySelector('terminal-textfield[fitContent]')
+    this.shadowRoot.querySelector("terminal-dialog").show();
+    this.shadowRoot.querySelector("terminal-textfield[fitContent]")
         .updateFitContentWidth();
 
     this.commandRef_.value.focus();
@@ -429,7 +429,7 @@ export class TerminalSSHDialog extends LitElement {
    * @param {!Event} event
    */
   onOkClick_(event) {
-    if (!event.target.hasAttribute('disabled')) {
+    if (!event.target.hasAttribute("disabled")) {
       this.dialogRef_.value.accept();
     }
   }
@@ -453,7 +453,7 @@ export class TerminalSSHDialog extends LitElement {
 
   /** @param {!Event} event */
   onTextfieldKeydown_(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       event.preventDefault();
       this.okRef_.value.click();
     }
@@ -461,7 +461,7 @@ export class TerminalSSHDialog extends LitElement {
 
   /** @param {!Event} event */
   onImportButtonClick_(event) {
-    this.shadowRoot.querySelector('#identity-input').click();
+    this.shadowRoot.querySelector("#identity-input").click();
   }
 
   /** @param {!Event} event */
@@ -481,7 +481,7 @@ export class TerminalSSHDialog extends LitElement {
       if (!parsedDestination) {
         // This should not happen since we should have prevented the user from
         // clicking the ok button.
-        throw new Error('Unable to parse destination from {}',
+        throw new Error("Unable to parse destination from {}",
             this.parsedCommand_.destination);
       }
 
@@ -497,24 +497,24 @@ export class TerminalSSHDialog extends LitElement {
         ]);
       }
       const values = {
-        'terminalSSHDialogCommand': this.commandRef_.value.value,
-        'description': this.getTitle_(),
-        'username': parsedDestination.username,
-        'hostname': parsedDestination.hostname,
+        "terminalSSHDialogCommand": this.commandRef_.value.value,
+        "description": this.getTitle_(),
+        "username": parsedDestination.username,
+        "hostname": parsedDestination.hostname,
         // We only save the port number if it appears in the destination. If the
         // user specify it with `-p`, then it will go into 'argstr'.
-        'port': parsedDestination.port,
-        'argstr': this.parsedCommand_.argstr,
-        'nassh-options': this.relayArgsRef_.value.value,
-        'mount-path': this.mountPathRef_.value.value,
-        'identity': this.identityDropdownRef_.value.value,
+        "port": parsedDestination.port,
+        "argstr": this.parsedCommand_.argstr,
+        "nassh-options": this.relayArgsRef_.value.value,
+        "mount-path": this.mountPathRef_.value.value,
+        "identity": this.identityDropdownRef_.value.value,
       };
-      values['terminal-profile'] =
+      values["terminal-profile"] =
           this.settingsProfileDropdownRef_.value.value;
       setProfileValues(ProfileType.NASSH, this.nasshProfileId_, values);
     }
 
-    this.dispatchEvent(new CustomEvent('close'));
+    this.dispatchEvent(new CustomEvent("close"));
   }
 
   async loadIdentities_() {
@@ -528,15 +528,15 @@ export class TerminalSSHDialog extends LitElement {
   async onDeleteIdentity_(e) {
     const identityName = e.detail.option.value;
     if (!identityName) {
-      throw new Error('identity name is empty');
+      throw new Error("identity name is empty");
     }
     if (identityName === this.identityDropdownRef_.value.value) {
       // Switch to the default identity.
-      this.identityDropdownRef_.value.value = '';
+      this.identityDropdownRef_.value.value = "";
     }
     await deleteIdentityFiles(lib.notNull(this.fileSystem_), identityName);
     await this.loadIdentities_();
   }
 }
 
-customElements.define('terminal-ssh-dialog', TerminalSSHDialog);
+customElements.define("terminal-ssh-dialog", TerminalSSHDialog);

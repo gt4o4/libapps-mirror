@@ -8,17 +8,17 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {css, html} from './lit.js';
-import {TerminalSettingsElement} from './terminal_settings_element.js';
-import {DEFAULT_ANSI_COLORS} from './terminal_common.js';
+import {css, html} from "./lit.js";
+import {TerminalSettingsElement} from "./terminal_settings_element.js";
+import {DEFAULT_ANSI_COLORS} from "./terminal_common.js";
 
 const rows = [[0, 1, 2, 3, 4, 5, 6, 7], [8, 9, 10, 11, 12, 13, 14, 15]];
 
 export class TerminalSettingsAnsiColorsElement extends
     TerminalSettingsElement {
-  static get is() { return 'terminal-settings-ansi-colors'; }
+  static get is() { return "terminal-settings-ansi-colors"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}

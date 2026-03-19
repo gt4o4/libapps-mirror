@@ -10,13 +10,13 @@
 
 import {
   BackgroundWorker, SyscallEntry, SyscallHandler,
-} from '../../wasi-js-bindings/index.js';
-import * as WasshProcess from './process.js';
-import * as WasshSyscallEntry from './syscall_entry.js';
+} from "../../wasi-js-bindings/index.js";
+import * as WasshProcess from "./process.js";
+import * as WasshSyscallEntry from "./syscall_entry.js";
 
 class WasshWorker extends BackgroundWorker.Base {
   newProcess(executable, argv, environ, sab, handler_ids) {
-    const trace = (params.get('trace') ?? 'false') === 'true';
+    const trace = (params.get("trace") ?? "false") === "true";
     const debug = trace;
 
     const sys_handlers = [

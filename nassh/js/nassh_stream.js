@@ -58,11 +58,11 @@ export class Stream {
 /**
  * Errors we may raise.
  */
-Stream.ERR_STREAM_CLOSED = 'Stream closed';
-Stream.ERR_STREAM_OPENED = 'Stream opened';
-Stream.ERR_NOT_IMPLEMENTED = 'Not implemented';
-Stream.ERR_STREAM_CANT_READ = 'Stream has no read permission';
-Stream.ERR_STREAM_CANT_WRITE = 'Stream has no write permission';
+Stream.ERR_STREAM_CLOSED = "Stream closed";
+Stream.ERR_STREAM_OPENED = "Stream opened";
+Stream.ERR_NOT_IMPLEMENTED = "Not implemented";
+Stream.ERR_STREAM_CANT_READ = "Stream has no read permission";
+Stream.ERR_STREAM_CANT_WRITE = "Stream has no write permission";
 
 /**
  * Maximum number of queued bytes allowed in a WebSocket.

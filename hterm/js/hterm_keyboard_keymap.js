@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * @typedef {{
@@ -105,7 +105,7 @@ hterm.Keyboard.KeyMap = function(keyboard) {
  */
 hterm.Keyboard.KeyMap.prototype.addKeyDef = function(keyCode, def) {
   if (keyCode in this.keyDefs) {
-    console.warn('Duplicate keyCode: ' + keyCode);
+    console.warn("Duplicate keyCode: " + keyCode);
   }
 
   this.keyDefs[keyCode] = def;
@@ -132,7 +132,7 @@ hterm.Keyboard.KeyMap.prototype.reset = function() {
    * @return {!hterm.Keyboard.KeyAction}
    */
   const resolve = (action, e, k) => {
-    if (typeof action == 'function') {
+    if (typeof action == "function") {
       const keyDefFn = /** @type {!hterm.Keyboard.KeyDefFunction} */ (action);
       return keyDefFn.call(this, e, k);
     }
@@ -291,7 +291,7 @@ hterm.Keyboard.KeyMap.prototype.reset = function() {
   let keycapEP;
   let keycapMU;
   if (globalThis.navigator?.userAgent &&
-      globalThis.navigator.userAgent.includes('Firefox')) {
+      globalThis.navigator.userAgent.includes("Firefox")) {
     // Firefox defines some keys uniquely.  No other browser defines these in
     // this way.  Some even conflict.  The keyCode field isn't well documented
     // as it isn't standardized.  At some point we should switch to "key".
@@ -305,7 +305,7 @@ hterm.Keyboard.KeyMap.prototype.reset = function() {
     keycapMU = 173;     // -_
 
     // Firefox Italian +*.
-    add(171, '+*', DEFAULT, c('onZoom_'), DEFAULT, c('onZoom_'));
+    add(171, "+*", DEFAULT, c("onZoom_"), DEFAULT, c("onZoom_"));
   } else {
     // All other browsers use these mappings.
     // keycapMute = 173;   // Mute
@@ -316,192 +316,192 @@ hterm.Keyboard.KeyMap.prototype.reset = function() {
     keycapMU = 189;     // -_
   }
 
-  const ESC = '\x1b';
-  const CSI = '\x1b[';
-  const SS3 = '\x1bO';
+  const ESC = "\x1b";
+  const CSI = "\x1b[";
+  const SS3 = "\x1bO";
 
   // These fields are: [keycode, keycap, normal, control, alt, meta]
-  /* eslint-disable no-multi-spaces */
+   
 
   // The browser sends the keycode 0 for some keys.  We'll just assume it's
   // going to do the right thing by default for those keys.
-  add(0,   '[UNKNOWN]', PASS, PASS, PASS, PASS);
+  add(0,   "[UNKNOWN]", PASS, PASS, PASS, PASS);
 
   // First row.
   // These bindings match xterm for lack of a better standard.  The emitted
   // values might look like they're skipping values, but it's what xterm does.
   // https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h2-PC-Style-Function-Keys
-  add(27,  '[ESC]', ESC,                       DEFAULT, DEFAULT,     DEFAULT);
-  add(112, '[F1]',  mod(SS3 + 'P', CSI + 'P'), DEFAULT, CSI + '23~', DEFAULT);
-  add(113, '[F2]',  mod(SS3 + 'Q', CSI + 'Q'), DEFAULT, CSI + '24~', DEFAULT);
-  add(114, '[F3]',  mod(SS3 + 'R', CSI + 'R'), DEFAULT, CSI + '25~', DEFAULT);
-  add(115, '[F4]',  mod(SS3 + 'S', CSI + 'S'), DEFAULT, CSI + '26~', DEFAULT);
-  add(116, '[F5]',  CSI + '15~',               DEFAULT, CSI + '28~', DEFAULT);
-  add(117, '[F6]',  CSI + '17~',               DEFAULT, CSI + '29~', DEFAULT);
-  add(118, '[F7]',  CSI + '18~',               DEFAULT, CSI + '31~', DEFAULT);
-  add(119, '[F8]',  CSI + '19~',               DEFAULT, CSI + '32~', DEFAULT);
-  add(120, '[F9]',  CSI + '20~',               DEFAULT, CSI + '33~', DEFAULT);
-  add(121, '[F10]', CSI + '21~',               DEFAULT, CSI + '34~', DEFAULT);
-  add(122, '[F11]', c('onF11_'),               DEFAULT, CSI + '42~', DEFAULT);
-  add(123, '[F12]', CSI + '24~',               DEFAULT, CSI + '43~', DEFAULT);
+  add(27,  "[ESC]", ESC,                       DEFAULT, DEFAULT,     DEFAULT);
+  add(112, "[F1]",  mod(SS3 + "P", CSI + "P"), DEFAULT, CSI + "23~", DEFAULT);
+  add(113, "[F2]",  mod(SS3 + "Q", CSI + "Q"), DEFAULT, CSI + "24~", DEFAULT);
+  add(114, "[F3]",  mod(SS3 + "R", CSI + "R"), DEFAULT, CSI + "25~", DEFAULT);
+  add(115, "[F4]",  mod(SS3 + "S", CSI + "S"), DEFAULT, CSI + "26~", DEFAULT);
+  add(116, "[F5]",  CSI + "15~",               DEFAULT, CSI + "28~", DEFAULT);
+  add(117, "[F6]",  CSI + "17~",               DEFAULT, CSI + "29~", DEFAULT);
+  add(118, "[F7]",  CSI + "18~",               DEFAULT, CSI + "31~", DEFAULT);
+  add(119, "[F8]",  CSI + "19~",               DEFAULT, CSI + "32~", DEFAULT);
+  add(120, "[F9]",  CSI + "20~",               DEFAULT, CSI + "33~", DEFAULT);
+  add(121, "[F10]", CSI + "21~",               DEFAULT, CSI + "34~", DEFAULT);
+  add(122, "[F11]", c("onF11_"),               DEFAULT, CSI + "42~", DEFAULT);
+  add(123, "[F12]", CSI + "24~",               DEFAULT, CSI + "43~", DEFAULT);
 
   // Second row.
-  add(192, '`~', DEFAULT, sh(ctl('@'), ctl('^')),     DEFAULT,           PASS);
-  add(49,  '1!', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(50,  '2@', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(51,  '3#', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(52,  '4$', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(53,  '5%', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(54,  '6^', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(55,  '7&', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(56,  '8*', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(57,  '9(', DEFAULT, c('onCtrlNum_'),    c('onAltNum_'), c('onMetaNum_'));
-  add(48,  '0)', DEFAULT, c('onZoom_'),       c('onAltNum_'), c('onZoom_'));
-  add(keycapMU, '-_', DEFAULT, c('onZoom_'),  DEFAULT,        c('onZoom_'));
-  add(keycapEP, '=+', DEFAULT, c('onZoom_'),  DEFAULT,        c('onZoom_'));
+  add(192, "`~", DEFAULT, sh(ctl("@"), ctl("^")),     DEFAULT,           PASS);
+  add(49,  "1!", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(50,  "2@", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(51,  "3#", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(52,  "4$", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(53,  "5%", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(54,  "6^", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(55,  "7&", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(56,  "8*", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(57,  "9(", DEFAULT, c("onCtrlNum_"),    c("onAltNum_"), c("onMetaNum_"));
+  add(48,  "0)", DEFAULT, c("onZoom_"),       c("onAltNum_"), c("onZoom_"));
+  add(keycapMU, "-_", DEFAULT, c("onZoom_"),  DEFAULT,        c("onZoom_"));
+  add(keycapEP, "=+", DEFAULT, c("onZoom_"),  DEFAULT,        c("onZoom_"));
 
-  add(8,   '[BKSP]', bs('\x7f', '\b'), bs('\b', '\x7f'), DEFAULT,     DEFAULT);
+  add(8,   "[BKSP]", bs("\x7f", "\b"), bs("\b", "\x7f"), DEFAULT,     DEFAULT);
 
   // Third row.
-  add(9,   '[TAB]', sh('\t', CSI + 'Z'), c('onCtrlTab_'), PASS, DEFAULT);
-  add(81,  'qQ',    DEFAULT,             ctl('Q'),  DEFAULT, DEFAULT);
-  add(87,  'wW',    DEFAULT,         c('onCtrlW_'), DEFAULT, DEFAULT);
-  add(69,  'eE',    DEFAULT,             ctl('E'),  DEFAULT, DEFAULT);
-  add(82,  'rR',    DEFAULT,             ctl('R'),  DEFAULT, DEFAULT);
-  add(84,  'tT',    DEFAULT,         c('onCtrlT_'), DEFAULT, DEFAULT);
-  add(89,  'yY',    DEFAULT,             ctl('Y'),  DEFAULT, DEFAULT);
-  add(85,  'uU',    DEFAULT,             ctl('U'),  DEFAULT, DEFAULT);
-  add(73,  'iI',    DEFAULT,             ctl('I'),  DEFAULT, DEFAULT);
-  add(79,  'oO',    DEFAULT,             ctl('O'),  DEFAULT, DEFAULT);
-  add(80,  'pP',    DEFAULT,             ctl('P'),  DEFAULT, DEFAULT);
-  add(219, '[{',    DEFAULT,             ctl('['),  DEFAULT, DEFAULT);
-  add(221, ']}',    DEFAULT,             ctl(']'),  DEFAULT, DEFAULT);
-  add(220, '\\|',   DEFAULT,             ctl('\\'), DEFAULT, DEFAULT);
+  add(9,   "[TAB]", sh("\t", CSI + "Z"), c("onCtrlTab_"), PASS, DEFAULT);
+  add(81,  "qQ",    DEFAULT,             ctl("Q"),  DEFAULT, DEFAULT);
+  add(87,  "wW",    DEFAULT,         c("onCtrlW_"), DEFAULT, DEFAULT);
+  add(69,  "eE",    DEFAULT,             ctl("E"),  DEFAULT, DEFAULT);
+  add(82,  "rR",    DEFAULT,             ctl("R"),  DEFAULT, DEFAULT);
+  add(84,  "tT",    DEFAULT,         c("onCtrlT_"), DEFAULT, DEFAULT);
+  add(89,  "yY",    DEFAULT,             ctl("Y"),  DEFAULT, DEFAULT);
+  add(85,  "uU",    DEFAULT,             ctl("U"),  DEFAULT, DEFAULT);
+  add(73,  "iI",    DEFAULT,             ctl("I"),  DEFAULT, DEFAULT);
+  add(79,  "oO",    DEFAULT,             ctl("O"),  DEFAULT, DEFAULT);
+  add(80,  "pP",    DEFAULT,             ctl("P"),  DEFAULT, DEFAULT);
+  add(219, "[{",    DEFAULT,             ctl("["),  DEFAULT, DEFAULT);
+  add(221, "]}",    DEFAULT,             ctl("]"),  DEFAULT, DEFAULT);
+  add(220, "\\|",   DEFAULT,             ctl("\\"), DEFAULT, DEFAULT);
 
   // Fourth row. We let Ctrl+Shift+J pass for Chrome DevTools.
   // To be compliant with xterm's behavior for modifiers on Enter
   // would mean maximizing the window with Alt+Enter... so we don't
   // want to do that. Our behavior on Enter is what most other
   // modern emulators do.
-  add(20,  '[CAPS]',  PASS,    PASS,                        PASS,    DEFAULT);
-  add(65,  'aA', DEFAULT, sh(ctl('A'), c('onCtrlShiftA_')), DEFAULT, DEFAULT);
-  add(83,  'sS',      DEFAULT, ctl('S'),                    DEFAULT, DEFAULT);
-  add(68,  'dD',      DEFAULT, ctl('D'),                    DEFAULT, DEFAULT);
-  add(70,  'fF', DEFAULT, sh(ctl('F'), c('onCtrlShiftF_')), DEFAULT, DEFAULT);
-  add(71,  'gG',      DEFAULT, ctl('G'),                    DEFAULT, DEFAULT);
-  add(72,  'hH',      DEFAULT, ctl('H'),                    DEFAULT, DEFAULT);
-  add(74,  'jJ',      DEFAULT, sh(ctl('J'), PASS),          DEFAULT, DEFAULT);
-  add(75,  'kK',      DEFAULT, sh(ctl('K'), c('onClear_')), DEFAULT, DEFAULT);
-  add(76,  'lL',      DEFAULT, sh(ctl('L'), PASS),          DEFAULT, DEFAULT);
-  add(keycapSC, ';:', DEFAULT, STRIP,                       DEFAULT, DEFAULT);
+  add(20,  "[CAPS]",  PASS,    PASS,                        PASS,    DEFAULT);
+  add(65,  "aA", DEFAULT, sh(ctl("A"), c("onCtrlShiftA_")), DEFAULT, DEFAULT);
+  add(83,  "sS",      DEFAULT, ctl("S"),                    DEFAULT, DEFAULT);
+  add(68,  "dD",      DEFAULT, ctl("D"),                    DEFAULT, DEFAULT);
+  add(70,  "fF", DEFAULT, sh(ctl("F"), c("onCtrlShiftF_")), DEFAULT, DEFAULT);
+  add(71,  "gG",      DEFAULT, ctl("G"),                    DEFAULT, DEFAULT);
+  add(72,  "hH",      DEFAULT, ctl("H"),                    DEFAULT, DEFAULT);
+  add(74,  "jJ",      DEFAULT, sh(ctl("J"), PASS),          DEFAULT, DEFAULT);
+  add(75,  "kK",      DEFAULT, sh(ctl("K"), c("onClear_")), DEFAULT, DEFAULT);
+  add(76,  "lL",      DEFAULT, sh(ctl("L"), PASS),          DEFAULT, DEFAULT);
+  add(keycapSC, ";:", DEFAULT, STRIP,                       DEFAULT, DEFAULT);
   add(222, '\'"',     DEFAULT, STRIP,                       DEFAULT, DEFAULT);
-  add(13,  '[ENTER]', '\r',    DEFAULT,                     DEFAULT, DEFAULT);
+  add(13,  "[ENTER]", "\r",    DEFAULT,                     DEFAULT, DEFAULT);
 
   // Fifth row.  This includes the copy/paste shortcuts.  On some
   // platforms it's Ctrl+C/V, on others it's Meta+C/V.  We assume either
   // Ctrl+C/Meta+C should pass to the browser when there is a selection,
   // and Ctrl+Shift+V/Meta+*+V should always pass to the browser (since
   // these seem to be recognized as paste too).
-  add(16,  '[SHIFT]', PASS, PASS,                  PASS,    DEFAULT);
-  add(90,  'zZ',   DEFAULT, ctl('Z'),              DEFAULT, DEFAULT);
-  add(88,  'xX',   DEFAULT, ctl('X'),              DEFAULT, DEFAULT);
-  add(67,  'cC',   DEFAULT, c('onCtrlC_'),         DEFAULT, c('onMetaC_'));
-  add(86,  'vV',   DEFAULT, c('onCtrlV_'),         DEFAULT, c('onMetaV_'));
-  add(66,  'bB',   DEFAULT, ctl('B'),              DEFAULT, DEFAULT);
-  add(78,  'nN',   DEFAULT, c('onCtrlN_'),         DEFAULT, c('onMetaN_'));
-  add(77,  'mM',   DEFAULT, ctl('M'),              DEFAULT, DEFAULT);
-  add(188, ',<',   DEFAULT, alt(STRIP, PASS),      DEFAULT, DEFAULT);
-  add(190, '.>',   DEFAULT, alt(STRIP, PASS),      DEFAULT, DEFAULT);
-  add(191, '/?',   DEFAULT, sh(ctl('_'), ctl('?')), DEFAULT, DEFAULT);
+  add(16,  "[SHIFT]", PASS, PASS,                  PASS,    DEFAULT);
+  add(90,  "zZ",   DEFAULT, ctl("Z"),              DEFAULT, DEFAULT);
+  add(88,  "xX",   DEFAULT, ctl("X"),              DEFAULT, DEFAULT);
+  add(67,  "cC",   DEFAULT, c("onCtrlC_"),         DEFAULT, c("onMetaC_"));
+  add(86,  "vV",   DEFAULT, c("onCtrlV_"),         DEFAULT, c("onMetaV_"));
+  add(66,  "bB",   DEFAULT, ctl("B"),              DEFAULT, DEFAULT);
+  add(78,  "nN",   DEFAULT, c("onCtrlN_"),         DEFAULT, c("onMetaN_"));
+  add(77,  "mM",   DEFAULT, ctl("M"),              DEFAULT, DEFAULT);
+  add(188, ",<",   DEFAULT, alt(STRIP, PASS),      DEFAULT, DEFAULT);
+  add(190, ".>",   DEFAULT, alt(STRIP, PASS),      DEFAULT, DEFAULT);
+  add(191, "/?",   DEFAULT, sh(ctl("_"), ctl("?")), DEFAULT, DEFAULT);
 
   // Sixth and final row.
-  add(17,  '[CTRL]',  PASS,    PASS,     PASS,    PASS);
-  add(18,  '[ALT]',   PASS,    PASS,     PASS,    PASS);
-  add(91,  '[LAPL]',  PASS,    PASS,     PASS,    PASS);
-  add(32,  ' ',       DEFAULT, ctl('@'), DEFAULT, DEFAULT);
-  add(92,  '[RAPL]',  PASS,    PASS,     PASS,    PASS);
-  add(93,  '[RMENU]', PASS,    PASS,     PASS,    PASS);
+  add(17,  "[CTRL]",  PASS,    PASS,     PASS,    PASS);
+  add(18,  "[ALT]",   PASS,    PASS,     PASS,    PASS);
+  add(91,  "[LAPL]",  PASS,    PASS,     PASS,    PASS);
+  add(32,  " ",       DEFAULT, ctl("@"), DEFAULT, DEFAULT);
+  add(92,  "[RAPL]",  PASS,    PASS,     PASS,    PASS);
+  add(93,  "[RMENU]", PASS,    PASS,     PASS,    PASS);
 
   // These things.
-  add(42,  '[PRTSCR]', PASS, PASS, PASS, PASS);
-  add(145, '[SCRLK]',  PASS, PASS, PASS, PASS);
-  add(19,  '[BREAK]',  PASS, PASS, PASS, PASS);
+  add(42,  "[PRTSCR]", PASS, PASS, PASS, PASS);
+  add(145, "[SCRLK]",  PASS, PASS, PASS, PASS);
+  add(19,  "[BREAK]",  PASS, PASS, PASS, PASS);
 
   // The block of six keys above the arrows.
-  add(45,  '[INSERT]', c('onKeyInsert_'),   DEFAULT, DEFAULT, DEFAULT);
-  add(36,  '[HOME]',   c('onKeyHome_'),     DEFAULT, DEFAULT, DEFAULT);
-  add(33,  '[PGUP]',   c('onKeyPageUp_'),   DEFAULT, DEFAULT, DEFAULT);
-  add(46,  '[DEL]',    c('onKeyDel_'),      DEFAULT, DEFAULT, DEFAULT);
-  add(35,  '[END]',    c('onKeyEnd_'),      DEFAULT, DEFAULT, DEFAULT);
-  add(34,  '[PGDOWN]', c('onKeyPageDown_'), DEFAULT, DEFAULT, DEFAULT);
+  add(45,  "[INSERT]", c("onKeyInsert_"),   DEFAULT, DEFAULT, DEFAULT);
+  add(36,  "[HOME]",   c("onKeyHome_"),     DEFAULT, DEFAULT, DEFAULT);
+  add(33,  "[PGUP]",   c("onKeyPageUp_"),   DEFAULT, DEFAULT, DEFAULT);
+  add(46,  "[DEL]",    c("onKeyDel_"),      DEFAULT, DEFAULT, DEFAULT);
+  add(35,  "[END]",    c("onKeyEnd_"),      DEFAULT, DEFAULT, DEFAULT);
+  add(34,  "[PGDOWN]", c("onKeyPageDown_"), DEFAULT, DEFAULT, DEFAULT);
 
   // Arrow keys.  When unmodified they respect the application cursor state,
   // otherwise they always send the CSI codes.
-  add(38, '[UP]',    c('onKeyArrowUp_'), DEFAULT, DEFAULT, DEFAULT);
-  add(40, '[DOWN]',  c('onKeyArrowDown_'), DEFAULT, DEFAULT, DEFAULT);
-  add(39, '[RIGHT]', ac(CSI + 'C', SS3 + 'C'), DEFAULT, DEFAULT, DEFAULT);
-  add(37, '[LEFT]',  ac(CSI + 'D', SS3 + 'D'), DEFAULT, DEFAULT, DEFAULT);
+  add(38, "[UP]",    c("onKeyArrowUp_"), DEFAULT, DEFAULT, DEFAULT);
+  add(40, "[DOWN]",  c("onKeyArrowDown_"), DEFAULT, DEFAULT, DEFAULT);
+  add(39, "[RIGHT]", ac(CSI + "C", SS3 + "C"), DEFAULT, DEFAULT, DEFAULT);
+  add(37, "[LEFT]",  ac(CSI + "D", SS3 + "D"), DEFAULT, DEFAULT, DEFAULT);
 
-  add(144, '[NUMLOCK]', PASS, PASS, PASS, PASS);
+  add(144, "[NUMLOCK]", PASS, PASS, PASS, PASS);
 
   // On Apple keyboards, the NumLock key is a Clear key.  It also tends to be
   // what KP5 sends when numlock is off.  Not clear if we could do anything
   // useful with it, so just pass it along.
-  add(12, '[CLEAR]', PASS, PASS, PASS, PASS);
+  add(12, "[CLEAR]", PASS, PASS, PASS, PASS);
 
   // With numlock off, the keypad generates the same key codes as the arrows
   // and 'block of six' for some keys, and null key codes for the rest.
 
   // Keypad with numlock on generates unique key codes...
-  add(96,  '[KP0]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(97,  '[KP1]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(98,  '[KP2]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(99,  '[KP3]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(100, '[KP4]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(101, '[KP5]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(102, '[KP6]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(103, '[KP7]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(104, '[KP8]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(105, '[KP9]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(107, '[KP+]', DEFAULT, c('onZoom_'), DEFAULT, c('onZoom_'));
-  add(109, '[KP-]', DEFAULT, c('onZoom_'), DEFAULT, c('onZoom_'));
-  add(106, '[KP*]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(111, '[KP/]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
-  add(110, '[KP.]', DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(96,  "[KP0]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(97,  "[KP1]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(98,  "[KP2]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(99,  "[KP3]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(100, "[KP4]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(101, "[KP5]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(102, "[KP6]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(103, "[KP7]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(104, "[KP8]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(105, "[KP9]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(107, "[KP+]", DEFAULT, c("onZoom_"), DEFAULT, c("onZoom_"));
+  add(109, "[KP-]", DEFAULT, c("onZoom_"), DEFAULT, c("onZoom_"));
+  add(106, "[KP*]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(111, "[KP/]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
+  add(110, "[KP.]", DEFAULT, DEFAULT,      DEFAULT, DEFAULT);
 
   // OS-specific differences.
-  if (hterm.os == 'cros') {
+  if (hterm.os == "cros") {
     // ChromeOS keyboard top row.  The media-keys-are-fkeys preference allows
     // users to make these always behave as function keys (see those bindings
     // above for more details).
-    /* eslint-disable max-len */
-    add(166, '[BACK]',   med(mod(SS3 + 'P', CSI + 'P')), DEFAULT, CSI + '23~', DEFAULT);  // F1
-    add(167, '[FWD]',    med(mod(SS3 + 'Q', CSI + 'Q')), DEFAULT, CSI + '24~', DEFAULT);  // F2
-    add(168, '[RELOAD]', med(mod(SS3 + 'R', CSI + 'R')), DEFAULT, CSI + '25~', DEFAULT);  // F3
-    add(183, '[FSCR]',   med(mod(SS3 + 'S', CSI + 'S')), DEFAULT, CSI + '26~', DEFAULT);  // F4
-    add(182, '[WINS]',   med(CSI + '15~'),               DEFAULT, CSI + '28~', DEFAULT);  // F5
-    add(216, '[BRIT-]',  med(CSI + '17~'),               DEFAULT, CSI + '29~', DEFAULT);  // F6
-    add(217, '[BRIT+]',  med(CSI + '18~'),               DEFAULT, CSI + '31~', DEFAULT);  // F7
-    add(173, '[MUTE]',   med(CSI + '19~'),               DEFAULT, CSI + '32~', DEFAULT);  // F8
-    add(174, '[VOL-]',   med(CSI + '20~'),               DEFAULT, CSI + '33~', DEFAULT);  // F9
-    add(175, '[VOL+]',   med(CSI + '21~'),               DEFAULT, CSI + '34~', DEFAULT);  // F10
-    /* eslint-enable max-len */
+     
+    add(166, "[BACK]",   med(mod(SS3 + "P", CSI + "P")), DEFAULT, CSI + "23~", DEFAULT);  // F1
+    add(167, "[FWD]",    med(mod(SS3 + "Q", CSI + "Q")), DEFAULT, CSI + "24~", DEFAULT);  // F2
+    add(168, "[RELOAD]", med(mod(SS3 + "R", CSI + "R")), DEFAULT, CSI + "25~", DEFAULT);  // F3
+    add(183, "[FSCR]",   med(mod(SS3 + "S", CSI + "S")), DEFAULT, CSI + "26~", DEFAULT);  // F4
+    add(182, "[WINS]",   med(CSI + "15~"),               DEFAULT, CSI + "28~", DEFAULT);  // F5
+    add(216, "[BRIT-]",  med(CSI + "17~"),               DEFAULT, CSI + "29~", DEFAULT);  // F6
+    add(217, "[BRIT+]",  med(CSI + "18~"),               DEFAULT, CSI + "31~", DEFAULT);  // F7
+    add(173, "[MUTE]",   med(CSI + "19~"),               DEFAULT, CSI + "32~", DEFAULT);  // F8
+    add(174, "[VOL-]",   med(CSI + "20~"),               DEFAULT, CSI + "33~", DEFAULT);  // F9
+    add(175, "[VOL+]",   med(CSI + "21~"),               DEFAULT, CSI + "34~", DEFAULT);  // F10
+     
 
     // We could make this into F11, but it'd be a bit weird.  Chrome allows us
     // to see this and react, but it doesn't actually allow us to block or
     // cancel it, so it makes the screen flash/lock still.
-    add(152, '[POWER]', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+    add(152, "[POWER]", DEFAULT, DEFAULT, DEFAULT, DEFAULT);
 
     // The Pixelbook has a slightly different layout.  This means half the keys
     // above are off by one.  https://crbug.com/807513
-    add(179, '[PLAY]', med(CSI + '18~'), DEFAULT, CSI + '31~', DEFAULT); // F7
+    add(179, "[PLAY]", med(CSI + "18~"), DEFAULT, CSI + "31~", DEFAULT); // F7
     // The settings / hamburgers / three hot dogs / menu / whatever-it's-called.
-    add(154, '[DOGS]', med(CSI + '23~'), DEFAULT, CSI + '42~', DEFAULT); // F11
+    add(154, "[DOGS]", med(CSI + "23~"), DEFAULT, CSI + "42~", DEFAULT); // F11
 
     // We don't use this for anything, but keep it from popping up by default.
-    add(153, '[ASSIST]', DEFAULT, DEFAULT, DEFAULT, DEFAULT);
+    add(153, "[ASSIST]", DEFAULT, DEFAULT, DEFAULT, DEFAULT);
   }
-  /* eslint-enable no-multi-spaces */
+   
 };
 
 /**
@@ -515,7 +515,7 @@ hterm.Keyboard.KeyMap.prototype.onKeyInsert_ = function(e) {
     return hterm.Keyboard.KeyActions.PASS;
   }
 
-  return '\x1b[2~';
+  return "\x1b[2~";
 };
 
 /**
@@ -528,10 +528,10 @@ hterm.Keyboard.KeyMap.prototype.onKeyHome_ = function(e) {
   if (this.keyboard.homeKeysScroll === e.shiftKey) {
     if ((e.altKey || e.ctrlKey || e.shiftKey) ||
         !this.keyboard.applicationCursor) {
-      return '\x1b[H';
+      return "\x1b[H";
     }
 
-    return '\x1bOH';
+    return "\x1bOH";
   }
 
   this.keyboard.terminal.scrollHome();
@@ -548,10 +548,10 @@ hterm.Keyboard.KeyMap.prototype.onKeyEnd_ = function(e) {
   if (this.keyboard.homeKeysScroll === e.shiftKey) {
     if ((e.altKey || e.ctrlKey || e.shiftKey) ||
         !this.keyboard.applicationCursor) {
-      return '\x1b[F';
+      return "\x1b[F";
     }
 
-    return '\x1bOF';
+    return "\x1bOF";
   }
 
   this.keyboard.terminal.scrollEnd();
@@ -566,7 +566,7 @@ hterm.Keyboard.KeyMap.prototype.onKeyEnd_ = function(e) {
  */
 hterm.Keyboard.KeyMap.prototype.onKeyPageUp_ = function(e) {
   if (this.keyboard.pageKeysScroll === e.shiftKey) {
-    return '\x1b[5~';
+    return "\x1b[5~";
   }
 
   this.keyboard.terminal.scrollPageUp();
@@ -587,9 +587,9 @@ hterm.Keyboard.KeyMap.prototype.onKeyPageUp_ = function(e) {
 hterm.Keyboard.KeyMap.prototype.onKeyDel_ = function(e) {
   if (this.keyboard.altBackspaceIsMetaBackspace &&
       this.keyboard.altKeyPressed && !e.altKey) {
-    return '\x1b\x7f';
+    return "\x1b\x7f";
   }
-  return '\x1b[3~';
+  return "\x1b[3~";
 };
 
 /**
@@ -600,7 +600,7 @@ hterm.Keyboard.KeyMap.prototype.onKeyDel_ = function(e) {
  */
 hterm.Keyboard.KeyMap.prototype.onKeyPageDown_ = function(e) {
   if (this.keyboard.pageKeysScroll === e.shiftKey) {
-    return '\x1b[6~';
+    return "\x1b[6~";
   }
 
   this.keyboard.terminal.scrollPageDown();
@@ -620,7 +620,7 @@ hterm.Keyboard.KeyMap.prototype.onKeyArrowUp_ = function(e) {
   }
 
   return (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey ||
-          !this.keyboard.applicationCursor) ? '\x1b[A' : '\x1bOA';
+          !this.keyboard.applicationCursor) ? "\x1b[A" : "\x1bOA";
 };
 
 /**
@@ -636,7 +636,7 @@ hterm.Keyboard.KeyMap.prototype.onKeyArrowDown_ = function(e) {
   }
 
   return (e.shiftKey || e.ctrlKey || e.altKey || e.metaKey ||
-          !this.keyboard.applicationCursor) ? '\x1b[B' : '\x1bOB';
+          !this.keyboard.applicationCursor) ? "\x1b[B" : "\x1bOB";
 };
 
 /**
@@ -661,11 +661,11 @@ hterm.Keyboard.KeyMap.prototype.onClear_ = function(e) {
  * @return {!hterm.Keyboard.KeyAction} Key action or sequence.
  */
 hterm.Keyboard.KeyMap.prototype.onF11_ = function(e) {
-  if (hterm.windowType !== 'popup' && hterm.windowType !== 'app' &&
+  if (hterm.windowType !== "popup" && hterm.windowType !== "app" &&
       !e.shiftKey) {
     return hterm.Keyboard.KeyActions.PASS;
   } else {
-    return '\x1b[23~';
+    return "\x1b[23~";
   }
 };
 
@@ -689,15 +689,15 @@ hterm.Keyboard.KeyMap.prototype.onCtrlNum_ = function(e, keyDef) {
   }
 
   switch (keyDef.keyCap.substr(0, 1)) {
-    case '1': return '1';
-    case '2': return ctl('@');
-    case '3': return ctl('[');
-    case '4': return ctl('\\');
-    case '5': return ctl(']');
-    case '6': return ctl('^');
-    case '7': return ctl('_');
-    case '8': return '\x7f';
-    case '9': return '9';
+    case "1": return "1";
+    case "2": return ctl("@");
+    case "3": return ctl("[");
+    case "4": return ctl("\\");
+    case "5": return ctl("]");
+    case "6": return ctl("^");
+    case "7": return ctl("_");
+    case "8": return "\x7f";
+    case "9": return "9";
   }
   return hterm.Keyboard.KeyActions.PASS;
 };
@@ -754,7 +754,7 @@ hterm.Keyboard.KeyMap.prototype.onCtrlW_ = function(e) {
   if (this.keyboard.terminal.passCtrlW) {
     return hterm.Keyboard.KeyActions.PASS;
   }
-  return '\x17';
+  return "\x17";
 };
 
 /**
@@ -768,7 +768,7 @@ hterm.Keyboard.KeyMap.prototype.onCtrlT_ = function(e) {
   if (this.keyboard.terminal.passCtrlT) {
     return hterm.Keyboard.KeyActions.PASS;
   }
-  return '\x14';
+  return "\x14";
 };
 
 /**
@@ -828,7 +828,7 @@ hterm.Keyboard.KeyMap.prototype.onCtrlC_ = function(e) {
     }
   }
 
-  return '\x03';
+  return "\x03";
 };
 
 /**
@@ -847,7 +847,7 @@ hterm.Keyboard.KeyMap.prototype.onCtrlN_ = function(e) {
     return hterm.Keyboard.KeyActions.CANCEL;
   }
 
-  return '\x0e';
+  return "\x0e";
 };
 
 /**
@@ -874,7 +874,7 @@ hterm.Keyboard.KeyMap.prototype.onCtrlV_ = function(e) {
     }
   }
 
-  return '\x16';
+  return "\x16";
 };
 
 /**
@@ -954,9 +954,9 @@ hterm.Keyboard.KeyMap.prototype.onZoom_ = function(e, keyDef) {
     // If ctrl-PMZ controls zoom and the shift key is pressed, or
     // ctrl-shift-PMZ controls zoom and this shift key is not pressed,
     // then we want to send the control code instead of affecting zoom.
-    if (keyDef.keyCap == '-_') {
+    if (keyDef.keyCap == "-_") {
       // ^_
-      return '\x1f';
+      return "\x1f";
     }
 
     // Only ^_ is valid, the other sequences have no meaning.
@@ -964,12 +964,12 @@ hterm.Keyboard.KeyMap.prototype.onZoom_ = function(e, keyDef) {
   }
 
   const cap = keyDef.keyCap.substr(0, 1);
-  if (cap == '0') {
+  if (cap == "0") {
       this.keyboard.terminal.setFontSize(0);
   } else {
     let size = this.keyboard.terminal.getFontSize();
 
-    if (cap == '-' || keyDef.keyCap == '[KP-]') {
+    if (cap == "-" || keyDef.keyCap == "[KP-]") {
       size -= 1;
     } else {
       size += 1;

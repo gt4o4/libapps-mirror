@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
 import {DEFAULT_VM_NAME, DEFAULT_CONTAINER_NAME, ORIGINAL_URL,
   PARAM_NAME_MOUNT, PARAM_NAME_MOUNT_PATH, PARAM_NAME_SETTINGS_PROFILE,
-  PARAM_NAME_SFTP, PARAM_NAME_TMUX} from './terminal_common.js';
+  PARAM_NAME_SFTP, PARAM_NAME_TMUX} from "./terminal_common.js";
 
 /**
  * @typedef {{
@@ -119,10 +119,10 @@ export class TerminalInfoTracker {
    */
   static async create() {
     return new Promise((resolve) => {
-      const channel = new BroadcastChannel('terminalInfoTracker');
+      const channel = new BroadcastChannel("terminalInfoTracker");
       // Return early if running in dev env without chrome.tabs.
       if (!chrome.tabs) {
-        console.warn('chrome.tabs API not found.');
+        console.warn("chrome.tabs API not found.");
         return resolve(new TerminalInfoTracker(
             {tabId: 0, channel, launchInfo: {home: {}}}));
       }
@@ -131,7 +131,7 @@ export class TerminalInfoTracker {
           const parentTerminalInfo =
               await TerminalInfoTracker.requestTerminalInfo(channel,
                   tab.openerTabId);
-          console.log('parentTerminalInfo: ', parentTerminalInfo);
+          console.log("parentTerminalInfo: ", parentTerminalInfo);
           const launchInfo = resolveLaunchInfo(parentTerminalInfo?.launchInfo);
           console.log(`current tab (${tab.id}) launchInfo: `, launchInfo);
           resolve(new TerminalInfoTracker({
@@ -190,7 +190,7 @@ export class TerminalInfoTracker {
         }, timeout);
 
         channel.onmessage = (ev) => {
-          if (typeof ev.data === 'object' && ev.data.tabId === tabId) {
+          if (typeof ev.data === "object" && ev.data.tabId === tabId) {
             resolve(ev.data);
             clearTimeout(timeoutId);
           }
@@ -229,15 +229,15 @@ export async function getTerminalInfoTracker() {
  * @return {!LaunchInfo}
  */
 export function resolveLaunchInfo(parentLaunchInfo, url = ORIGINAL_URL) {
-  if (url.host === 'crosh') {
+  if (url.host === "crosh") {
     return {crosh: {}};
   }
 
-  if (url.pathname === '/html/terminal_ssh.html') {
+  if (url.pathname === "/html/terminal_ssh.html") {
     if (url.hash) {
-      const isSftp = url.searchParams.get(PARAM_NAME_SFTP) === 'true';
-      const isMount = url.searchParams.get(PARAM_NAME_MOUNT) === 'true';
-      const mountPath = url.searchParams.get(PARAM_NAME_MOUNT_PATH) ?? '';
+      const isSftp = url.searchParams.get(PARAM_NAME_SFTP) === "true";
+      const isMount = url.searchParams.get(PARAM_NAME_MOUNT) === "true";
+      const mountPath = url.searchParams.get(PARAM_NAME_MOUNT_PATH) ?? "";
       return {
         ssh: {needRedirect: false, isSftp, isMount, mountPath, hash: url.hash},
         settingsProfileId: url.searchParams.get(PARAM_NAME_SETTINGS_PROFILE),
@@ -247,7 +247,7 @@ export function resolveLaunchInfo(parentLaunchInfo, url = ORIGINAL_URL) {
     }
   }
 
-  if (url.hash === '#home') {
+  if (url.hash === "#home") {
     return {home: {}};
   }
 
@@ -283,7 +283,7 @@ export function resolveLaunchInfo(parentLaunchInfo, url = ORIGINAL_URL) {
   }
 
   // We are launching the terminal with vsh.
-  const args = url.searchParams.getAll('args[]');
+  const args = url.searchParams.getAll("args[]");
   const outputArgs = [];
   let passthroughArgs = [];
   let containerId = {};
@@ -292,28 +292,28 @@ export function resolveLaunchInfo(parentLaunchInfo, url = ORIGINAL_URL) {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (arg == '--') {
+    if (arg == "--") {
       // Swallow all following args and stop parsing.
       passthroughArgs = args.splice(i);
       break;
     }
 
-    if (arg.startsWith('--vm_name=')) {
-      const value = arg.split('=', 2)[1];
+    if (arg.startsWith("--vm_name=")) {
+      const value = arg.split("=", 2)[1];
       if (value) {
         containerId.vmName = value;
       }
       continue;
     }
-    if (arg.startsWith('--target_container=')) {
-      const value = arg.split('=', 2)[1];
+    if (arg.startsWith("--target_container=")) {
+      const value = arg.split("=", 2)[1];
       if (value) {
         containerId.containerName = value;
       }
       continue;
     }
 
-    if (arg.startsWith('--cwd=')) {
+    if (arg.startsWith("--cwd=")) {
       inputArgsHasCwd = outputArgsHasCwd = true;
     }
     outputArgs.push(arg);
@@ -368,9 +368,9 @@ export function resolveLaunchInfo(parentLaunchInfo, url = ORIGINAL_URL) {
  * @return {string}
  */
 export function composeTitle(containerId) {
-  let suffix = (containerId.containerName || containerId.vmName || '');
-  suffix += ':~';
-  return '<>@' + suffix;
+  let suffix = (containerId.containerName || containerId.vmName || "");
+  suffix += ":~";
+  return "<>@" + suffix;
 }
 
 /**
@@ -379,11 +379,11 @@ export function composeTitle(containerId) {
  * @return {string}
  */
 export function getInitialTitleCacheKey(containerId) {
-  return 'cachedInitialTitle-' + JSON.stringify(
+  return "cachedInitialTitle-" + JSON.stringify(
       containerId,
       // This is to make sure the order of the properties. This seems to be
       // documented in the ES5 standard.
-      ['containerName', 'vmName'],
+      ["containerName", "vmName"],
   );
 }
 
@@ -400,22 +400,22 @@ export function getInitialTitleCacheKey(containerId) {
 export function setUpTitleHandler(terminalInfoTracker) {
   const launchInfo = terminalInfoTracker.launchInfo;
   if (launchInfo.crosh) {
-    document.title = 'crosh';
+    document.title = "crosh";
     return;
   }
 
   if (launchInfo.tmux) {
-    document.title = '[tmux]';
+    document.title = "[tmux]";
     return;
   }
 
   if (launchInfo.ssh) {
-    document.title = 'SSH';
+    document.title = "SSH";
     return;
   }
 
   if (launchInfo.home) {
-    document.title = hterm.messageManager.get('TERMINAL_TITLE_TERMINAL');
+    document.title = hterm.messageManager.get("TERMINAL_TITLE_TERMINAL");
     return;
   }
 
@@ -444,6 +444,6 @@ export function setUpTitleHandler(terminalInfoTracker) {
       observer.disconnect();
       window.localStorage.setItem(key, mutations[0].target.textContent);
     });
-    observer.observe(document.querySelector('title'), {childList: true});
+    observer.observe(document.querySelector("title"), {childList: true});
   }
 }

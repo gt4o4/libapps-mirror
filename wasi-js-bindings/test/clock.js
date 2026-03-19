@@ -6,9 +6,9 @@
  * @fileoverview Tests for clock APIs.
  */
 
-import {Process, SyscallEntry, SyscallHandler, WASI} from '../index.js';
+import {Process, SyscallEntry, SyscallHandler, WASI} from "../index.js";
 
-describe('clock.js', () => {
+describe("clock.js", () => {
 
 /**
  * A handler just to capture output.
@@ -16,8 +16,8 @@ describe('clock.js', () => {
 class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
   constructor(...args) {
     super(...args);
-    this.stdout = '';
-    this.stderr = '';
+    this.stdout = "";
+    this.stderr = "";
     this.td = new TextDecoder();
   }
 
@@ -64,14 +64,14 @@ async function run(prog, argv) {
   const sys_handlers = [handler];
   const proc = new Process.Foreground({
     executable: prog,
-    argv: ['clock.wasm', ...argv],
+    argv: ["clock.wasm", ...argv],
     sys_handlers: sys_handlers,
     sys_entries: [
       new SyscallEntry.WasiPreview1({sys_handlers}),
     ],
   });
   const ret = await proc.run();
-  assert.equal(handler.stderr, '');
+  assert.equal(handler.stderr, "");
   return {
     returncode: ret,
     stdout: handler.stdout,
@@ -89,7 +89,7 @@ before(async function() {
    *
    * @type {!ArrayBuffer}
    */
-  this.prog = await fetch('clock.wasm')
+  this.prog = await fetch("clock.wasm")
     .then((response) => response.arrayBuffer());
 });
 
@@ -107,12 +107,12 @@ function getNanosec(seconds, nanoseconds) {
 /**
  * Verify monotonic clock behavior.
  */
-it('monotonic', async function() {
-  const result = await run(this.prog, ['monotonic']);
+it("monotonic", async function() {
+  const result = await run(this.prog, ["monotonic"]);
   const data = result.data;
 
   // Check resolution.
-  assert.deepEqual(data.getres, ['0', '1000']);
+  assert.deepEqual(data.getres, ["0", "1000"]);
 
   // Check it is indeed monotonic.
   let curr = -1n;
@@ -127,12 +127,12 @@ it('monotonic', async function() {
 /**
  * Verify realtime clock behavior.
  */
-it('realtime', async function() {
-  const result = await run(this.prog, ['realtime']);
+it("realtime", async function() {
+  const result = await run(this.prog, ["realtime"]);
   const data = result.data;
 
   // Check resolution.
-  assert.deepEqual(data.getres, ['0', '1000000']);
+  assert.deepEqual(data.getres, ["0", "1000000"]);
 
   // Check it is indeed monotonic.
   let curr = -1n;

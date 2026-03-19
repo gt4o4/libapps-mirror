@@ -7,13 +7,13 @@
  * between webworkers.
  */
 
-import * as util from './util.js';
+import * as util from "./util.js";
 
 /**
  * A magic string to mark bigints serialized in JSON as a string.
  */
-const BIGINT_MAGIC = '_WASI\x00BigInt\x01';
-const ARRAY_BUFFER_MAGIC = '_WASI\x00ArrayBuffer\x01';
+const BIGINT_MAGIC = "_WASI\x00BigInt\x01";
+const ARRAY_BUFFER_MAGIC = "_WASI\x00ArrayBuffer\x01";
 
 /**
  * Locking type that's more analagous to a Win32-style signal. This class
@@ -37,7 +37,7 @@ export class SyscallLock {
     // NB: We don't verify offset, or buffer length, of offset alignment as
     // Int32Array does it for us.
     if (!(buffer instanceof SharedArrayBuffer)) {
-      throw new Error('buffer must be a SharedArrayBuffer');
+      throw new Error("buffer must be a SharedArrayBuffer");
     }
 
     // Space for integers shared memory.
@@ -121,14 +121,14 @@ export class SyscallLock {
     let ab = null;
     const str = JSON.stringify(obj, (key, value) => {
       switch (typeof value) {
-        case 'bigint':
+        case "bigint":
           return BIGINT_MAGIC + value.toString();
-        case 'object':
+        case "object":
           if (ArrayBuffer.isView(value)) {
             // closure-compiler misses the ArrayBuffer.isView check above, so we
             // have to cast it when using it below.
             if (ab !== null) {
-              console.warn('Can only handle one array buffer at a time.');
+              console.warn("Can only handle one array buffer at a time.");
               return Array.from(
                   /** @type {!IArrayLike<!ArrayBufferView>} */ (value));
             }
@@ -165,7 +165,7 @@ export class SyscallLock {
     // buffers yet.
     const bytes = this.sabDataArr.slice(0, length);
     const ret = JSON.parse(td.decode(bytes), (key, value) => {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         if (value.startsWith(BIGINT_MAGIC)) {
           return BigInt(value.substr(BIGINT_MAGIC.length));
         } else if (value.startsWith(ARRAY_BUFFER_MAGIC)) {
@@ -176,7 +176,7 @@ export class SyscallLock {
       return value;
     });
     if (!(ret instanceof Object)) {
-      throw new Error(`Invalid serialized object`);
+      throw new Error("Invalid serialized object");
     }
     return ret;
   }

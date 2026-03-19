@@ -6,11 +6,11 @@
  * @fileoverview Processes for managing program runtimes.
  */
 
-import {Program} from './program.js';
-import {SyscallLock} from './syscall_lock.js';
-import {WasiView} from './dataview.js';
-import * as util from './util.js';
-import * as WASI from './wasi.js';
+import {Program} from "./program.js";
+import {SyscallLock} from "./syscall_lock.js";
+import {WasiView} from "./dataview.js";
+import * as util from "./util.js";
+import * as WASI from "./wasi.js";
 
 /**
  * Shared logic between different process types.
@@ -29,17 +29,17 @@ class Base {
   constructor({executable, argv, environ, debug}) {
     this.executable = executable;
     if (argv === undefined) {
-      if (typeof executable === 'string') {
+      if (typeof executable === "string") {
         this.argv = [executable];
       } else {
-        this.argv = ['wasi-program'];
+        this.argv = ["wasi-program"];
       }
     } else {
       if (!Array.isArray(argv)) {
-        throw new util.ApiViolation('argv must be an Array');
+        throw new util.ApiViolation("argv must be an Array");
       }
       for (let i = 0; i < argv.length; ++i) {
-        if (typeof argv[i] !== 'string') {
+        if (typeof argv[i] !== "string") {
           throw new util.ApiViolation(
               `argv must be an Array of strings; argv[${i}] is a ` +
               `"${typeof argv[i]}" instead!`);
@@ -152,7 +152,7 @@ export class Foreground extends Base {
         resolve(ret);
       } catch (e) {
         if (e instanceof WebAssembly.RuntimeError) {
-          if (e.message === 'unreachable') {
+          if (e.message === "unreachable") {
             // This shows up with abort() & exit() calls.  If this was an exit,
             // then exit status should be set (via the exit syscall).
             if (this.exit_status === null) {
@@ -261,11 +261,11 @@ export class Background extends Base {
   }
 
   onMessageError(e) {
-    this.logError('>>>main onMessageError', e);
+    this.logError(">>>main onMessageError", e);
   }
 
   onError(e) {
-    this.logError('terminating process due to runtime error:', e);
+    this.logError("terminating process due to runtime error:", e);
     this.terminate({message: e.toString()});
   }
 
@@ -293,7 +293,7 @@ export class Background extends Base {
      * }}
      */
     const data = e.data;
-    this.debug('>>>main onMessage', data);
+    this.debug(">>>main onMessage", data);
 
     const {name, argv} = data;
 
@@ -318,7 +318,7 @@ export class Background extends Base {
     let ret = WASI.errno.ENOSYS;
     if (method in this.handler) {
       ret = await this.handler[method].apply(this.handler, args);
-      if (typeof ret !== 'number') {
+      if (typeof ret !== "number") {
         this.lock.setData(ret);
         ret = -1;
       }
@@ -342,7 +342,7 @@ export class Background extends Base {
   }
 
   onMessage_error(message) {
-    this.logError('terminating process due to worker error:', message);
+    this.logError("terminating process due to worker error:", message);
     this.terminate(new util.CompletedProcessError({message}));
   }
 
@@ -355,13 +355,13 @@ export class Background extends Base {
   }
 
   async run() {
-    const w = new Worker(this.workerUri, {type: 'module'});
+    const w = new Worker(this.workerUri, {type: "module"});
     this.worker = w;
     w.addEventListener(
-        'message', /** @type {!EventListener} */ (this.onMessage.bind(this)));
-    w.addEventListener('messageerror', this.onMessageError.bind(this));
-    w.addEventListener('error', this.onError.bind(this));
-    this.postMessage('run', this.executable, this.argv, this.environ, this.sab,
+        "message", /** @type {!EventListener} */ (this.onMessage.bind(this)));
+    w.addEventListener("messageerror", this.onMessageError.bind(this));
+    w.addEventListener("error", this.onError.bind(this));
+    this.postMessage("run", this.executable, this.argv, this.environ, this.sab,
                      this.handler.getHandlers_());
 
     // Return a promise that resolves when we terminate.

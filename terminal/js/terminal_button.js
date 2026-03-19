@@ -8,7 +8,7 @@
  * @suppress {moduleLoad}
  */
 
-import {LitElement, css, html, ifDefined} from './lit.js';
+import {LitElement, css, html, ifDefined} from "./lit.js";
 
 export class TerminalButtonElement extends LitElement {
   /**
@@ -136,8 +136,8 @@ export class TerminalButtonElement extends LitElement {
    * @override
    */
   updated(changedProperties) {
-    this.setAttribute('aria-disabled', `${this.disabled}`);
+    this.setAttribute("aria-disabled", `${this.disabled}`);
   }
 }
 
-customElements.define('terminal-button', TerminalButtonElement);
+customElements.define("terminal-button", TerminalButtonElement);

@@ -6,16 +6,16 @@
  * @fileoverview Unit tests for terminal_emulator.js.
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
-import {sleep} from './terminal_common.js';
+import {sleep} from "./terminal_common.js";
 import {A11yButtons, Modifier, XtermTerminal, XtermTerminalTestParams,
-  encodeKeyCombo, keyCodes} from './terminal_emulator.js';
-import {MockFunction, MockObject} from './terminal_test_mocks.js';
-import {Terminal} from './xterm.js';
+  encodeKeyCombo, keyCodes} from "./terminal_emulator.js";
+import {MockFunction, MockObject} from "./terminal_test_mocks.js";
+import {Terminal} from "./xterm.js";
 
-describe('XtermTerminal', function() {
+describe("XtermTerminal", function() {
   beforeEach(async function() {
     this.mocks = {
       term: new MockObject({
@@ -40,14 +40,14 @@ describe('XtermTerminal', function() {
       onVTKeystroke: new MockFunction(),
     };
     const testParams = {};
-    for (const prop of ['term', 'fontManager', 'xtermInternal',
-        'searchAddon']) {
+    for (const prop of ["term", "fontManager", "xtermInternal",
+        "searchAddon"]) {
       testParams[prop] = this.mocks[prop].proxy;
     }
 
     this.terminal = new XtermTerminal({
       storage: new lib.Storage.Memory(),
-      profileId: 'test',
+      profileId: "test",
       testParams: /** @type {!XtermTerminalTestParams} */(testParams),
     });
 
@@ -62,59 +62,59 @@ describe('XtermTerminal', function() {
     this.terminal.inited_ = true;
   });
 
-  describe('updateFont_()', function() {
-    it('updates font', async function() {
-      const updateFontPromise = this.terminal.updateFont_('font one');
+  describe("updateFont_()", function() {
+    it("updates font", async function() {
+      const updateFontPromise = this.terminal.updateFont_("font one");
       assert.deepEqual(
-          await this.mocks.fontManager.whenCalled('loadFont'),
-          [['font one']]);
+          await this.mocks.fontManager.whenCalled("loadFont"),
+          [["font one"]]);
       assert.equal(this.mocks.term.baseObj.options.fontFamily, undefined);
       assert.isNotNull(this.terminal.pendingFont_);
 
       await updateFontPromise;
-      assert.equal(this.mocks.term.baseObj.options.fontFamily, 'font one');
+      assert.equal(this.mocks.term.baseObj.options.fontFamily, "font one");
       assert.isNull(this.terminal.pendingFont_);
       await sleep(0);
     });
 
-    it('refresh font when the font is the same', async function() {
-      this.mocks.term.baseObj.options.fontFamily = 'font one';
-      const updateFontPromise = this.terminal.updateFont_('font one');
+    it("refresh font when the font is the same", async function() {
+      this.mocks.term.baseObj.options.fontFamily = "font one";
+      const updateFontPromise = this.terminal.updateFont_("font one");
       assert.deepEqual(
-          await this.mocks.fontManager.whenCalled('loadFont'),
-          [['font one']]);
-      assert.equal(this.mocks.term.baseObj.options.fontFamily, 'font one');
+          await this.mocks.fontManager.whenCalled("loadFont"),
+          [["font one"]]);
+      assert.equal(this.mocks.term.baseObj.options.fontFamily, "font one");
       assert.isNotNull(this.terminal.pendingFont_);
 
       await updateFontPromise;
       // Note the extra space at the end.
-      assert.equal(this.mocks.term.baseObj.options.fontFamily, 'font one ');
+      assert.equal(this.mocks.term.baseObj.options.fontFamily, "font one ");
       assert.isNull(this.terminal.pendingFont_);
       await sleep(0);
     });
 
-    it('aborts if pendingFont_ was changed', async function() {
-      const updateFontPromise = this.terminal.updateFont_('font one');
+    it("aborts if pendingFont_ was changed", async function() {
+      const updateFontPromise = this.terminal.updateFont_("font one");
       assert.deepEqual(
-          await this.mocks.fontManager.whenCalled('loadFont'),
-          [['font one']]);
+          await this.mocks.fontManager.whenCalled("loadFont"),
+          [["font one"]]);
       assert.equal(this.mocks.term.baseObj.options.fontFamily, undefined);
       assert.isNotNull(this.terminal.pendingFont_);
 
-      this.terminal.pendingFont_ = 'font two';
+      this.terminal.pendingFont_ = "font two";
 
       await updateFontPromise;
       assert.equal(this.mocks.term.baseObj.options.fontFamily, undefined);
-      assert.equal(this.terminal.pendingFont_, 'font two');
+      assert.equal(this.terminal.pendingFont_, "font two");
       await sleep(0);
     });
   });
 
-  describe('handleKeyEvent_', function() {
-    it('keyDownHandlers_', async function() {
+  describe("handleKeyEvent_", function() {
+    it("keyDownHandlers_", async function() {
       const mockHandler = new MockFunction();
       const fakeEvent = {
-        type: 'keydown',
+        type: "keydown",
         keyCode: 65,
         ctrlKey: true,
       };
@@ -126,7 +126,7 @@ describe('XtermTerminal', function() {
       assert.equal(history[0][0], fakeEvent);
 
       assert.isTrue(this.terminal.handleKeyEvent_({...fakeEvent,
-        type: 'keypress'}));
+        type: "keypress"}));
       assert.isEmpty(mockHandler.popHistory());
 
       assert.isFalse(this.terminal.handleKeyEvent_({...fakeEvent,
@@ -142,12 +142,12 @@ describe('XtermTerminal', function() {
       assert.isEmpty(mockHandler.popHistory());
     });
 
-    it('arrow keys and 6 pack keys', async function() {
+    it("arrow keys and 6 pack keys", async function() {
       const check = (ev, handled, vtKeystroke) => {
         const mockPreventDefault = new MockFunction();
         const mockStopPropagation = new MockFunction();
         assert.equal(this.terminal.handleKeyEvent_({
-          type: 'keydown',
+          type: "keydown",
           preventDefault: mockPreventDefault.proxy,
           stopPropagation: mockStopPropagation.proxy,
           ...ev,
@@ -164,38 +164,38 @@ describe('XtermTerminal', function() {
       };
 
       check({keyCode: keyCodes.UP}, false, null);
-      check({keyCode: keyCodes.UP, shiftKey: true}, true, '\x1b[1;2A');
-      check({keyCode: keyCodes.UP, altKey: true}, true, '\x1b[1;3A');
+      check({keyCode: keyCodes.UP, shiftKey: true}, true, "\x1b[1;2A");
+      check({keyCode: keyCodes.UP, altKey: true}, true, "\x1b[1;3A");
       check({keyCode: keyCodes.UP, shiftKey: true, altKey: true}, true,
-          '\x1b[1;4A');
+          "\x1b[1;4A");
 
       check({keyCode: keyCodes.INSERT}, false, null);
-      check({keyCode: keyCodes.INSERT, altKey: true}, true, '\x1b[2;3~');
+      check({keyCode: keyCodes.INSERT, altKey: true}, true, "\x1b[2;3~");
       check({keyCode: keyCodes.INSERT, shiftKey: true, altKey: true}, true,
-          '\x1b[2;4~');
+          "\x1b[2;4~");
 
       check({keyCode: keyCodes.HOME}, false, null);
-      check({keyCode: keyCodes.HOME, altKey: true}, true, '\x1b[1;3H');
+      check({keyCode: keyCodes.HOME, altKey: true}, true, "\x1b[1;3H");
       check({keyCode: keyCodes.HOME, shiftKey: true, altKey: true}, true,
-          '\x1b[1;4H');
+          "\x1b[1;4H");
 
       // Shift+HOME should scroll the page.
-      assert.equal(this.mocks.term.getMethodHistory('scrollToTop').length, 0);
+      assert.equal(this.mocks.term.getMethodHistory("scrollToTop").length, 0);
       check({keyCode: keyCodes.HOME, shiftKey: true}, true, null);
-      assert.equal(this.mocks.term.getMethodHistory('scrollToTop').length, 1);
+      assert.equal(this.mocks.term.getMethodHistory("scrollToTop").length, 1);
 
       // For non-keydown event, if a modifier key is depressed, we do nothing
       // but `handleKeyEvent_()` will return true to prevent xterm.js from
       // handling it.
-      check({type: 'keypress', keyCode: keyCodes.HOME, altKey: true}, true,
+      check({type: "keypress", keyCode: keyCodes.HOME, altKey: true}, true,
           undefined);
       // If there is no modifiers, we still pass through it to xterm.js.
-      check({type: 'keypress', keyCode: keyCodes.HOME}, false, null);
+      check({type: "keypress", keyCode: keyCodes.HOME}, false, null);
     });
   });
 
 
-  it('selectCloestOffScreenChar_', function() {
+  it("selectCloestOffScreenChar_", function() {
     this.setBuffer = (viewportY, length) => {
       this.mocks.term.proxy.buffer = {
         active: {
@@ -216,50 +216,50 @@ describe('XtermTerminal', function() {
     assert.isFalse(this.terminal.selectCloestOffScreenChar_(false));
 
     // Select successfully.
-    assert.isEmpty(this.mocks.term.popMethodHistory('select'));
+    assert.isEmpty(this.mocks.term.popMethodHistory("select"));
     this.setBuffer(1, 100);
     assert.isTrue(this.terminal.selectCloestOffScreenChar_(true));
-    assert.deepEqual(this.mocks.term.popMethodHistory('select'),
+    assert.deepEqual(this.mocks.term.popMethodHistory("select"),
         [[99, 0, 1]]);
     this.setBuffer(10, 100);
     assert.isTrue(this.terminal.selectCloestOffScreenChar_(true));
-    assert.deepEqual(this.mocks.term.popMethodHistory('select'),
+    assert.deepEqual(this.mocks.term.popMethodHistory("select"),
         [[99, 9, 1]]);
     this.setBuffer(99, 110);
     assert.isTrue(this.terminal.selectCloestOffScreenChar_(false));
-    assert.deepEqual(this.mocks.term.popMethodHistory('select'),
+    assert.deepEqual(this.mocks.term.popMethodHistory("select"),
         [[0, 109, 1]]);
     this.setBuffer(50, 110);
     assert.isTrue(this.terminal.selectCloestOffScreenChar_(false));
-    assert.deepEqual(this.mocks.term.popMethodHistory('select'),
+    assert.deepEqual(this.mocks.term.popMethodHistory("select"),
         [[0, 60, 1]]);
   });
 
-  it('searchInProgress_', async function() {
+  it("searchInProgress_", async function() {
     assert.isFalse(this.terminal.searchInProgress_);
     this.terminal.onFindBarEvent_({
       target: {
-        value: 'abc',
+        value: "abc",
       },
       detail: {
-        type: 'find',
+        type: "find",
         backward: false,
       },
     });
     assert.isTrue(this.terminal.searchInProgress_);
     this.mocks.searchAddon.getMethodHistory(
-        'onDidChangeResults').slice(-1)[0][0](0, 0);
+        "onDidChangeResults").slice(-1)[0][0](0, 0);
     assert.isFalse(this.terminal.searchInProgress_);
   });
 });
 
-describe('A11yButtons', () => {
+describe("A11yButtons", () => {
   const ROWS = 5;
 
   beforeEach(function() {
-    this.elem = document.createElement('div');
-    this.elem.style.height = '500px';
-    this.elem.style.width = '500px';
+    this.elem = document.createElement("div");
+    this.elem.style.height = "500px";
+    this.elem.style.width = "500px";
     document.body.appendChild(this.elem);
 
     this.terminal = new Terminal({cols: 80, rows: ROWS,
@@ -281,42 +281,42 @@ describe('A11yButtons', () => {
     document.body.removeChild(this.elem);
   });
 
-  it('announceScreenContent_', async function() {
+  it("announceScreenContent_", async function() {
     this.a11yButtons.announceScreenContent_();
     assert.deepEqual(
-        this.htermA11yReaderMock.popMethodHistory('assertiveAnnounce'),
-        [['100% scrolled,']]);
+        this.htermA11yReaderMock.popMethodHistory("assertiveAnnounce"),
+        [["100% scrolled,"]]);
 
-    await this.write('hello');
+    await this.write("hello");
     this.a11yButtons.announceScreenContent_();
     assert.deepEqual(
-        this.htermA11yReaderMock.popMethodHistory('assertiveAnnounce'),
-        [['100% scrolled,\nhello']]);
+        this.htermA11yReaderMock.popMethodHistory("assertiveAnnounce"),
+        [["100% scrolled,\nhello"]]);
 
-    await this.write('\r\nworld');
+    await this.write("\r\nworld");
     this.a11yButtons.announceScreenContent_();
     assert.deepEqual(
-        this.htermA11yReaderMock.popMethodHistory('assertiveAnnounce'),
-        [['100% scrolled,\nhello\nworld']]);
+        this.htermA11yReaderMock.popMethodHistory("assertiveAnnounce"),
+        [["100% scrolled,\nhello\nworld"]]);
 
     for (let i = 0; i < ROWS; ++i) {
       await this.write(`\r\n${i}`);
     }
     this.a11yButtons.announceScreenContent_();
     assert.deepEqual(
-        this.htermA11yReaderMock.popMethodHistory('assertiveAnnounce'),
-        [['100% scrolled,\n0\n1\n2\n3\n4']]);
+        this.htermA11yReaderMock.popMethodHistory("assertiveAnnounce"),
+        [["100% scrolled,\n0\n1\n2\n3\n4"]]);
 
     this.terminal.scrollLines(-1);
     this.a11yButtons.announceScreenContent_();
     assert.deepEqual(
-        this.htermA11yReaderMock.popMethodHistory('assertiveAnnounce'),
-        [['50% scrolled,\nworld\n0\n1\n2\n3']]);
+        this.htermA11yReaderMock.popMethodHistory("assertiveAnnounce"),
+        [["50% scrolled,\nworld\n0\n1\n2\n3"]]);
 
     this.terminal.scrollLines(-1);
     this.a11yButtons.announceScreenContent_();
     assert.deepEqual(
-        this.htermA11yReaderMock.popMethodHistory('assertiveAnnounce'),
-        [['0% scrolled,\nhello\nworld\n0\n1\n2']]);
+        this.htermA11yReaderMock.popMethodHistory("assertiveAnnounce"),
+        [["0% scrolled,\nhello\nworld\n0\n1\n2"]]);
   });
 });

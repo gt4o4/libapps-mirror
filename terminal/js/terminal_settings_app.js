@@ -8,35 +8,35 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
-import {getIndexeddbFileSystem} from './nassh_fs.js';
+import {getIndexeddbFileSystem} from "./nassh_fs.js";
 
-import {LitElement, createRef, css, html, ref} from './lit.js';
+import {LitElement, createRef, css, html, ref} from "./lit.js";
 import {SUPPORTED_FONT_SIZES, SUPPORTED_LINE_HEIGHT,
   backgroundImageLocalStorageKeyForProfileId}
-    from './terminal_common.js';
-import './terminal_dropdown.js';
-import './terminal_file_editor.js';
-import {ICON_OPEN_IN_NEW} from './terminal_icons.js';
+    from "./terminal_common.js";
+import "./terminal_dropdown.js";
+import "./terminal_file_editor.js";
+import {ICON_OPEN_IN_NEW} from "./terminal_icons.js";
 import {ProfileType, getProfileIds, setProfileIds}
-    from './terminal_profiles.js';
-import './terminal_settings_ansi_colors.js';
-import './terminal_settings_background_image.js';
-import './terminal_settings_category_selector.js';
-import './terminal_settings_checkbox.js';
-import './terminal_settings_colorpicker.js';
-import './terminal_settings_fonts.js';
-import './terminal_settings_profile_header.js';
-import './terminal_settings_profile_item.js';
-import './terminal_settings_row.js';
-import './terminal_settings_theme.js';
-import './terminal_settings_scrollback_limit.js';
+    from "./terminal_profiles.js";
+import "./terminal_settings_ansi_colors.js";
+import "./terminal_settings_background_image.js";
+import "./terminal_settings_category_selector.js";
+import "./terminal_settings_checkbox.js";
+import "./terminal_settings_colorpicker.js";
+import "./terminal_settings_fonts.js";
+import "./terminal_settings_profile_header.js";
+import "./terminal_settings_profile_item.js";
+import "./terminal_settings_row.js";
+import "./terminal_settings_theme.js";
+import "./terminal_settings_scrollback_limit.js";
 
 export const BELL_SOUND_CONVERTER = {
   toChecked: (value) => !!value,
-  fromChecked: (checked) => checked ? 'lib-resource:hterm/audio/bell' : '',
+  fromChecked: (checked) => checked ? "lib-resource:hterm/audio/bell" : "",
 };
 
 export class TerminalSettingsApp extends LitElement {
@@ -55,8 +55,8 @@ export class TerminalSettingsApp extends LitElement {
   constructor() {
     super();
 
-    this.activeCategory_ = 'profile';
-    this.activeProfileCategory_ = 'appearance';
+    this.activeCategory_ = "profile";
+    this.activeProfileCategory_ = "appearance";
     this.settingsProfiles_ = [hterm.Terminal.DEFAULT_PROFILE_ID];
     this.activeSettingsProfile_ = hterm.Terminal.DEFAULT_PROFILE_ID;
     this.updateSettingsProfiles_();
@@ -212,7 +212,7 @@ export class TerminalSettingsApp extends LitElement {
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
 
     const cursorShapeOptions =
-        window.PreferenceManager.defaultPreferences['cursor-shape'].type.map(
+        window.PreferenceManager.defaultPreferences["cursor-shape"].type.map(
             (value) => ({
               value,
               label: msg(`TERMINAL_SETTINGS_DROPDOWN_CURSOR_SHAPE_${value}`),
@@ -221,7 +221,7 @@ export class TerminalSettingsApp extends LitElement {
 
     return html`
       <div id="left-panel">
-        <h1>${msg('PREFERENCES_HEADER_TERMINAL')}</h1>
+        <h1>${msg("PREFERENCES_HEADER_TERMINAL")}</h1>
         <terminal-settings-profile-header
             @settings-profile-add=${this.onSettingsProfileAdd_}>
         </terminal-settings-profile-header>
@@ -238,87 +238,87 @@ export class TerminalSettingsApp extends LitElement {
           `)}
           <div data-name="ssh">SSH</div>
           <div data-name="about">
-            ${msg('TERMINAL_SETTINGS_ABOUT_LABEL')}
+            ${msg("TERMINAL_SETTINGS_ABOUT_LABEL")}
           </div>
         </terminal-settings-category-selector>
       </div>
       <div id="right-panel">
 
         <section class="terminal-settings-category profile"
-            ?active-category="${this.activeCategory_ === 'profile'}">
+            ?active-category="${this.activeCategory_ === "profile"}">
           <terminal-settings-category-selector tabs
               @category-change=${this.onProfileCategoryChange_}>
             <div data-name="appearance">
-              ${msg('TERMINAL_TITLE_PREF_APPEARANCE')}
+              ${msg("TERMINAL_TITLE_PREF_APPEARANCE")}
             </div>
             <div data-name="mousekeyboard">
-              ${msg('TERMINAL_TITLE_PREF_KEYBOARD_MOUSE')}
+              ${msg("TERMINAL_TITLE_PREF_KEYBOARD_MOUSE")}
             </div>
             <div data-name="behavior">
-              ${msg('TERMINAL_TITLE_PREF_BEHAVIOR')}
+              ${msg("TERMINAL_TITLE_PREF_BEHAVIOR")}
             </div>
           </terminal-settings-category-selector>
         </section>
 
         <section class="terminal-settings-category"
-            ?active-category="${this.isActive_('appearance')}">
+            ?active-category="${this.isActive_("appearance")}">
           <section>
-            <h3>${msg('TERMINAL_TITLE_THEME')}</h3>
+            <h3>${msg("TERMINAL_TITLE_THEME")}</h3>
             <terminal-settings-theme></terminal-settings-theme>
           </section>
 
           <section>
-            <h3>${msg('TERMINAL_TITLE_PREF_BACKGROUND')}</h3>
+            <h3>${msg("TERMINAL_TITLE_PREF_BACKGROUND")}</h3>
 
             <ul class="section-body">
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_BACKGROUND_COLOR')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_COLOR')}</div>
+                  title="${msg("HTERM_PREF_BACKGROUND_COLOR")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_COLOR")}</div>
                 <terminal-settings-colorpicker
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_COLOR')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_COLOR")}"
                     preference="background-color"
                     disableTransparency>
                 </terminal-settings-colorpicker>
               </li>
               <li class="setting-container"
-                  title="${msg('TERMINAL_SETTINGS_BACKGROUND_IMAGE_HELP')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_IMAGE')}</div>
+                  title="${msg("TERMINAL_SETTINGS_BACKGROUND_IMAGE_HELP")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_IMAGE")}</div>
                 <terminal-settings-background-image />
               </li>
             </ul>
           </section>
 
           <section>
-            <h3>${msg('TERMINAL_TITLE_PREF_TEXT')}</h3>
+            <h3>${msg("TERMINAL_TITLE_PREF_TEXT")}</h3>
 
             <ul class="section-body">
               <li class="setting-container">
-                <div class="label">${msg('TERMINAL_NAME_PREF_FONT')}</div>
+                <div class="label">${msg("TERMINAL_NAME_PREF_FONT")}</div>
                 <terminal-settings-fonts
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_FONT')}">
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_FONT")}">
                 </terminal-settings-fonts>
                 <!-- TODO(lxj@google.com): We should allow user to input a
                     text size not in the list. -->
                 <terminal-settings-dropdown
-                    ariaLabel="${msg('HTERM_NAME_PREF_FONT_SIZE')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_FONT_SIZE")}"
                     preference="font-size"
-                    title="${msg('HTERM_PREF_FONT_SIZE')}"
+                    title="${msg("HTERM_PREF_FONT_SIZE")}"
                     .options="${SUPPORTED_FONT_SIZES.map((value) => ({value}))}"
                 >
                 </terminal-settings-dropdown>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_FOREGROUND_COLOR')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_COLOR')}</div>
+                  title="${msg("HTERM_PREF_FOREGROUND_COLOR")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_COLOR")}</div>
                 <terminal-settings-colorpicker
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_COLOR')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_COLOR")}"
                     preference="foreground-color">
                 </terminal-settings-colorpicker>
               </li>
               <li class="setting-container"
-                  title="${msg('TERMINAL_PREF_ANSI_COLORS')}">
+                  title="${msg("TERMINAL_PREF_ANSI_COLORS")}">
                 <div class="label">
-                  ${msg('TERMINAL_NAME_PREF_ANSI_COLORS')}
+                  ${msg("TERMINAL_NAME_PREF_ANSI_COLORS")}
                 </div>
                 <terminal-settings-ansi-colors
                     preference="color-palette-overrides">
@@ -326,12 +326,12 @@ export class TerminalSettingsApp extends LitElement {
               </li>
 
               <li class="setting-container"
-                  title="${msg('TERMINAL_PREF_LINE_HEIGHT')}">
+                  title="${msg("TERMINAL_PREF_LINE_HEIGHT")}">
                 <div class="label">
-                  ${msg('TERMINAL_NAME_PREF_LINE_HEIGHT')}
+                  ${msg("TERMINAL_NAME_PREF_LINE_HEIGHT")}
                 </div>
                 <terminal-settings-dropdown
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_LINE_HEIGHT')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_LINE_HEIGHT")}"
                     preference="line-height"
                     .options="${SUPPORTED_LINE_HEIGHT.map(
                       (value) => ({value}))}"
@@ -342,31 +342,31 @@ export class TerminalSettingsApp extends LitElement {
           </section>
 
           <section>
-            <h3>${msg('TERMINAL_TITLE_PREF_CURSOR')}</h3>
+            <h3>${msg("TERMINAL_TITLE_PREF_CURSOR")}</h3>
 
             <ul class="section-body">
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_CURSOR_SHAPE')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_SHAPE')}</div>
+                  title="${msg("HTERM_PREF_CURSOR_SHAPE")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_SHAPE")}</div>
                 <terminal-settings-dropdown
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_SHAPE')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_SHAPE")}"
                     preference="cursor-shape"
                     .options="${cursorShapeOptions}">
                 </terminal-settings-dropdown>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_CURSOR_COLOR')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_COLOR')}</div>
+                  title="${msg("HTERM_PREF_CURSOR_COLOR")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_COLOR")}</div>
                 <terminal-settings-colorpicker
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_COLOR')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_COLOR")}"
                     preference="cursor-color">
                 </terminal-settings-colorpicker>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_CURSOR_BLINK')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_BLINKING')}</div>
+                  title="${msg("HTERM_PREF_CURSOR_BLINK")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_BLINKING")}</div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_BLINKING')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_BLINKING")}"
                     preference="cursor-blink">
                 </terminal-settings-checkbox>
               </li>
@@ -374,14 +374,14 @@ export class TerminalSettingsApp extends LitElement {
           </section>
 
           <section>
-            <h3>${msg('TERMINAL_TITLE_PREF_SCROLLBAR')}</h3>
+            <h3>${msg("TERMINAL_TITLE_PREF_SCROLLBAR")}</h3>
 
             <ul class="section-body">
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_SCROLLBAR_VISIBLE')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_VISIBLE')}</div>
+                  title="${msg("HTERM_PREF_SCROLLBAR_VISIBLE")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_VISIBLE")}</div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_VISIBLE')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_VISIBLE")}"
                     preference="scrollbar-visible">
                 </terminal-settings-checkbox>
               </li>
@@ -390,169 +390,169 @@ export class TerminalSettingsApp extends LitElement {
         </section>
 
         <section class="terminal-settings-category"
-            ?active-category="${this.isActive_('mousekeyboard')}">
+            ?active-category="${this.isActive_("mousekeyboard")}">
           <section>
-            <h3>${msg('HTERM_TITLE_PREF_KEYBOARD')}</h3>
+            <h3>${msg("HTERM_TITLE_PREF_KEYBOARD")}</h3>
 
             <ul class="section-body">
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_KEYBINDINGS_OS_DEFAULTS')}">
+                  title="${msg("HTERM_PREF_KEYBINDINGS_OS_DEFAULTS")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_KEYBINDINGS_OS_DEFAULTS')}
+                  ${msg("HTERM_NAME_PREF_KEYBINDINGS_OS_DEFAULTS")}
                 </div>
                 <terminal-settings-checkbox
                     ariaLabel="${
-                        msg('HTERM_NAME_PREF_KEYBINDINGS_OS_DEFAULTS')}"
+                        msg("HTERM_NAME_PREF_KEYBINDINGS_OS_DEFAULTS")}"
                     preference="keybindings-os-defaults">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_PASS_CTRL_N')}">
-                <div class="label">${msg('HTERM_NAME_PREF_PASS_CTRL_N')}</div>
+                  title="${msg("HTERM_PREF_PASS_CTRL_N")}">
+                <div class="label">${msg("HTERM_NAME_PREF_PASS_CTRL_N")}</div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_PASS_CTRL_N')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_PASS_CTRL_N")}"
                     preference="pass-ctrl-n">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_PASS_CTRL_T')}">
-                <div class="label">${msg('HTERM_NAME_PREF_PASS_CTRL_T')}</div>
+                  title="${msg("HTERM_PREF_PASS_CTRL_T")}">
+                <div class="label">${msg("HTERM_NAME_PREF_PASS_CTRL_T")}</div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_PASS_CTRL_T')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_PASS_CTRL_T")}"
                     preference="pass-ctrl-t">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_PASS_CTRL_W')}">
-                <div class="label">${msg('HTERM_NAME_PREF_PASS_CTRL_W')}</div>
+                  title="${msg("HTERM_PREF_PASS_CTRL_W")}">
+                <div class="label">${msg("HTERM_NAME_PREF_PASS_CTRL_W")}</div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_PASS_CTRL_W')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_PASS_CTRL_W")}"
                     preference="pass-ctrl-w">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_PASS_CTRL_TAB')}">
+                  title="${msg("HTERM_PREF_PASS_CTRL_TAB")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_PASS_CTRL_TAB')}
+                  ${msg("HTERM_NAME_PREF_PASS_CTRL_TAB")}
                 </div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_PASS_CTRL_TAB')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_PASS_CTRL_TAB")}"
                     preference="pass-ctrl-tab">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_PASS_CTRL_NUMBER')}">
+                  title="${msg("HTERM_PREF_PASS_CTRL_NUMBER")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_PASS_CTRL_NUMBER')}
+                  ${msg("HTERM_NAME_PREF_PASS_CTRL_NUMBER")}
                 </div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_PASS_CTRL_NUMBER')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_PASS_CTRL_NUMBER")}"
                     preference="pass-ctrl-number">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_PASS_ALT_NUMBER')}">
+                  title="${msg("HTERM_PREF_PASS_ALT_NUMBER")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_PASS_ALT_NUMBER')}
+                  ${msg("HTERM_NAME_PREF_PASS_ALT_NUMBER")}
                 </div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_PASS_ALT_NUMBER')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_PASS_ALT_NUMBER")}"
                     preference="pass-alt-number">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_CTRL_PLUS_MINUS_ZERO_ZOOM')}">
+                  title="${msg("HTERM_PREF_CTRL_PLUS_MINUS_ZERO_ZOOM")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_CTRL_PLUS_MINUS_ZERO_ZOOM')}
+                  ${msg("HTERM_NAME_PREF_CTRL_PLUS_MINUS_ZERO_ZOOM")}
                 </div>
                 <terminal-settings-checkbox
                     ariaLabel="${
-                        msg('HTERM_NAME_PREF_CTRL_PLUS_MINUS_ZERO_ZOOM')}"
+                        msg("HTERM_NAME_PREF_CTRL_PLUS_MINUS_ZERO_ZOOM")}"
                     preference="ctrl-plus-minus-zero-zoom">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_CTRL_C_COPY')}">
-                <div class="label">${msg('HTERM_NAME_PREF_CTRL_C_COPY')}</div>
+                  title="${msg("HTERM_PREF_CTRL_C_COPY")}">
+                <div class="label">${msg("HTERM_NAME_PREF_CTRL_C_COPY")}</div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_CTRL_C_COPY')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_CTRL_C_COPY")}"
                     preference="ctrl-c-copy">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_CTRL_V_PASTE')}">
+                  title="${msg("HTERM_PREF_CTRL_V_PASTE")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_CTRL_V_PASTE')}
+                  ${msg("HTERM_NAME_PREF_CTRL_V_PASTE")}
                 </div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_CTRL_V_PASTE')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_CTRL_V_PASTE")}"
                     preference="ctrl-v-paste">
                 </terminal-settings-checkbox>
               </li>
             </ul>
           </section>
           <section>
-            <h3>${msg('TERMINAL_TITLE_PREF_MOUSE')}</h3>
+            <h3>${msg("TERMINAL_TITLE_PREF_MOUSE")}</h3>
 
             <!-- TODO(lxj): it might make more sense to move these to the
                 behavior section. -->
             <ul class="section-body">
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_SCROLL_ON_KEYSTROKE')}">
+                  title="${msg("HTERM_PREF_SCROLL_ON_KEYSTROKE")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_SCROLL_ON_KEYSTROKE')}
+                  ${msg("HTERM_NAME_PREF_SCROLL_ON_KEYSTROKE")}
                 </div>
                 <terminal-settings-checkbox
                     ariaLabel="${
-                        msg('HTERM_NAME_PREF_SCROLL_ON_KEYSTROKE')}"
+                        msg("HTERM_NAME_PREF_SCROLL_ON_KEYSTROKE")}"
                     preference="scroll-on-keystroke">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_SCROLL_ON_OUTPUT')}">
+                  title="${msg("HTERM_PREF_SCROLL_ON_OUTPUT")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_SCROLL_ON_OUTPUT')}
+                  ${msg("HTERM_NAME_PREF_SCROLL_ON_OUTPUT")}
                 </div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_SCROLL_ON_OUTPUT')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_SCROLL_ON_OUTPUT")}"
                     preference="scroll-on-output">
                 </terminal-settings-checkbox>
               </li>
             </ul>
           </section>
           <section>
-            <h3>${msg('HTERM_TITLE_PREF_COPYPASTE')}</h3>
+            <h3>${msg("HTERM_TITLE_PREF_COPYPASTE")}</h3>
 
             <ul class="section-body">
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_COPY_ON_SELECT')}">
+                  title="${msg("HTERM_PREF_COPY_ON_SELECT")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_COPY_ON_SELECT')}
+                  ${msg("HTERM_NAME_PREF_COPY_ON_SELECT")}
                 </div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_COPY_ON_SELECT')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_COPY_ON_SELECT")}"
                     preference="copy-on-select">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_ENABLE_CLIPBOARD_NOTICE')}">
+                  title="${msg("HTERM_PREF_ENABLE_CLIPBOARD_NOTICE")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_ENABLE_CLIPBOARD_NOTICE')}
+                  ${msg("HTERM_NAME_PREF_ENABLE_CLIPBOARD_NOTICE")}
                 </div>
                 <terminal-settings-checkbox
                     ariaLabel="${
-                        msg('HTERM_NAME_PREF_ENABLE_CLIPBOARD_NOTICE')}"
+                        msg("HTERM_NAME_PREF_ENABLE_CLIPBOARD_NOTICE")}"
                     preference="enable-clipboard-notice">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_MOUSE_RIGHT_CLICK_PASTE')}">
+                  title="${msg("HTERM_PREF_MOUSE_RIGHT_CLICK_PASTE")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_MOUSE_RIGHT_CLICK_PASTE')}
+                  ${msg("HTERM_NAME_PREF_MOUSE_RIGHT_CLICK_PASTE")}
                 </div>
                 <terminal-settings-checkbox
                     ariaLabel="${
-                        msg('HTERM_NAME_PREF_MOUSE_RIGHT_CLICK_PASTE')}"
+                        msg("HTERM_NAME_PREF_MOUSE_RIGHT_CLICK_PASTE")}"
                     preference="mouse-right-click-paste">
                 </terminal-settings-checkbox>
               </li>
@@ -561,56 +561,56 @@ export class TerminalSettingsApp extends LitElement {
         </section>
 
         <section class="terminal-settings-category"
-            ?active-category="${this.isActive_('behavior')}">
-            <h3>${msg('TERMINAL_TITLE_PREF_BEHAVIOR')}</h3>
+            ?active-category="${this.isActive_("behavior")}">
+            <h3>${msg("TERMINAL_TITLE_PREF_BEHAVIOR")}</h3>
 
             <ul class="section-body">
               <li class="setting-container"
-                  title="${msg('TERMINAL_PREF_BELL')}">
-                <div class="label">${msg('TERMINAL_NAME_PREF_BELL')}</div>
+                  title="${msg("TERMINAL_PREF_BELL")}">
+                <div class="label">${msg("TERMINAL_NAME_PREF_BELL")}</div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('TERMINAL_NAME_PREF_BELL')}"
+                    ariaLabel="${msg("TERMINAL_NAME_PREF_BELL")}"
                     preference="audible-bell-sound"
                     .converter=${BELL_SOUND_CONVERTER}>
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_ENABLE_RESIZE_STATUS')}">
+                  title="${msg("HTERM_PREF_ENABLE_RESIZE_STATUS")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_ENABLE_RESIZE_STATUS')}
+                  ${msg("HTERM_NAME_PREF_ENABLE_RESIZE_STATUS")}
                 </div>
                 <terminal-settings-checkbox
                     ariaLabel="${
-                        msg('HTERM_NAME_PREF_ENABLE_RESIZE_STATUS')}"
+                        msg("HTERM_NAME_PREF_ENABLE_RESIZE_STATUS")}"
                     preference="enable-resize-status">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('TERMINAL_NAME_PREF_SCROLLBACK_LIMIT')}">
+                  title="${msg("TERMINAL_NAME_PREF_SCROLLBACK_LIMIT")}">
                 <div class="label">
-                  ${msg('TERMINAL_NAME_PREF_SCROLLBACK_LIMIT')}
+                  ${msg("TERMINAL_NAME_PREF_SCROLLBACK_LIMIT")}
                 </div>
                 <terminal-settings-scrollback-limit>
                 </terminal-settings-scrollback-limit>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_CLOSE_ON_EXIT')}">
+                  title="${msg("HTERM_PREF_CLOSE_ON_EXIT")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_CLOSE_ON_EXIT')}
+                  ${msg("HTERM_NAME_PREF_CLOSE_ON_EXIT")}
                 </div>
                 <terminal-settings-checkbox
-                    ariaLabel="${msg('HTERM_NAME_PREF_CLOSE_ON_EXIT')}"
+                    ariaLabel="${msg("HTERM_NAME_PREF_CLOSE_ON_EXIT")}"
                     preference="close-on-exit">
                 </terminal-settings-checkbox>
               </li>
               <li class="setting-container"
-                  title="${msg('HTERM_PREF_DESKTOP_NOTIFICATION_BELL')}">
+                  title="${msg("HTERM_PREF_DESKTOP_NOTIFICATION_BELL")}">
                 <div class="label">
-                  ${msg('HTERM_NAME_PREF_DESKTOP_NOTIFICATION_BELL')}
+                  ${msg("HTERM_NAME_PREF_DESKTOP_NOTIFICATION_BELL")}
                 </div>
                 <terminal-settings-checkbox
                     ariaLabel="${
-                        msg('HTERM_NAME_PREF_DESKTOP_NOTIFICATION_BELL')}"
+                        msg("HTERM_NAME_PREF_DESKTOP_NOTIFICATION_BELL")}"
                     preference="desktop-notification-bell">
                 </terminal-settings-checkbox>
               </li>
@@ -618,7 +618,7 @@ export class TerminalSettingsApp extends LitElement {
         </section>
 
         <section class="terminal-settings-category"
-            ?active-category="${this.activeCategory_ === 'ssh'}">
+            ?active-category="${this.activeCategory_ === "ssh"}">
           <h3>SSH Files</h3>
 
           <terminal-settings-row label="~/.ssh/known_hosts" expandable
@@ -639,13 +639,13 @@ export class TerminalSettingsApp extends LitElement {
         </section>
 
         <section class="terminal-settings-category"
-            ?active-category="${this.activeCategory_ === 'about'}">
-          <h3>${msg('TERMINAL_SETTINGS_ABOUT_LABEL')}</h3>
+            ?active-category="${this.activeCategory_ === "about"}">
+          <h3>${msg("TERMINAL_SETTINGS_ABOUT_LABEL")}</h3>
           <ul class="section-body">
             <li class="setting-container about-link" role="link"
                 @click="${() => lib.f.openWindow(
-                    '/html/licenses.html', '_blank', 'popup')}">
-                <div class="label">${msg('LICENSES')}</div>
+                    "/html/licenses.html", "_blank", "popup")}">
+                <div class="label">${msg("LICENSES")}</div>
                 <span class="icon">${ICON_OPEN_IN_NEW}</span>
             </li>
           </ul>
@@ -659,7 +659,7 @@ export class TerminalSettingsApp extends LitElement {
    * @return {boolean}
    */
   isActive_(category) {
-    return this.activeCategory_ === 'profile' &&
+    return this.activeCategory_ === "profile" &&
          this.activeProfileCategory_ === category;
   }
 
@@ -715,7 +715,7 @@ export class TerminalSettingsApp extends LitElement {
       return;
     }
     this.shadowRoot.querySelectorAll(
-        'terminal-settings-profile-item')[i].click();
+        "terminal-settings-profile-item")[i].click();
   }
 
   /**
@@ -749,4 +749,4 @@ export class TerminalSettingsApp extends LitElement {
   }
 }
 
-customElements.define('terminal-settings-app', TerminalSettingsApp);
+customElements.define("terminal-settings-app", TerminalSettingsApp);

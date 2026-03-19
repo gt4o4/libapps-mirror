@@ -6,10 +6,10 @@
  * @fileoverview SSH file editing helper.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {getSyncStorage} from './nassh.js';
-import {getIndexeddbFileSystem} from './nassh_fs.js';
+import {getSyncStorage} from "./nassh.js";
+import {getIndexeddbFileSystem} from "./nassh_fs.js";
 
 /**
  * A cached handle to the filesystem.
@@ -74,7 +74,7 @@ class FileWatcher {
    * Clear the UI.
    */
   clear() {
-    this.element.value = '';
+    this.element.value = "";
   }
 
   /**
@@ -85,12 +85,12 @@ class FileWatcher {
   keyup(e) {
     switch (e.key) {
       // Escape should discard changes & reload content.
-      case 'Escape':
+      case "Escape":
         this.load();
         break;
 
       // Ctrl+Enter saves changes.
-      case 'Enter':
+      case "Enter":
         if (e.ctrlKey) {
           this.save();
         }
@@ -130,23 +130,23 @@ class DirWatcher {
    * @param {!IndexeddbFsFileEntry} path The filesystem path to work with.
    */
   addFile_(path) {
-    const li = document.createElement('li');
+    const li = document.createElement("li");
     const id = `ssh-files-identities:${path.name}`;
     li.id = id;
 
-    const button = document.createElement('button');
-    button.textContent = '🗑';
+    const button = document.createElement("button");
+    button.textContent = "🗑";
     button.onclick = this.deleteFile_.bind(this, li, path.fullPath);
 
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.download = path.name;
     a.textContent = path.name;
     filesystem.readFile(path.fullPath).then((data) => {
-      const blob = new Blob([data], {type: 'text/plain'});
+      const blob = new Blob([data], {type: "text/plain"});
       a.href = URL.createObjectURL(blob);
     });
-    a.style.paddingLeft = '1em';
-    a.style.paddingRight = '1em';
+    a.style.paddingLeft = "1em";
+    a.style.paddingRight = "1em";
 
     li.appendChild(button);
     li.appendChild(a);
@@ -200,7 +200,7 @@ class StorageFileWatcher {
    * @return {!Promise<void>} Promise that resolves when the load finishes.
    */
   async load() {
-    const data = await this.storage.getItem(this.key) ?? '';
+    const data = await this.storage.getItem(this.key) ?? "";
     this.element.value = data;
   }
 
@@ -225,12 +225,12 @@ class StorageFileWatcher {
   keyup(e) {
     switch (e.key) {
       // Escape should discard changes & reload content.
-      case 'Escape':
+      case "Escape":
         this.load();
         break;
 
       // Ctrl+Enter saves changes.
-      case 'Enter':
+      case "Enter":
         if (e.ctrlKey) {
           this.save();
         }
@@ -247,22 +247,22 @@ const watched = {};
 /**
  * Event when the window finishes loading.
  */
-globalThis.addEventListener('DOMContentLoaded', async (event) => {
+globalThis.addEventListener("DOMContentLoaded", async (event) => {
   const storage = await getSyncStorage();
   watched.etcSshConfig = new StorageFileWatcher(
-      'ssh-files-etc-ssh-config', storage, '/nassh/etc/ssh/ssh_config');
+      "ssh-files-etc-ssh-config", storage, "/nassh/etc/ssh/ssh_config");
   watched.etcSshKnownHosts = new StorageFileWatcher(
-      'ssh-files-etc-ssh-known-hosts', storage,
-      '/nassh/etc/ssh/ssh_known_hosts');
+      "ssh-files-etc-ssh-known-hosts", storage,
+      "/nassh/etc/ssh/ssh_known_hosts");
 
   // Load all the ~/.ssh files into the UI.
   getIndexeddbFileSystem().then((fs) => {
     filesystem = fs;
     watched.knownHosts = new FileWatcher(
-        'ssh-files-known-hosts', '/.ssh/known_hosts');
+        "ssh-files-known-hosts", "/.ssh/known_hosts");
     watched.sshConfig = new FileWatcher(
-        'ssh-files-config', '/.ssh/config');
+        "ssh-files-config", "/.ssh/config");
     watched.identities = new DirWatcher(
-        'ssh-files-identities', '/.ssh/identity');
+        "ssh-files-identities", "/.ssh/identity");
   });
 });

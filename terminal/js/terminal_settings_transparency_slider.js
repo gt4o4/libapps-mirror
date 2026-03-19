@@ -8,17 +8,17 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {LitElement, css, html} from './lit.js';
-import {redispatchEvent} from './terminal_common.js';
-import './terminal_knob.js';
-import './terminal_slider.js';
+import {LitElement, css, html} from "./lit.js";
+import {redispatchEvent} from "./terminal_common.js";
+import "./terminal_knob.js";
+import "./terminal_slider.js";
 
 const setAlpha = lib.colors.setAlpha;
 
 export class TransparencySliderElement extends LitElement {
-  static get is() { return 'transparency-slider'; }
+  static get is() { return "transparency-slider"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}
@@ -78,8 +78,8 @@ export class TransparencySliderElement extends LitElement {
    */
   render() {
     const color = lib.notNull(lib.colors.normalizeCSS(
-        this.color || 'rgb(0, 0, 0)'));
-    const displayStyle = `background-image: linear-gradient(to right, ` +
+        this.color || "rgb(0, 0, 0)"));
+    const displayStyle = "background-image: linear-gradient(to right, " +
         `transparent, ${setAlpha(color, 1)});`;
     return html`
         <terminal-slider value=${this.transparency} @change=${this.onChange_}>
@@ -107,7 +107,7 @@ export class TransparencySliderElement extends LitElement {
    * @override
    */
   firstUpdated(changedProperties) {
-    this.slider_ = this.shadowRoot.querySelector('terminal-slider');
+    this.slider_ = this.shadowRoot.querySelector("terminal-slider");
   }
 
   onChange_(event) {

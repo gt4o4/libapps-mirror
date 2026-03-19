@@ -6,8 +6,8 @@
  * @fileoverview Test suite for local storage.
  */
 
-import {lib} from '../index.js';
-import {storageApiTest} from './lib_storage_test_util.js';
+import {lib} from "../index.js";
+import {storageApiTest} from "./lib_storage_test_util.js";
 
 /**
  * Initialize the storage fakes & APIs.

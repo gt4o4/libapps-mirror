@@ -6,21 +6,21 @@
  * @fileoverview Preference manager tests.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../index.js';
+import {hterm} from "../index.js";
 
 /**
  * The main body of translations.
  */
-const nasshMessagesPromise = fetch('../../nassh/_locales/en/messages.json');
+const nasshMessagesPromise = fetch("../../nassh/_locales/en/messages.json");
 
 /**
  * Make sure hterm translations are kept in sync with nassh.
  */
-it('pref-messages-sync', async function() {
-  const toMsgId = (id) => id.replace(/-/g, '_').toUpperCase();
-  const fromMsgId = (id) => id.replace(/_/g, '-').toLowerCase();
+it("pref-messages-sync", async function() {
+  const toMsgId = (id) => id.replace(/-/g, "_").toUpperCase();
+  const fromMsgId = (id) => id.replace(/_/g, "-").toLowerCase();
   const helpIdToMsgId = (id) => `PREF_${toMsgId(id)}`;
   const msgIdToHelpId = (id) => fromMsgId(id.substr(11));
   const nameIdToMsgId = (id) => `NAME_PREF_${toMsgId(id)}`;
@@ -31,7 +31,7 @@ it('pref-messages-sync', async function() {
   const td = new TextDecoder();
   const response = await nasshMessagesPromise;
   if (!response.ok) {
-    console.warn('Unable to load nassh translations');
+    console.warn("Unable to load nassh translations");
     this.skip();
     return;
   }
@@ -44,23 +44,23 @@ it('pref-messages-sync', async function() {
   const loadedMessages = hterm.messageManager.messages_;
   Object.entries(loadedMessages)
       .forEach(([msgId, nasshMsg]) => {
-        if (msgId.startsWith('HTERM_PREF_')) {
+        if (msgId.startsWith("HTERM_PREF_")) {
           const key = msgIdToHelpId(msgId);
           assert.property(hterm.PreferenceManager.defaultPreferences, key,
                           `stale ${msgId} help translation for key ${key}`);
         }
 
-        if (msgId.startsWith('HTERM_TITLE_PREF_')) {
+        if (msgId.startsWith("HTERM_TITLE_PREF_")) {
           let found = false;
           hterm.PreferenceManager.categoryDefinitions.forEach((def) => {
-            if (msgId == 'HTERM_' + titleIdToMsgId(def.id)) {
+            if (msgId == "HTERM_" + titleIdToMsgId(def.id)) {
               found = true;
             }
           });
           assert.isTrue(found, `stale ${msgId} translation for category`);
         }
 
-        if (msgId.startsWith('HTERM_NAME_PREF_')) {
+        if (msgId.startsWith("HTERM_NAME_PREF_")) {
           const key = msgIdToNameId(msgId);
           assert.property(hterm.PreferenceManager.defaultPreferences, key,
                           `stale ${msgId} name translation for key ${key}`);
@@ -72,13 +72,13 @@ it('pref-messages-sync', async function() {
       ([key, entry]) => {
         // Check the pref name text.
         const nameId = nameIdToMsgId(key);
-        const htermNameMsg = entry['name'];
+        const htermNameMsg = entry["name"];
         const nasshNameMsg = hterm.msg(nameId);
         assert.equal(htermNameMsg, nasshNameMsg, nameId);
 
         // Check the help text.
         const helpId = helpIdToMsgId(key);
-        const htermHelpMsg = entry['help'];
+        const htermHelpMsg = entry["help"];
         const nasshHelpMsg = hterm.msg(helpId);
         assert.equal(htermHelpMsg, nasshHelpMsg, helpId);
       });
@@ -95,7 +95,7 @@ it('pref-messages-sync', async function() {
 /**
  * Make sure default values can be parsed correctly.
  */
-it('parse-defaults', () => {
+it("parse-defaults", () => {
   Object.entries(hterm.PreferenceManager.defaultPreferences)
       .forEach(([key, pref]) => {
         if (Array.isArray(pref.type)) {
@@ -107,40 +107,40 @@ it('parse-defaults', () => {
         }
         const msg = `invalid ${pref.type} pref ${key}: ${pref.default}`;
         switch (pref.type) {
-          case 'bool':
-            assert.typeOf(pref.default, 'boolean', msg);
+          case "bool":
+            assert.typeOf(pref.default, "boolean", msg);
             break;
-          case 'color': {
+          case "color": {
             const rgba = lib.colors.normalizeCSS(pref.default);
             assert.isNotNull(rgba, msg);
             assert.isNotNull(lib.colors.crackRGB(lib.notNull(rgba)), msg);
             break;
           }
-          case 'int':
+          case "int":
             assert.isTrue(Number.isInteger(pref.default), msg);
             break;
-          case 'multiline-string':
-            assert.typeOf(pref.default, 'string', msg);
+          case "multiline-string":
+            assert.typeOf(pref.default, "string", msg);
             break;
-          case 'string':
-            assert.typeOf(pref.default, 'string', msg);
+          case "string":
+            assert.typeOf(pref.default, "string", msg);
             break;
-          case 'tristate':
+          case "tristate":
             assert.isTrue(
-                typeof pref.default === 'boolean' || pref.default === null,
+                typeof pref.default === "boolean" || pref.default === null,
                 msg);
             break;
-          case 'url':
+          case "url":
             try {
-              if (pref.default !== '') {
-                // eslint-disable-next-line no-new
+              if (pref.default !== "") {
+                 
                 new URL(pref.default);
               }
             } catch (e) {
               assert.fail(msg);
             }
             break;
-          case 'value':
+          case "value":
             // Anything goes for 'value'.
             break;
           default:

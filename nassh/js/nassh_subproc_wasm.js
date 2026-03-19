@@ -8,25 +8,25 @@
  * @suppress {checkTypes} FileHandle$$module$wassh$js$vfs naming confusion.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {sanitizeScriptUrl} from './nassh.js';
-import {Agent} from './nassh_agent.js';
-import {newBuffer} from './nassh_buffer.js';
-import {getIndexeddbFileSystem} from './nassh_fs.js';
-import {Relay} from './nassh_relay.js';
-import {Stream} from './nassh_stream.js';
-import {SshAgentStream} from './nassh_stream_sshagent.js';
-import {SshAgentRelayStream} from './nassh_stream_sshagent_relay.js';
+import {sanitizeScriptUrl} from "./nassh.js";
+import {Agent} from "./nassh_agent.js";
+import {newBuffer} from "./nassh_buffer.js";
+import {getIndexeddbFileSystem} from "./nassh_fs.js";
+import {Relay} from "./nassh_relay.js";
+import {Stream} from "./nassh_stream.js";
+import {SshAgentStream} from "./nassh_stream_sshagent.js";
+import {SshAgentRelayStream} from "./nassh_stream_sshagent_relay.js";
 
-import {WASI} from '../../wasi-js-bindings/index.js';
+import {WASI} from "../../wasi-js-bindings/index.js";
 
-import * as WasshProcess from '../wassh/js/process.js';
-import {cleanupChromeSockets} from '../wassh/js/sockets.js';
-import * as WasshSyscallHandler from '../wassh/js/syscall_handler.js';
-import {FileHandle, FileHandler} from '../wassh/js/vfs.js';
+import * as WasshProcess from "../wassh/js/process.js";
+import {cleanupChromeSockets} from "../wassh/js/sockets.js";
+import * as WasshSyscallHandler from "../wassh/js/syscall_handler.js";
+import {FileHandle, FileHandler} from "../wassh/js/vfs.js";
 
 /**
  * A path backed by a key in a specific lib.Storage.
@@ -51,7 +51,7 @@ class StorageFileHandle extends FileHandle {
 
   /** @override */
   async init() {
-    const data = await this.storage_.getItem(this.key_) ?? '';
+    const data = await this.storage_.getItem(this.key_) ?? "";
     this.data = lib.codec.stringToCodeUnitArray(data);
   }
 
@@ -299,7 +299,7 @@ export class WasmSubproc {
       // OpenSSH-7.3 added -oIdentityAgent, but SSH_AUTH_SOCK has been supported
       // forever, so use that.  Also allows people to set IdentityAgent via the
       // ssh_config file.
-      this.environ_['SSH_AUTH_SOCK'] = `/AF_UNIX/agent/${this.authAgentAppID_}`;
+      this.environ_["SSH_AUTH_SOCK"] = `/AF_UNIX/agent/${this.authAgentAppID_}`;
     }
 
     const settings = {
@@ -335,7 +335,7 @@ export class WasmSubproc {
     if (this.captureStdout_) {
       // Wrap stdout in a logger which will save the output & pass it thru.
       const origStdout = handler.vfs.fds_.get(1);
-      const logStdout = new LogPipeWriteHandle('/dev/stdout/log', origStdout);
+      const logStdout = new LogPipeWriteHandle("/dev/stdout/log", origStdout);
       handler.vfs.fds_.set(1, logStdout);
     }
   }
@@ -368,7 +368,7 @@ export class WasmSubproc {
    */
   async writeTo(fd, data) {
     const ret = await this.process_.writeTo(fd, data);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       console.error(`Unable to write to fd ${fd}: ${ret}`);
     }
   }
@@ -398,12 +398,12 @@ export class WasmSubproc {
     let args;
 
     // This path convention matches the init() function.
-    if (address.startsWith('/AF_UNIX/agent/')) {
+    if (address.startsWith("/AF_UNIX/agent/")) {
       if (this.authAgent_) {
         args = {authAgent: this.authAgent_};
         stream = new SshAgentStream(args);
       } else {
-        args = {authAgentAppID: address.split('/')[3]};
+        args = {authAgentAppID: address.split("/")[3]};
         stream = new SshAgentRelayStream();
       }
     }

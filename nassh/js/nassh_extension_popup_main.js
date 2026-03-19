@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
 import {
   getSyncStorage, localize, openOptionsPage, sendFeedback,
-} from './nassh.js';
+} from "./nassh.js";
 import {
   LocalPreferenceManager, PreferenceManager,
-} from './nassh_preference_manager.js';
+} from "./nassh_preference_manager.js";
 
 /**
  * CSP means that we can't kick off the initialization from the html file,
  * so we do it like this instead.
  */
-globalThis.addEventListener('DOMContentLoaded', async (event) => {
+globalThis.addEventListener("DOMContentLoaded", async (event) => {
   await hterm.initPromise;
 
   // Save a handle for debugging.
@@ -43,9 +43,9 @@ function popup() {
     this.prefs_.readStorage().then(() => {
       // If there aren't any connections yet, pop open the connection dialog
       // automatically.  This will force users to register one first.
-      const ids = this.prefs_.get('profile-ids');
+      const ids = this.prefs_.get("profile-ids");
       if (ids.length === 0) {
-        this.openLink_('connect-dialog', openModes.WINDOW);
+        this.openLink_("connect-dialog", openModes.WINDOW);
         return;
       }
 
@@ -63,9 +63,9 @@ function popup() {
  * @enum {string}
  */
 const openModes = {
-  FOREGROUND_TAB: 'foreground-tab',
-  WINDOW: 'window',
-  WINDOW_TAB: 'window+tab',
+  FOREGROUND_TAB: "foreground-tab",
+  WINDOW: "window",
+  WINDOW_TAB: "window+tab",
 };
 
 /**
@@ -77,22 +77,22 @@ const openModes = {
 popup.prototype.openLink_ = function(id, openMode) {
   let profile;
 
-  let url = lib.f.getURL('/html/nassh.html');
+  let url = lib.f.getURL("/html/nassh.html");
   switch (id) {
-    case 'connect-dialog':
-      url = lib.f.getURL('/html/nassh_connect_dialog.html');
+    case "connect-dialog":
+      url = lib.f.getURL("/html/nassh_connect_dialog.html");
       break;
-    case 'options':
+    case "options":
       openOptionsPage();
       return;
-    case 'feedback':
+    case "feedback":
       sendFeedback();
       return;
     default: {
-      let openas = '';
+      let openas = "";
       if (openMode === openModes.WINDOW) {
-        const state = profile ? profile.get('win/state') : '';
-        if (state !== 'normal') {
+        const state = profile ? profile.get("win/state") : "";
+        if (state !== "normal") {
           openas = `openas=${state}&`;
         }
       }
@@ -122,10 +122,10 @@ popup.prototype.openLink_ = function(id, openMode) {
         const ret = parseInt(value, 10);
         return isNaN(ret) ? fallback : ret;
       };
-      top = parseDim(profile.get('win/top'), top);
-      left = parseDim(profile.get('win/left'), left);
-      height = parseDim(profile.get('win/height'), height);
-      width = parseDim(profile.get('win/width'), width);
+      top = parseDim(profile.get("win/top"), top);
+      left = parseDim(profile.get("win/left"), left);
+      height = parseDim(profile.get("win/height"), height);
+      width = parseDim(profile.get("win/width"), width);
     }
 
     if (openMode === openModes.WINDOW_TAB) {
@@ -138,8 +138,8 @@ popup.prototype.openLink_ = function(id, openMode) {
         focused: true,
       });
     } else {
-      lib.f.openWindow(url, '',
-                       'chrome=no,close=yes,resize=yes,scrollbars=yes,' +
+      lib.f.openWindow(url, "",
+                       "chrome=no,close=yes,resize=yes,scrollbars=yes," +
                        `minimizable=yes,top=${top},left=${left},` +
                        `height=${height},width=${width}`);
     }
@@ -157,7 +157,7 @@ popup.prototype.openLink_ = function(id, openMode) {
  */
 popup.prototype.mouseClickLink_ = function(e) {
   // We route multiple event types here.
-  if (e.type === 'auxclick') {
+  if (e.type === "auxclick") {
     // Only consume middle mouse.  Leave other buttons for future use.
     if (e.button != 1) {
       return;
@@ -166,9 +166,9 @@ popup.prototype.mouseClickLink_ = function(e) {
 
   // Figure out whether to open a window or a tab.
   let openMode;
-  if ((hterm.os !== 'mac' && e.ctrlKey) ||
-      (hterm.os === 'mac' && e.metaKey) ||
-      e.type === 'auxclick') {
+  if ((hterm.os !== "mac" && e.ctrlKey) ||
+      (hterm.os === "mac" && e.metaKey) ||
+      e.type === "auxclick") {
     openMode = openModes.FOREGROUND_TAB;
   } else if (e.shiftKey) {
     openMode = openModes.WINDOW_TAB;
@@ -187,11 +187,11 @@ popup.prototype.mouseClickLink_ = function(e) {
  */
 popup.prototype.keyupLink_ = function(e) {
   switch (e.key) {
-    case 'Enter': {
+    case "Enter": {
       // Figure out whether to open a window or a tab.
       let openMode;
-      if ((hterm.os !== 'mac' && e.ctrlKey) ||
-          (hterm.os === 'mac' && e.metaKey)) {
+      if ((hterm.os !== "mac" && e.ctrlKey) ||
+          (hterm.os === "mac" && e.metaKey)) {
         openMode = openModes.FOREGROUND_TAB;
       } else if (e.shiftKey) {
         openMode = openModes.WINDOW_TAB;
@@ -216,7 +216,7 @@ popup.prototype.keydownWindow_ = function(e) {
   // Helper to find the last focusable element.
   const findLastFocusElement = () => {
     let ret;
-    document.querySelectorAll('[tabIndex]').forEach((ele) => {
+    document.querySelectorAll("[tabIndex]").forEach((ele) => {
       if (!ret || ret.tabIndex < ele.tabIndex) {
         ret = ele;
       }
@@ -227,7 +227,7 @@ popup.prototype.keydownWindow_ = function(e) {
   // Helper to find the first focusable element.
   const findFirstFocusElement = () => {
     let ret;
-    document.querySelectorAll('[tabIndex]').forEach((ele) => {
+    document.querySelectorAll("[tabIndex]").forEach((ele) => {
       if (!ret || ret.tabIndex > ele.tabIndex) {
         ret = ele;
       }
@@ -236,9 +236,9 @@ popup.prototype.keydownWindow_ = function(e) {
   };
 
   switch (e.key) {
-    case 'PageUp':
-    case 'ArrowUp':
-    case 'ArrowLeft': {
+    case "PageUp":
+    case "ArrowUp":
+    case "ArrowLeft": {
       // Move focus to the previous entry.
       const tabIndex = e.target.tabIndex - 1;
       let ele = document.querySelector(`[tabIndex="${tabIndex}"]`);
@@ -250,9 +250,9 @@ popup.prototype.keydownWindow_ = function(e) {
       break;
     }
 
-    case 'PageDown':
-    case 'ArrowDown':
-    case 'ArrowRight': {
+    case "PageDown":
+    case "ArrowDown":
+    case "ArrowRight": {
       // Move focus to the next entry.
       const tabIndex = e.target.tabIndex + 1;
       let ele = document.querySelector(`[tabIndex="${tabIndex}"]`);
@@ -264,12 +264,12 @@ popup.prototype.keydownWindow_ = function(e) {
       break;
     }
 
-    case 'Home':
+    case "Home":
       findFirstFocusElement().focus();
       e.preventDefault();
       break;
 
-    case 'End':
+    case "End":
       findLastFocusElement().focus();
       e.preventDefault();
       break;
@@ -281,44 +281,44 @@ popup.prototype.keydownWindow_ = function(e) {
  */
 popup.prototype.populateList_ = function() {
   // Create a copy since we're going to modify it in place below.
-  const ids = this.prefs_.get('profile-ids').slice();
-  ids.unshift('connect-dialog');
-  ids.push('options');
-  ids.push('feedback');
+  const ids = this.prefs_.get("profile-ids").slice();
+  ids.unshift("connect-dialog");
+  ids.push("options");
+  ids.push("feedback");
 
   for (let i = 0; i < ids.length; i++) {
     const id = ids[i];
 
-    const link = document.createElement('div');
-    link.title = localize('POPUP_CONNECT_TOOLTIP');
+    const link = document.createElement("div");
+    link.title = localize("POPUP_CONNECT_TOOLTIP");
     link.id = id;
     link.tabIndex = i + 1;
-    link.className = 'links';
+    link.className = "links";
     const mouseClick = /** @type {!EventListener} */ (
         this.mouseClickLink_.bind(this));
-    link.addEventListener('click', mouseClick);
-    link.addEventListener('auxclick', mouseClick);
-    link.addEventListener('keyup', /** @type {!EventListener} */ (
+    link.addEventListener("click", mouseClick);
+    link.addEventListener("auxclick", mouseClick);
+    link.addEventListener("keyup", /** @type {!EventListener} */ (
         this.keyupLink_.bind(this)));
 
     switch (id) {
-      case 'connect-dialog':
-        link.textContent = localize('CONNECTION_DIALOG_NAME');
-        link.style.textAlign = 'center';
-        link.style.borderBottom = 'dashed 1px';
+      case "connect-dialog":
+        link.textContent = localize("CONNECTION_DIALOG_NAME");
+        link.style.textAlign = "center";
+        link.style.borderBottom = "dashed 1px";
         break;
-      case 'options':
-        link.textContent = localize('HTERM_OPTIONS_BUTTON_LABEL');
-        link.style.textAlign = 'center';
-        link.style.borderTop = 'dashed 1px';
+      case "options":
+        link.textContent = localize("HTERM_OPTIONS_BUTTON_LABEL");
+        link.style.textAlign = "center";
+        link.style.borderTop = "dashed 1px";
         break;
-      case 'feedback':
-        link.textContent = localize('SEND_FEEDBACK_LABEL');
-        link.style.textAlign = 'center';
+      case "feedback":
+        link.textContent = localize("SEND_FEEDBACK_LABEL");
+        link.style.textAlign = "center";
         break;
       default: {
         const profile = this.prefs_.getProfile(id);
-        const desc = profile.get('description');
+        const desc = profile.get("description");
         link.textContent = desc;
         break;
       }
@@ -327,12 +327,12 @@ popup.prototype.populateList_ = function() {
     document.body.appendChild(link);
   }
 
-  globalThis.addEventListener('keydown', /** @type {!EventListener} */ (
+  globalThis.addEventListener("keydown", /** @type {!EventListener} */ (
       this.keydownWindow_.bind(this)));
 
   // Workaround bugs on Chrome on macOS where the popup renders as a small box
   // due to the body dimenions being unset.  https://crbug.com/428044
-  if (hterm.os == 'mac') {
+  if (hterm.os == "mac") {
     // This height calculation is excessive due to padding, but it's not worth
     // the extra coding effort to get it pixel-perfect (e.g. getComputedStyle).
     const height = document.body.clientHeight;

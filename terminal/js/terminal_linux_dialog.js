@@ -6,15 +6,15 @@
  * @fileoverview Export an element: terminal-linux-dialog
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, createRef, css, html, ref} from './lit.js';
-import './terminal_dialog.js';
-import './terminal_dropdown.js';
-import './terminal_label.js';
+import {LitElement, createRef, css, html, ref} from "./lit.js";
+import "./terminal_dialog.js";
+import "./terminal_dropdown.js";
+import "./terminal_label.js";
 import {ProfileType, getProfileIds, getVshProfiles, setVshProfiles}
-  from './terminal_profiles.js';
-import './terminal_textfield.js';
+  from "./terminal_profiles.js";
+import "./terminal_textfield.js";
 
 export class TerminalLinuxDialog extends LitElement {
   /**
@@ -49,10 +49,10 @@ export class TerminalLinuxDialog extends LitElement {
     super();
 
     // The title manually set by the user.
-    this.userTitle_ = '';
+    this.userTitle_ = "";
     // This is set in Show(). Empty string means we are creating a new VSH
     // connection.
-    this.vshProfileId_ = '';
+    this.vshProfileId_ = "";
 
     this.settingsProfiles_ = [hterm.Terminal.DEFAULT_PROFILE_ID];
 
@@ -65,7 +65,7 @@ export class TerminalLinuxDialog extends LitElement {
     if (this.userTitle_) {
       return this.userTitle_;
     }
-    return hterm.messageManager.get('TERMINAL_HOME_NEW_LINUX');
+    return hterm.messageManager.get("TERMINAL_HOME_NEW_LINUX");
   }
 
   /**
@@ -75,7 +75,7 @@ export class TerminalLinuxDialog extends LitElement {
   render() {
     const msg = (id) => hterm.messageManager.get(id);
 
-    const settingsProfileLabel = msg('TERMINAL_PROFILE_LABEL');
+    const settingsProfileLabel = msg("TERMINAL_PROFILE_LABEL");
 
     return html`
         <terminal-dialog ${ref(this.dialogRef_)}
@@ -111,9 +111,9 @@ export class TerminalLinuxDialog extends LitElement {
 
     const profiles = getVshProfiles();
     this.settingsProfileDropdownRef_.value.value =
-        profiles[id]['terminal-profile'] || hterm.Terminal.DEFAULT_PROFILE_ID;
+        profiles[id]["terminal-profile"] || hterm.Terminal.DEFAULT_PROFILE_ID;
 
-    this.shadowRoot.querySelector('terminal-dialog').show();
+    this.shadowRoot.querySelector("terminal-dialog").show();
     this.settingsProfileDropdownRef_.value.focus();
   }
 
@@ -122,13 +122,13 @@ export class TerminalLinuxDialog extends LitElement {
     if (event.detail.accept) {
       // Save the connection.
       const profiles = getVshProfiles();
-      profiles[this.vshProfileId_]['terminal-profile'] =
+      profiles[this.vshProfileId_]["terminal-profile"] =
           this.settingsProfileDropdownRef_.value.value;
       setVshProfiles(profiles);
     }
 
-    this.dispatchEvent(new CustomEvent('close'));
+    this.dispatchEvent(new CustomEvent("close"));
   }
 }
 
-customElements.define('terminal-linux-dialog', TerminalLinuxDialog);
+customElements.define("terminal-linux-dialog", TerminalLinuxDialog);

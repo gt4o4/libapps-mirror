@@ -11,7 +11,7 @@
  * certificate associated to an authentication key in the PIV applet of a
  * smart card, in their BER representation into an ASN.1 schema.
  */
-import {fromBER} from 'asn1js';
+import {fromBER} from "asn1js";
 const asn1js = {fromBER};
 export {asn1js};
 
@@ -20,7 +20,7 @@ export {asn1js};
  * RSA/ECC public keys, from the certificates stored in the PIV applet of smart
  * cards.
  */
-import {Certificate, ECPublicKey, RSAPublicKey} from 'pkijs';
+import {Certificate, ECPublicKey, RSAPublicKey} from "pkijs";
 const pkijs = {
   Certificate,
   ECPublicKey,

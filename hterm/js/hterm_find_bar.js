@@ -6,7 +6,7 @@
  * @fileoverview Find bar handling.
  */
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Manage the find bar.
@@ -97,7 +97,7 @@ hterm.FindBar = function(terminal) {
    *
    * @private {string}
    */
-  this.searchText_ = '';
+  this.searchText_ = "";
 
   /** @private {number} */
   this.batchRow_ = 0;
@@ -201,16 +201,16 @@ hterm.FindBar.Result;
  * @param {!Document} document
  */
 hterm.FindBar.prototype.decorate = function(document) {
-  this.findBar_ = document.createElement('div');
-  this.findBar_.id = 'hterm:find-bar';
-  this.findBar_.setAttribute('aria-hidden', 'true');
+  this.findBar_ = document.createElement("div");
+  this.findBar_.id = "hterm:find-bar";
+  this.findBar_.setAttribute("aria-hidden", "true");
   this.findBar_.innerHTML = hterm.sanitizeHtml(hterm.resources.HTML_FIND_BAR);
 
-  this.input_ = this.findBar_.querySelector('input');
-  this.upArrowButton_ = this.findBar_.querySelector('#hterm\\:find-bar-up');
-  this.downArrowButton_ = this.findBar_.querySelector('#hterm\\:find-bar-down');
-  this.closeButton_ = this.findBar_.querySelector('#hterm\\:find-bar-close');
-  this.counterLabel_ = this.findBar_.querySelector('#hterm\\:find-bar-count');
+  this.input_ = this.findBar_.querySelector("input");
+  this.upArrowButton_ = this.findBar_.querySelector("#hterm\\:find-bar-up");
+  this.downArrowButton_ = this.findBar_.querySelector("#hterm\\:find-bar-down");
+  this.closeButton_ = this.findBar_.querySelector("#hterm\\:find-bar-close");
+  this.counterLabel_ = this.findBar_.querySelector("#hterm\\:find-bar-count");
 
   // Add aria-label and svg icons.
   this.upArrowButton_.innerHTML = hterm.sanitizeHtml(
@@ -219,30 +219,30 @@ hterm.FindBar.prototype.decorate = function(document) {
       hterm.resources.IMG_KEYBOARD_ARROW_DOWN);
   this.closeButton_.innerHTML = hterm.sanitizeHtml(hterm.resources.IMG_CLOSE);
 
-  this.upArrowButton_.setAttribute('aria-label', hterm.msg('BUTTON_PREVIOUS'));
-  this.downArrowButton_.setAttribute('aria-label', hterm.msg('BUTTON_NEXT'));
-  this.input_.setAttribute('aria-label', hterm.msg('BUTTON_FIND'));
-  this.closeButton_.setAttribute('aria-label', hterm.msg('BUTTON_CLOSE'));
+  this.upArrowButton_.setAttribute("aria-label", hterm.msg("BUTTON_PREVIOUS"));
+  this.downArrowButton_.setAttribute("aria-label", hterm.msg("BUTTON_NEXT"));
+  this.input_.setAttribute("aria-label", hterm.msg("BUTTON_FIND"));
+  this.closeButton_.setAttribute("aria-label", hterm.msg("BUTTON_CLOSE"));
 
   // Add event listeners to the elements.
   const el = (e) => /** @type {!EventListener} */ (e.bind(this));
-  this.input_.addEventListener('input', el(this.onInput_));
-  this.input_.addEventListener('keydown', el(this.onKeyDown_));
-  this.input_.addEventListener('keypress', el(this.onKeyPressed_));
-  this.input_.addEventListener('textInput', el(this.onInputText_));
-  this.input_.addEventListener('focus', el(() => { this.hasFocus = true; }));
-  this.input_.addEventListener('blur', el(() => { this.hasFocus = false; }));
-  this.closeButton_.addEventListener('click', el(this.close));
-  this.upArrowButton_.addEventListener('click', el(this.onPrevious_));
-  this.downArrowButton_.addEventListener('click', el(this.onNext_));
+  this.input_.addEventListener("input", el(this.onInput_));
+  this.input_.addEventListener("keydown", el(this.onKeyDown_));
+  this.input_.addEventListener("keypress", el(this.onKeyPressed_));
+  this.input_.addEventListener("textInput", el(this.onInputText_));
+  this.input_.addEventListener("focus", el(() => { this.hasFocus = true; }));
+  this.input_.addEventListener("blur", el(() => { this.hasFocus = false; }));
+  this.closeButton_.addEventListener("click", el(this.close));
+  this.upArrowButton_.addEventListener("click", el(this.onPrevious_));
+  this.downArrowButton_.addEventListener("click", el(this.onNext_));
 
   document.body.appendChild(this.findBar_);
 
-  this.resultScreen_ = document.createElement('div');
-  this.resultScreen_.id = 'hterm:find-result-screen';
+  this.resultScreen_ = document.createElement("div");
+  this.resultScreen_.id = "hterm:find-result-screen";
   this.resultScreen_.innerHTML = hterm.sanitizeHtml(
       hterm.resources.HTML_FIND_SCREEN);
-  this.resultScreen_.style.display = 'none';
+  this.resultScreen_.style.display = "none";
   document.body.appendChild(this.resultScreen_);
 };
 
@@ -250,16 +250,16 @@ hterm.FindBar.prototype.decorate = function(document) {
  * Display find bar.
  */
 hterm.FindBar.prototype.display = function() {
-  this.scrollPort_.subscribe('scroll', this.onScroll_);
+  this.scrollPort_.subscribe("scroll", this.onScroll_);
 
-  this.findBar_.classList.add('enabled');
-  this.findBar_.removeAttribute('aria-hidden');
+  this.findBar_.classList.add("enabled");
+  this.findBar_.removeAttribute("aria-hidden");
   this.input_.focus();
-  this.resultScreen_.style.display = '';
+  this.resultScreen_.style.display = "";
   this.isVisible = true;
 
   // Start searching for stored text in findbar.
-  this.input_.dispatchEvent(new Event('input'));
+  this.input_.dispatchEvent(new Event("input"));
 };
 
 /**
@@ -267,12 +267,12 @@ hterm.FindBar.prototype.display = function() {
  */
 hterm.FindBar.prototype.close = function() {
   // Clear all results of findbar.
-  this.resultScreen_.style.display = 'none';
+  this.resultScreen_.style.display = "none";
 
-  this.scrollPort_.unsubscribe('scroll', this.onScroll_);
+  this.scrollPort_.unsubscribe("scroll", this.onScroll_);
 
-  this.findBar_.classList.remove('enabled');
-  this.findBar_.setAttribute('aria-hidden', 'true');
+  this.findBar_.classList.remove("enabled");
+  this.findBar_.setAttribute("aria-hidden", "true");
   this.terminal_.focus();
   this.isVisible = false;
 
@@ -365,8 +365,8 @@ hterm.FindBar.prototype.findInRow_ = function(rowNum, update = false) {
     if (this.resultCount_ === 0) {
       this.selectedRowNum_ = rowNum;
       this.selectedOrdinal_ = 0;
-      this.upArrowButton_.classList.add('enabled');
-      this.downArrowButton_.classList.add('enabled');
+      this.upArrowButton_.classList.add("enabled");
+      this.downArrowButton_.classList.add("enabled");
       this.scrollToResult_();
     }
   } else {
@@ -416,10 +416,10 @@ hterm.FindBar.prototype.onKeyDown_ = function(event) {
     event.stopPropagation();
     return;
   }
-  if (event.key == 'Escape') {
+  if (event.key == "Escape") {
     this.close();
   }
-  if (event.key == 'Enter') {
+  if (event.key == "Enter") {
     if (event.shiftKey) {
       this.onPrevious_();
     } else {
@@ -451,10 +451,10 @@ hterm.FindBar.prototype.onKeyDown_ = function(event) {
  */
 hterm.FindBar.prototype.setFindResultColor = function(color) {
   if (color === undefined) {
-    color = this.terminal_.getPrefs().getString('find-result-color');
+    color = this.terminal_.getPrefs().getString("find-result-color");
   }
 
-  this.terminal_.setCssVar('find-result-color', color);
+  this.terminal_.setCssVar("find-result-color", color);
 };
 
 /**
@@ -466,10 +466,10 @@ hterm.FindBar.prototype.setFindResultColor = function(color) {
 hterm.FindBar.prototype.setFindResultSelectedColor =
     function(color = undefined) {
   if (color === undefined) {
-    color = this.terminal_.getPrefs().getString('find-result-selected-color');
+    color = this.terminal_.getPrefs().getString("find-result-selected-color");
   }
 
-  this.terminal_.setCssVar('find-result-selected-color', color);
+  this.terminal_.setCssVar("find-result-selected-color", color);
 };
 
 /**
@@ -525,13 +525,13 @@ hterm.FindBar.prototype.fetchRowNode_ = function(rowNum) {
   }
 
   // Create a new find-row.
-  const findRow = this.terminal_.getDocument().createElement('find-row');
+  const findRow = this.terminal_.getDocument().createElement("find-row");
   if (!row) {
     return findRow;
   }
   row.rowResult.forEach((result) => {
-    const highlighter = this.terminal_.getDocument().createElement('div');
-    highlighter.classList.add('find-highlighter');
+    const highlighter = this.terminal_.getDocument().createElement("div");
+    highlighter.classList.add("find-highlighter");
     highlighter.style.left =
         `calc(var(--hterm-charsize-width) * ${result.index})`;
     highlighter.style.width =
@@ -581,16 +581,16 @@ hterm.FindBar.prototype.updateCounterLabel_ = function() {
     this.selectedRowIndex_ = 0;
     this.selectedOrdinal_ = -1;
     this.selectedResultKnown_ = true;
-    this.upArrowButton_.classList.remove('enabled');
-    this.downArrowButton_.classList.remove('enabled');
+    this.upArrowButton_.classList.remove("enabled");
+    this.downArrowButton_.classList.remove("enabled");
   }
    // Update the counterLabel.
   if (this.selectedResultKnown_) {
     this.counterLabel_.textContent = hterm.msg(
-        'FIND_COUNTER_LABEL', [this.selectedOrdinal_ + 1, this.resultCount_]);
+        "FIND_COUNTER_LABEL", [this.selectedOrdinal_ + 1, this.resultCount_]);
   } else {
     this.counterLabel_.textContent = hterm.msg(
-        'FIND_RESULT_COUNT', [this.resultCount_]);
+        "FIND_RESULT_COUNT", [this.resultCount_]);
   }
   this.highlightSelectedResult_();
 };
@@ -715,7 +715,7 @@ hterm.FindBar.prototype.selectNext_ = function(step) {
  * Select the next match.
  */
 hterm.FindBar.prototype.onNext_ = function() {
-  if (!this.downArrowButton_.classList.contains('enabled')) {
+  if (!this.downArrowButton_.classList.contains("enabled")) {
     return;
   }
   this.selectNext_(1);
@@ -725,7 +725,7 @@ hterm.FindBar.prototype.onNext_ = function() {
  * Select the previous match.
  */
 hterm.FindBar.prototype.onPrevious_ = function() {
-  if (!this.upArrowButton_.classList.contains('enabled')) {
+  if (!this.upArrowButton_.classList.contains("enabled")) {
     return;
   }
   this.selectNext_(-1);
@@ -750,7 +750,7 @@ hterm.FindBar.prototype.scrollToResult_ = function() {
 hterm.FindBar.prototype.highlightSelectedResult_ = function() {
   // Remove selected result.
   if (this.selectedResult_) {
-    this.selectedResult_.classList.remove('selected');
+    this.selectedResult_.classList.remove("selected");
     this.selectedResult_ = null;
   }
 
@@ -759,7 +759,7 @@ hterm.FindBar.prototype.highlightSelectedResult_ = function() {
     this.selectedResult_ = this.results_[this.selectedRowNum_]
         .rowResult[this.selectedRowIndex_].highlighter;
     if (this.selectedResult_) {
-      this.selectedResult_.classList.add('selected');
+      this.selectedResult_.classList.add("selected");
     }
   }
 };

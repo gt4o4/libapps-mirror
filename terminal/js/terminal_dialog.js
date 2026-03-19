@@ -8,10 +8,10 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {css, html, LitElement} from './lit.js';
-import './terminal_button.js';
+import {css, html, LitElement} from "./lit.js";
+import "./terminal_button.js";
 
 // A dialog with an accept and a cancel button. When a button is clicked, the
 // dialog is closed and a "close" event is sent with detail `{accept:
@@ -76,8 +76,8 @@ export class TerminalDialog extends LitElement {
     super();
 
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
-    this.acceptText = msg('OK_BUTTON_LABEL');
-    this.cancelText = msg('CANCEL_BUTTON_LABEL');
+    this.acceptText = msg("OK_BUTTON_LABEL");
+    this.cancelText = msg("CANCEL_BUTTON_LABEL");
     this.open = false;
   }
 
@@ -108,31 +108,31 @@ export class TerminalDialog extends LitElement {
   }
 
   getNativeDialog_() {
-    return this.shadowRoot.querySelector('dialog');
+    return this.shadowRoot.querySelector("dialog");
   }
 
   show() {
     const nativeDialog = this.getNativeDialog_();
-    nativeDialog.returnValue = 'cancel';
+    nativeDialog.returnValue = "cancel";
     nativeDialog.showModal();
     this.open = true;
-    this.dispatchEvent(new CustomEvent('open'));
+    this.dispatchEvent(new CustomEvent("open"));
   }
 
   onNativeClose_(event) {
     this.open = false;
-    this.dispatchEvent(new CustomEvent('close', {
-      detail: {accept: event.target.returnValue == 'accept'},
+    this.dispatchEvent(new CustomEvent("close", {
+      detail: {accept: event.target.returnValue == "accept"},
     }));
   }
 
   accept() {
-    this.getNativeDialog_().close('accept');
+    this.getNativeDialog_().close("accept");
   }
 
   cancel() {
-    this.getNativeDialog_().close('cancel');
+    this.getNativeDialog_().close("cancel");
   }
 }
 
-customElements.define('terminal-dialog', TerminalDialog);
+customElements.define("terminal-dialog", TerminalDialog);

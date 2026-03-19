@@ -7,15 +7,15 @@
  * code in here minimal as this cannot be unittested.
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {getSyncStorage, runtimeSendMessage} from './nassh.js';
-import {importPreferences} from './nassh_background.js';
-import {ContextMenusHandler} from './nassh_context_menus.js';
-import {ExternalApi} from './nassh_external_api.js';
-import {probeExtensions} from './nassh_google.js';
-import {OmniboxHandler} from './nassh_omnibox.js';
-import {SftpFsp} from './nassh_sftp_fsp.js';
+import {getSyncStorage, runtimeSendMessage} from "./nassh.js";
+import {importPreferences} from "./nassh_background.js";
+import {ContextMenusHandler} from "./nassh_context_menus.js";
+import {ExternalApi} from "./nassh_external_api.js";
+import {probeExtensions} from "./nassh_google.js";
+import {OmniboxHandler} from "./nassh_omnibox.js";
+import {SftpFsp} from "./nassh_sftp_fsp.js";
 
 let omniboxHandler = null;
 if (globalThis.chrome?.omnibox) {
@@ -70,7 +70,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   console.log(`onInstalled fired due to "${details.reason}"`);
 
   // Only sync prefs when installed the first time.
-  if (details.reason != 'install') {
+  if (details.reason != "install") {
     return;
   }
 
@@ -79,13 +79,13 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   // We'll get called when logging into a new device for the first time when we
   // get installed automatically as part of the overall sync.  We'll have prefs
   // in that case already, so no need to sync.
-  if (await storage.getItem('/nassh/profile-ids') !== undefined) {
+  if (await storage.getItem("/nassh/profile-ids") !== undefined) {
     // Prefs exist, so exit early.
     return;
   }
 
-  const extStableId = 'iodihamcpbpeioajjeobimgagajmlibd';
-  const extDevId = 'algkcnfjnajfhgimadimbjhmpaeohhln';
+  const extStableId = "iodihamcpbpeioajjeobimgagajmlibd";
+  const extDevId = "algkcnfjnajfhgimadimbjhmpaeohhln";
 
   /**
    * Try to import prefs from another install into our own.
@@ -95,7 +95,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
    */
   const migrate = (srcId, onError = () => {}) => {
     console.log(`Trying to sync prefs from ${srcId}`);
-    runtimeSendMessage(srcId, {command: 'prefsExport'})
+    runtimeSendMessage(srcId, {command: "prefsExport"})
       .then((response) => {
         const {prefs} = response;
         return importPreferences(prefs);

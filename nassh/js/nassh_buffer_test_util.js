@@ -6,8 +6,8 @@
  * @fileoverview Common buffer API tests.
  */
 
-import {newBuffer, setDefaultBackend} from './nassh_buffer.js';
-import {BufferInterface} from './nassh_buffer_interface.js';
+import {newBuffer, setDefaultBackend} from "./nassh_buffer.js";
+import {BufferInterface} from "./nassh_buffer_interface.js";
 
 /**
  * Helper class for inspecting buffer internals.
@@ -182,8 +182,8 @@ export function BufferApiTest(backend, inspectClass) {
     this.backend = backend;
     this.inspectClass = inspectClass;
   });
-  it('buffer-empty', testBufferEmpty);
-  it('buffer-autoack', testBufferAutoack);
-  it('buffer-manual-ack', testBufferManualAck);
-  it('buffer-grow', testBufferGrow);
+  it("buffer-empty", testBufferEmpty);
+  it("buffer-autoack", testBufferAutoack);
+  it("buffer-manual-ack", testBufferManualAck);
+  it("buffer-grow", testBufferGrow);
 }

@@ -8,7 +8,7 @@
  * @suppress {moduleLoad}
  */
 
-import {createFs} from './deps_indexeddb-fs.rollup.js';
+import {createFs} from "./deps_indexeddb-fs.rollup.js";
 
 /**
  * Request the persistent indexeddb-fs for this extension.
@@ -16,7 +16,7 @@ import {createFs} from './deps_indexeddb-fs.rollup.js';
  * @return {!Promise<!IndexeddbFs>} The filesystem handle.
  */
 export async function getIndexeddbFileSystem() {
-  return createFs({objectStoreName: 'nassh-rootfs'});
+  return createFs({objectStoreName: "nassh-rootfs"});
 }
 
 /**
@@ -32,12 +32,12 @@ export async function importIdentityFiles(fileSystem, files) {
 
     // Skip pub key halves as we don't need/use them.
     // Except ssh has a naming convention for certificate files.
-    if (file.name.endsWith('.pub') && !file.name.endsWith('-cert.pub')) {
+    if (file.name.endsWith(".pub") && !file.name.endsWith("-cert.pub")) {
       continue;
     }
 
     const targetPath = `/.ssh/identity/${file.name}`;
-    const blob = new Blob([file], {type: 'text/plain'});
+    const blob = new Blob([file], {type: "text/plain"});
     const contents = await blob.arrayBuffer();
     await fileSystem.writeFile(targetPath, contents);
   }
@@ -51,13 +51,13 @@ export async function importIdentityFiles(fileSystem, files) {
  * @return {!Promise<!Array<string>>} The names of identity files.
  */
 export async function getIdentityFileNames(fileSystem) {
-  const identityDir = '/.ssh/identity';
+  const identityDir = "/.ssh/identity";
   // Make sure the directory exists.  This makes reading empty dirs easier.
-  await fileSystem.createDirectory('/.ssh');
+  await fileSystem.createDirectory("/.ssh");
   await fileSystem.createDirectory(identityDir);
   const entries = await fileSystem.readDirectory(identityDir);
   return entries.files.filter((entry) => {
-    return entry.type === 'file' && !entry.name.endsWith('-cert.pub');
+    return entry.type === "file" && !entry.name.endsWith("-cert.pub");
   }).map((entry) => entry.name);
 }
 

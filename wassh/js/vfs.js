@@ -7,7 +7,7 @@
  * @suppress {moduleLoad}
  */
 
-import {WASI} from '../../wasi-js-bindings/index.js';
+import {WASI} from "../../wasi-js-bindings/index.js";
 
 /**
  * An abstraction for registering a handler for paths.
@@ -403,13 +403,13 @@ export class IndexeddbFsDirectoryHandler extends DirectoryHandler {
       // Make sure directory settings match.
       if (o_flags & WASI.oflags.DIRECTORY) {
         if (!exists) {
-          return WASI.oflags.EEXIST;
-        } else if (details.type !== 'directory') {
-          return WASI.oflags.ENOTDIR;
+          return WASI.errno.EEXIST;
+        } else if (details.type !== "directory") {
+          return WASI.errno.ENOTDIR;
         }
       } else {
-        if (exists && details.type === 'directory') {
-          return WASI.oflags.EISDIR;
+        if (exists && details.type === "directory") {
+          return WASI.errno.EISDIR;
         }
       }
 
@@ -435,7 +435,7 @@ export class IndexeddbFsDirectoryHandler extends DirectoryHandler {
 
       // Handle truncation.
       if (doTruncate) {
-        await this.fs_.writeFile(path, '');
+        await this.fs_.writeFile(path, "");
       }
 
       const ret = new IndexeddbFsFileHandle(path, this.fs_);
@@ -501,9 +501,9 @@ export class IndexeddbFsDirectoryHandler extends DirectoryHandler {
     // as we don't stat /.ssh files very often, and they're usually on the small
     // side (as in, O(KB)).
     let size = 0n;
-    if (details.type === 'file') {
+    if (details.type === "file") {
       const str = await this.fs_.readFile(this.path);
-      if (typeof str === 'string') {
+      if (typeof str === "string") {
         const te = new TextEncoder();
         const data = te.encode(str);
         size = BigInt(data.length);
@@ -513,7 +513,7 @@ export class IndexeddbFsDirectoryHandler extends DirectoryHandler {
     }
     return /** @type {!WASI_t.filestat} */ ({
       filetype:
-        details.type === 'directory' ?
+        details.type === "directory" ?
           WASI.filetype.DIRECTORY :
           WASI.filetype.REGULAR_FILE,
       size: size,
@@ -556,7 +556,7 @@ export class IndexeddbFsFileHandle extends FileHandle {
   /** @override */
   async init() {
     const data = await this.fs_.readFile(this.path);
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       const te = new TextEncoder();
       this.data = te.encode(data);
     } else {
@@ -567,7 +567,7 @@ export class IndexeddbFsFileHandle extends FileHandle {
   /** @override */
   async close() {
     let str = this.data;
-    if (typeof str !== 'string') {
+    if (typeof str !== "string") {
       const td = new TextDecoder();
       str = td.decode(str);
     }
@@ -582,7 +582,7 @@ export class CwdHandler extends DirectoryHandler {
   constructor(target) {
     // NB: This has to be '.' so the WASI layers can find the cwd node.
     // TODO(vapier): Check this is true and document properly.
-    super('.');
+    super(".");
     // TODO(vapier): Figure out relationship between path & target.
     this.target = target;
   }
@@ -604,7 +604,7 @@ export class CwdHandler extends DirectoryHandler {
 }
 
 export class DevNullHandler extends PathHandler {
-  constructor(path = '/dev/null', filetype = WASI.filetype.CHARACTER_DEVICE,
+  constructor(path = "/dev/null", filetype = WASI.filetype.CHARACTER_DEVICE,
               handleCls = DevNullHandle) {
     super(path, filetype, handleCls);
   }
@@ -767,7 +767,7 @@ export class VFS {
   }
 
   debug(...args) {
-    console.debug('VFS', ...args);
+    console.debug("VFS", ...args);
   }
 
   initStdio(handle) {
@@ -804,7 +804,7 @@ export class VFS {
    */
   resolvePath_(fd, path) {
     // If path is already absolute, then we never use the dirfd.
-    if (path.startsWith('/')) {
+    if (path.startsWith("/")) {
       return path;
     }
 
@@ -820,15 +820,15 @@ export class VFS {
     }
 
     // If the base dir is cwd, resolve that too.
-    if (fh.path === '.') {
+    if (fh.path === ".") {
       fh = this.paths_.get(fh.target);
     }
 
     // Normalize leading & trailing slashes.
-    let dirpath = fh.path.replace(/^\/+/, '').replace(/\/+$/, '');
+    let dirpath = fh.path.replace(/^\/+/, "").replace(/\/+$/, "");
     if (dirpath) {
       // Don't add trailing slash if dirpath is "" (i.e. it's the root dir).
-      dirpath += '/';
+      dirpath += "/";
     }
 
     return `/${dirpath}${path}`;
@@ -849,10 +849,10 @@ export class VFS {
       if (this.paths_.has(search_path)) {
         return this.paths_.get(search_path);
       }
-      search_path = search_path.substring(0, search_path.lastIndexOf('/'));
-    } while (search_path !== '');
+      search_path = search_path.substring(0, search_path.lastIndexOf("/"));
+    } while (search_path !== "");
 
-    return this.paths_.get('/') || WASI.errno.ENOENT;
+    return this.paths_.get("/") || WASI.errno.ENOENT;
   }
 
   /**
@@ -863,7 +863,7 @@ export class VFS {
     this.debug(`stat(${path})`);
 
     const handler = this.findHandler_(path);
-    if (typeof handler === 'number') {
+    if (typeof handler === "number") {
       return handler;
     }
     return handler.stat();
@@ -878,7 +878,7 @@ export class VFS {
     this.debug(`statat(${fd}, ${path})`);
 
     const resolvedPath = this.resolvePath_(fd, path);
-    if (typeof resolvedPath === 'number') {
+    if (typeof resolvedPath === "number") {
       return resolvedPath;
     }
     return this.stat(resolvedPath);
@@ -894,12 +894,12 @@ export class VFS {
     this.debug(`open(${path}, ${fdflags}, ${o_flags})`);
 
     const handler = this.findHandler_(path);
-    if (typeof handler === 'number') {
+    if (typeof handler === "number") {
       return handler;
     }
 
     const handle = await handler.open(path, fdflags, o_flags);
-    if (typeof handle === 'number') {
+    if (typeof handle === "number") {
       return handle;
     }
     const fd = this.openHandle(handle);
@@ -924,7 +924,7 @@ export class VFS {
 
     // NB: dirflags currently only involves symlinks which we don't support.
     const resolvedPath = this.resolvePath_(dfd, path);
-    if (typeof resolvedPath === 'number') {
+    if (typeof resolvedPath === "number") {
       return resolvedPath;
     }
     return this.open(resolvedPath, fdflags, o_flags);
@@ -977,7 +977,7 @@ export class VFS {
     this.debug(`mkdirat(${fd}, ${path})`);
 
     const resolvedPath = this.resolvePath_(fd, path);
-    if (typeof resolvedPath === 'number') {
+    if (typeof resolvedPath === "number") {
       return resolvedPath;
     }
     return this.mkdir(resolvedPath);
@@ -992,7 +992,7 @@ export class VFS {
 
     // TODO(vapier): Push this down a layer.
     switch (path) {
-      case '/.ssh': return WASI.errno.ESUCCESS;
+      case "/.ssh": return WASI.errno.ESUCCESS;
     }
 
     return WASI.errno.ENOENT;
@@ -1011,11 +1011,11 @@ export class VFS {
                `${new_path})`);
 
     const oldResolvedPath = this.resolvePath_(old_fd, old_path);
-    if (typeof oldResolvedPath === 'number') {
+    if (typeof oldResolvedPath === "number") {
       return oldResolvedPath;
     }
     const newResolvedPath = this.resolvePath_(new_fd, new_path);
-    if (typeof newResolvedPath === 'number') {
+    if (typeof newResolvedPath === "number") {
       return newResolvedPath;
     }
 
@@ -1031,11 +1031,11 @@ export class VFS {
     this.debug(`link(${oldPath}, ${newPath})`);
 
     const oldHandler = this.findHandler_(oldPath);
-    if (typeof oldHandler === 'number') {
+    if (typeof oldHandler === "number") {
       return oldHandler;
     }
     const newHandler = this.findHandler_(newPath);
-    if (typeof newHandler === 'number') {
+    if (typeof newHandler === "number") {
       return newHandler;
     }
 
@@ -1057,11 +1057,11 @@ export class VFS {
     this.debug(`renameat(${old_fd}, ${old_path}, ${new_fd}, ${new_path})`);
 
     const oldResolvedPath = this.resolvePath_(old_fd, old_path);
-    if (typeof oldResolvedPath === 'number') {
+    if (typeof oldResolvedPath === "number") {
       return oldResolvedPath;
     }
     const newResolvedPath = this.resolvePath_(new_fd, new_path);
-    if (typeof newResolvedPath === 'number') {
+    if (typeof newResolvedPath === "number") {
       return newResolvedPath;
     }
 
@@ -1077,11 +1077,11 @@ export class VFS {
     this.debug(`rename(${oldPath}, ${newPath})`);
 
     const oldHandler = this.findHandler_(oldPath);
-    if (typeof oldHandler === 'number') {
+    if (typeof oldHandler === "number") {
       return oldHandler;
     }
     const newHandler = this.findHandler_(newPath);
-    if (typeof newHandler === 'number') {
+    if (typeof newHandler === "number") {
       return newHandler;
     }
 
@@ -1100,7 +1100,7 @@ export class VFS {
   async unlinkat(fd, path) {
     this.debug(`unlinkat(${fd}, ${path})`);
     const resolvedPath = this.resolvePath_(fd, path);
-    if (typeof resolvedPath === 'number') {
+    if (typeof resolvedPath === "number") {
       return resolvedPath;
     }
     return this.unlink(resolvedPath);
@@ -1113,7 +1113,7 @@ export class VFS {
   async unlink(path) {
     this.debug(`unlink(${path})`);
     const handler = this.findHandler_(path);
-    if (typeof handler === 'number') {
+    if (typeof handler === "number") {
       return handler;
     }
     return handler.unlink(path);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /**
  * A wrapper for other storage classes to condense many keys into one.
@@ -57,7 +57,7 @@ lib.Storage.Condenser = class extends lib.Storage {
     }
 
     // Try and parse it.  If we fail, throw it away.
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       try {
         data = JSON.parse(data);
       } catch (e) {
@@ -66,7 +66,7 @@ lib.Storage.Condenser = class extends lib.Storage {
     } else {
       data = null;
     }
-    if (typeof data !== 'object' || data === null) {
+    if (typeof data !== "object" || data === null) {
       await this.storage_.removeItem(this.key_);
       return;
     }

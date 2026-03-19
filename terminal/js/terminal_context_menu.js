@@ -6,8 +6,8 @@
  * @fileoverview Implement element <terminal-context-menu>
  */
 
-import {LitElement, css, html} from './lit.js';
-import {positionElementWithinWindow} from './terminal_common.js';
+import {LitElement, css, html} from "./lit.js";
+import {positionElementWithinWindow} from "./terminal_common.js";
 
 /**
  * A context menu that can be positioned any where in the window.
@@ -30,7 +30,7 @@ export class TerminalContextMenu extends LitElement {
     /**
      * @public {string}
      */
-    this.label = '';
+    this.label = "";
 
     /**
      * @public {!Array<{name: string, action: function()}>}
@@ -97,13 +97,13 @@ export class TerminalContextMenu extends LitElement {
     await this.updateComplete;
 
     positionElementWithinWindow(this, cursorPosition);
-    this.style.visibility = 'visible';
+    this.style.visibility = "visible";
 
     // Hide on any click or keydown event.
     const options = {capture: true};
     const removeAndHide = () => {
-      this.ownerDocument.removeEventListener('click', onClick, options);
-      this.ownerDocument.removeEventListener('keydown', onKeydown, options);
+      this.ownerDocument.removeEventListener("click", onClick, options);
+      this.ownerDocument.removeEventListener("keydown", onKeydown, options);
       this.hide();
     };
     const onClick = removeAndHide;
@@ -113,26 +113,26 @@ export class TerminalContextMenu extends LitElement {
         removeAndHide();
       }
     };
-    this.ownerDocument.addEventListener('click', onClick, options);
-    this.ownerDocument.addEventListener('keydown', onKeydown, options);
-    this.renderRoot.querySelector('ul').focus();
+    this.ownerDocument.addEventListener("click", onClick, options);
+    this.ownerDocument.addEventListener("keydown", onKeydown, options);
+    this.renderRoot.querySelector("ul").focus();
     this.selected_ = -1;
   }
 
   hide() {
-    this.style.visibility = 'hidden';
+    this.style.visibility = "hidden";
   }
 
   /** @param {!Event} event */
   onKeydown_(event) {
     switch (event.code) {
-      case 'ArrowUp':
+      case "ArrowUp":
         this.selected_--;
         if (this.selected_ < 0) {
           this.selected_ = this.items.length - 1;
         }
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         this.selected_ = (this.selected_ + 1) % this.items.length;
         break;
       default:
@@ -140,7 +140,7 @@ export class TerminalContextMenu extends LitElement {
     }
     event.preventDefault();
     event.stopPropagation();
-    this.renderRoot.querySelectorAll('li')[this.selected_].focus();
+    this.renderRoot.querySelectorAll("li")[this.selected_].focus();
   }
 
   /**
@@ -158,7 +158,7 @@ export class TerminalContextMenu extends LitElement {
                 i.action();
               }}
               @keydown=${(e) => {
-                if (['Enter', 'Space'].includes(e.code)) {
+                if (["Enter", "Space"].includes(e.code)) {
                   e.preventDefault();
                   this.hide();
                   i.action();
@@ -172,4 +172,4 @@ export class TerminalContextMenu extends LitElement {
   }
 }
 
-customElements.define('terminal-context-menu', TerminalContextMenu);
+customElements.define("terminal-context-menu", TerminalContextMenu);

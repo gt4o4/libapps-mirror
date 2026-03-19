@@ -8,10 +8,10 @@
  * @suppress {checkTypes} module$__$wasi_js_bindings$js naming confusion.
  */
 
-import {SyscallHandler, WASI} from '../../wasi-js-bindings/index.js';
-import * as Constants from './constants.js';
-import * as Sockets from './sockets.js';
-import * as VFS from './vfs.js';
+import {SyscallHandler, WASI} from "../../wasi-js-bindings/index.js";
+import * as Constants from "./constants.js";
+import * as Sockets from "./sockets.js";
+import * as VFS from "./vfs.js";
 
 /**
  * How many nanoseconds in one millisecond.
@@ -20,7 +20,7 @@ const kNanosecToMillisec = 1000000;
 
 class Tty extends VFS.FileHandle {
   constructor(term, handler) {
-    super('/dev/tty', WASI.filetype.CHARACTER_DEVICE);
+    super("/dev/tty", WASI.filetype.CHARACTER_DEVICE);
     this.term = term;
     this.handler = handler;
     // TODO(vapier): Make this into a stream.
@@ -105,18 +105,18 @@ export class RemoteReceiverWasiPreview1 extends SyscallHandler.Base {
     const tty = new Tty(this.term_, this);
     this.vfs.initStdio(tty);
 
-    const root = new VFS.DirectoryHandler('/');
+    const root = new VFS.DirectoryHandler("/");
     this.vfs.addHandler(root);
-    await this.vfs.open('/');
+    await this.vfs.open("/");
 
     const sshdir = new VFS.IndexeddbFsDirectoryHandler(
-        '/.ssh', this.fileSystem_);
-    await this.fileSystem_.createDirectory('/.ssh');
+        "/.ssh", this.fileSystem_);
+    await this.fileSystem_.createDirectory("/.ssh");
     this.vfs.addHandler(sshdir);
 
-    const cwd = new VFS.CwdHandler('/');
+    const cwd = new VFS.CwdHandler("/");
     this.vfs.addHandler(cwd);
-    await this.vfs.open('.');
+    await this.vfs.open(".");
 
     this.vfs.addHandler(new VFS.DevNullHandler());
 
@@ -144,7 +144,7 @@ export class RemoteReceiverWasiPreview1 extends SyscallHandler.Base {
    */
   async handle_path_filestat_get(fd, lookupflags, path) {
     const stat = await this.vfs.statat(fd, path);
-    if (typeof stat === 'number') {
+    if (typeof stat === "number") {
       return stat;
     }
 
@@ -173,7 +173,7 @@ export class RemoteReceiverWasiPreview1 extends SyscallHandler.Base {
     }
 
     const stat = await this.vfs.stat(fh.path);
-    if (typeof stat === 'number') {
+    if (typeof stat === "number") {
       return stat;
     }
 
@@ -475,7 +475,7 @@ export class RemoteReceiverWasiPreview1 extends SyscallHandler.Base {
         };
         const timeout = setTimeout(resolveIt, Number(msec));
         this.notify_ = () => {
-          this.debug('poll: data has arrived!');
+          this.debug("poll: data has arrived!");
           clearTimeout(timeout);
           resolveIt();
         };
@@ -627,7 +627,7 @@ export class RemoteReceiverWasiPreview1 extends SyscallHandler.Base {
     }
 
     const newHandle = await handle.accept();
-    if (typeof newHandle === 'number') {
+    if (typeof newHandle === "number") {
       return newHandle;
     }
     newHandle.setReceiveListener(() => {
@@ -662,7 +662,7 @@ export class RemoteReceiverWasiPreview1 extends SyscallHandler.Base {
     }
 
     const newHandle = await handle.bind(address, port);
-    if (typeof newHandle === 'number') {
+    if (typeof newHandle === "number") {
       return newHandle;
     }
     if (newHandle !== handle) {
@@ -927,7 +927,7 @@ export class RemoteReceiverWasiPreview1 extends SyscallHandler.Base {
     }
 
     const ret = await handle.read(length, !(flags & Constants.MSG_DONTWAIT));
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 

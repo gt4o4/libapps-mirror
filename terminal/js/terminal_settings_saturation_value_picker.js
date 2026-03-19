@@ -8,15 +8,15 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {LitElement, css, html} from './lit.js';
-import './terminal_knob.js';
+import {LitElement, css, html} from "./lit.js";
+import "./terminal_knob.js";
 
 export const ARROW_KEY_OFFSET = 1;
 
 export class SaturationValuePickerElement extends LitElement {
-  static get is() { return 'saturation-value-picker'; }
+  static get is() { return "saturation-value-picker"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}
@@ -81,7 +81,7 @@ export class SaturationValuePickerElement extends LitElement {
    * @override
    */
   render() {
-    const whiteToPureStyle = `background: linear-gradient(to right, ` +
+    const whiteToPureStyle = "background: linear-gradient(to right, " +
         `#ffffff 0%, hsl(${this.hue}, 100%, 50%) 100%);`;
     const color = lib.colors.arrayToHSL(
         lib.colors.hsvxArrayToHslArray(
@@ -113,21 +113,21 @@ export class SaturationValuePickerElement extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
-    this.addEventListener('pointerdown', this.onPointerDown_);
-    this.addEventListener('pointerup', this.onPointerUp_);
+    this.addEventListener("pointerdown", this.onPointerDown_);
+    this.addEventListener("pointerup", this.onPointerUp_);
   }
 
   /** @override */
   disconnectedCallback() {
-    this.removeEventListener('pointerdown', this.onPointerDown_);
-    this.removeEventListener('pointerup', this.onPointerUp_);
+    this.removeEventListener("pointerdown", this.onPointerDown_);
+    this.removeEventListener("pointerup", this.onPointerUp_);
 
     super.disconnectedCallback();
   }
 
   /** @param {!Event} event */
   onPointerDown_(event) {
-    this.addEventListener('pointermove', this.onPointerMove_);
+    this.addEventListener("pointermove", this.onPointerMove_);
     this.setPointerCapture(event.pointerId);
     this.onPointerEvent_(event);
   }
@@ -139,27 +139,27 @@ export class SaturationValuePickerElement extends LitElement {
 
   /** @param {!Event} event */
   onPointerUp_(event) {
-    this.removeEventListener('pointermove', this.onPointerMove_);
+    this.removeEventListener("pointermove", this.onPointerMove_);
     this.releasePointerCapture(event.pointerId);
     this.onPointerEvent_(event);
-    this.shadowRoot.getElementById('picker').focus();
+    this.shadowRoot.getElementById("picker").focus();
   }
 
   onKeydown_(event) {
     switch (event.code) {
-      case 'ArrowLeft':
+      case "ArrowLeft":
         this.update_(this.saturation - ARROW_KEY_OFFSET, this.value);
         event.preventDefault();
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         this.update_(this.saturation + ARROW_KEY_OFFSET, this.value);
         event.preventDefault();
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         this.update_(this.saturation, this.value + ARROW_KEY_OFFSET);
         event.preventDefault();
         break;
-      case 'ArrowDown':
+      case "ArrowDown":
         this.update_(this.saturation, this.value - ARROW_KEY_OFFSET);
         event.preventDefault();
         break;
@@ -180,7 +180,7 @@ export class SaturationValuePickerElement extends LitElement {
     this.saturation = lib.f.clamp(saturation, 0, 100);
     this.value = lib.f.clamp(value, 0, 100);
 
-    this.dispatchEvent(new CustomEvent('change', {bubbles: true}));
+    this.dispatchEvent(new CustomEvent("change", {bubbles: true}));
   }
 }
 

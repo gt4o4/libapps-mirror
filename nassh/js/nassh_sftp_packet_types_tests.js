@@ -6,18 +6,18 @@
  * @fileoverview SFTP low level protocol tests.
  */
 
-import {Packet} from './nassh_sftp_packet.js';
+import {Packet} from "./nassh_sftp_packet.js";
 import {
   AttrsPacket, bitsToUnixModeLine, DataPacket, epochToLocal,
   ExtendedReplyPacket, FileXferAttrs, getFileAttrs, HandlePacket, LimitsPacket,
   NamePacket, PermissionBits, setFileAttrs, StatusPacket, UnknownPacket,
   ValidExtension, VersionPacket,
-} from './nassh_sftp_packet_types.js';
+} from "./nassh_sftp_packet_types.js";
 
 /**
  * Verify StatusPacket deserialization.
  */
-it('sftpStatusPacket', () => {
+it("sftpStatusPacket", () => {
   const te = new TextEncoder();
   const dataPacket = new Packet([
       // 32-bit request id.
@@ -25,7 +25,7 @@ it('sftpStatusPacket', () => {
       // 32-bit code.
       0xab, 0xcd, 0xef, 0x11,
       // Message string.
-      0x00, 0x00, 0x00, 0x06, ...te.encode('status'),
+      0x00, 0x00, 0x00, 0x06, ...te.encode("status"),
       // Language string.
       0x00, 0x00, 0x00, 0x00,
   ]);
@@ -35,20 +35,20 @@ it('sftpStatusPacket', () => {
 
   assert.equal(0x01020304, packet.requestId);
   assert.equal(0xabcdef11, packet.code);
-  assert.equal('status', packet.message);
-  assert.equal('', packet.lang);
+  assert.equal("status", packet.message);
+  assert.equal("", packet.lang);
 });
 
 /**
  * Verify DataPacket deserialization.
  */
-it('sftpDataPacket', () => {
+it("sftpDataPacket", () => {
   const te = new TextEncoder();
   const dataPacket = new Packet([
       // 32-bit request id.
       0x01, 0x02, 0x03, 0x04,
       // Data string.
-      0x00, 0x00, 0x00, 0x04, ...te.encode('data'),
+      0x00, 0x00, 0x00, 0x04, ...te.encode("data"),
   ]);
 
   const packet = new DataPacket(dataPacket);
@@ -61,26 +61,26 @@ it('sftpDataPacket', () => {
 /**
  * Verify HandlePacket deserialization.
  */
-it('sftpHandlePacket', () => {
+it("sftpHandlePacket", () => {
   const te = new TextEncoder();
   const dataPacket = new Packet([
       // 32-bit request id.
       0x01, 0x02, 0x03, 0x04,
       // Handle string.
-      0x00, 0x00, 0x00, 0x04, ...te.encode('data'),
+      0x00, 0x00, 0x00, 0x04, ...te.encode("data"),
   ]);
 
   const packet = new HandlePacket(dataPacket);
   assert.isTrue(dataPacket.eod());
 
   assert.equal(0x01020304, packet.requestId);
-  assert.equal('data', packet.handle);
+  assert.equal("data", packet.handle);
 });
 
 /**
  * Verify empty NamePacket deserialization.
  */
-it('sftpNamePacketEmpty', () => {
+it("sftpNamePacketEmpty", () => {
   const dataPacket = new Packet([
       // 32-bit request id.
       0x01, 0x02, 0x03, 0x04,
@@ -99,7 +99,7 @@ it('sftpNamePacketEmpty', () => {
 /**
  * Verify non-empty NamePacket deserialization.
  */
-it('sftpNamePacket', () => {
+it("sftpNamePacket", () => {
   const te = new TextEncoder();
   const dataPacket = new Packet([
       // 32-bit request id.
@@ -113,16 +113,16 @@ it('sftpNamePacket', () => {
       // File 1: (no) attributes.
       0x00, 0x00, 0x00, 0x00,
       // File 2: normal name.
-      0x00, 0x00, 0x00, 0x03, ...te.encode('abc'),
+      0x00, 0x00, 0x00, 0x03, ...te.encode("abc"),
       // File 2: normal long name.
       0x00, 0x00, 0x00, 0x2f,
-      ...te.encode('-rwxr-xr-x  1 root  root  8560 Oct 23 23:30 abc'),
+      ...te.encode("-rwxr-xr-x  1 root  root  8560 Oct 23 23:30 abc"),
       // File 2: (no) attributes.
       0x00, 0x00, 0x00, 0x00,
       // File 3: unicode name.
-      0x00, 0x00, 0x00, 0x09, ...te.encode('日本語'),
+      0x00, 0x00, 0x00, 0x09, ...te.encode("日本語"),
       // File 3: unicode long name.
-      0x00, 0x00, 0x00, 0x13, ...te.encode('-rw-rw-rw 日本語'),
+      0x00, 0x00, 0x00, 0x13, ...te.encode("-rw-rw-rw 日本語"),
       // File 3: simple attributes.
       0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03,
   ]);
@@ -135,21 +135,21 @@ it('sftpNamePacket', () => {
 
   // Check file 1 (empty).
   let file = packet.files[0];
-  assert.equal('', file.filename);
-  assert.equal('', file.longFilename);
+  assert.equal("", file.filename);
+  assert.equal("", file.longFilename);
   assert.equal(0, file.flags);
 
   // Check file 2 (normal).
   file = packet.files[1];
-  assert.equal('abc', file.filename);
-  assert.equal('-rwxr-xr-x  1 root  root  8560 Oct 23 23:30 abc',
+  assert.equal("abc", file.filename);
+  assert.equal("-rwxr-xr-x  1 root  root  8560 Oct 23 23:30 abc",
                file.longFilename);
   assert.equal(0, file.flags);
 
   // Check file 3 (unicode).
   file = packet.files[2];
-  assert.equal('日本語', file.filename);
-  assert.equal('-rw-rw-rw 日本語', file.longFilename);
+  assert.equal("日本語", file.filename);
+  assert.equal("-rw-rw-rw 日本語", file.longFilename);
   assert.equal(1, file.flags);
   assert.equal(3, file.size);
 });
@@ -159,7 +159,7 @@ it('sftpNamePacket', () => {
  *
  * This test is a bit light as we unit test getFileAttrs directly.
  */
-it('sftpAttrsPacket', () => {
+it("sftpAttrsPacket", () => {
   const dataPacket = new Packet([
       // 32-bit request id.
       0x01, 0x02, 0x03, 0x04,
@@ -178,7 +178,7 @@ it('sftpAttrsPacket', () => {
 /**
  * Verify basic LimitsPacket deserialization.
  */
-it('sftpLimitsPacket', () => {
+it("sftpLimitsPacket", () => {
   const dataPacket = new Packet([
       // 32-bit request id.
       0x01, 0x02, 0x03, 0x04,
@@ -206,7 +206,7 @@ it('sftpLimitsPacket', () => {
 /**
  * Verify basic VersionPacket deserialization.
  */
-it('sftpVersionPacket', () => {
+it("sftpVersionPacket", () => {
   const dataPacket = new Packet([
       // 32-bit version.
       0x00, 0x00, 0x00, 0x03,
@@ -216,7 +216,7 @@ it('sftpVersionPacket', () => {
   assert.isTrue(dataPacket.eod());
 
   // Check the fields.
-  assert.equal('init', packet.requestId);
+  assert.equal("init", packet.requestId);
   assert.equal(3, packet.version);
 
   // Check the extensions.
@@ -226,54 +226,54 @@ it('sftpVersionPacket', () => {
 /**
  * Verify VersionPacket w/extensions deserialization.
  */
-it('sftpVersionPacketExt', () => {
+it("sftpVersionPacketExt", () => {
   const te = new TextEncoder();
   const dataPacket = new Packet([
       // 32-bit version.
       0x00, 0x00, 0x00, 0x06,
       // Extension 1: name.
-      0x00, 0x00, 0x00, 0x07, ...te.encode('ext@foo'),
+      0x00, 0x00, 0x00, 0x07, ...te.encode("ext@foo"),
       // Extension 1: data.
-      0x00, 0x00, 0x00, 0x04, ...te.encode('data'),
+      0x00, 0x00, 0x00, 0x04, ...te.encode("data"),
       // Extension 2: name.
-      0x00, 0x00, 0x00, 0x0a, ...te.encode('ext@ok.com'),
+      0x00, 0x00, 0x00, 0x0a, ...te.encode("ext@ok.com"),
       // Extension 2: data.
-      0x00, 0x00, 0x00, 0x01, ...te.encode('1'),
+      0x00, 0x00, 0x00, 0x01, ...te.encode("1"),
       // Extension 3: (invalid) name.
-      0x00, 0x00, 0x00, 0x05, ...te.encode('n@m@e'),
+      0x00, 0x00, 0x00, 0x05, ...te.encode("n@m@e"),
       // Extension 3: data.
-      0x00, 0x00, 0x00, 0x04, ...te.encode('blah'),
+      0x00, 0x00, 0x00, 0x04, ...te.encode("blah"),
   ]);
 
   const packet = new VersionPacket(dataPacket);
   assert.isTrue(dataPacket.eod());
 
   // Check the fields.
-  assert.equal('init', packet.requestId);
+  assert.equal("init", packet.requestId);
   assert.equal(6, packet.version);
 
   // Check the extensions.
-  assert.equal('data', packet.extensions['ext@foo']);
-  assert.equal('1', packet.extensions['ext@ok.com']);
-  assert.isUndefined(packet.extensions['name']);
+  assert.equal("data", packet.extensions["ext@foo"]);
+  assert.equal("1", packet.extensions["ext@ok.com"]);
+  assert.isUndefined(packet.extensions["name"]);
 });
 
 /**
  * Check ValidExtension behavior.
  */
-it('sftpValidExtension', () => {
+it("sftpValidExtension", () => {
   const invalidExtensions = [
     // Empty.
-    '',
+    "",
     // Too long.
-    'abc@foo.commmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm',
+    "abc@foo.commmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
     // Too many @.
-    'na@me@foo.com',
+    "na@me@foo.com",
     // Invalid characters in name.
-    'na\x00me',
-    'na,me',
-    'na me',
-    'na\x7fme',
+    "na\x00me",
+    "na,me",
+    "na me",
+    "na\x7fme",
   ];
   invalidExtensions.forEach((ext) => {
     assert.isFalse(ValidExtension(ext), ext);
@@ -281,12 +281,12 @@ it('sftpValidExtension', () => {
 
   const validExtensions = [
     // No @.
-    'name',
+    "name",
     // Full valid ASCII set for the name.
     '!"#$%&\'()*+-./0123456789:;<=>?[\\]^_`{|}',
-    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
     // Name & domain.
-    'x@blah.blah.www.org',
+    "x@blah.blah.www.org",
   ];
   validExtensions.forEach((ext) => {
     assert.isTrue(ValidExtension(ext), ext);
@@ -296,13 +296,13 @@ it('sftpValidExtension', () => {
 /**
  * Verify UnknownPacket deserialization.
  */
-it('sftpUnknownPacket', () => {
+it("sftpUnknownPacket", () => {
   const te = new TextEncoder();
   const dataPacket = new Packet([
       // 32-bit request id.
       0x01, 0x02, 0x03, 0x04,
       // Whatever is left.
-      ...te.encode('abc'),
+      ...te.encode("abc"),
   ]);
 
   const packet = new UnknownPacket(dataPacket);
@@ -315,29 +315,29 @@ it('sftpUnknownPacket', () => {
 /**
  * Check bitsToUnixModeLine behavior.
  */
-it('sftpBitsToUnixModeLine', () => {
+it("sftpBitsToUnixModeLine", () => {
   const data = [
     // No mode bits.
-    ['?---------', 0o0000],
+    ["?---------", 0o0000],
     // All mode bits.
-    ['?rwsrwsrwt', 0o7777],
+    ["?rwsrwsrwt", 0o7777],
     // Check the file types.
-    ['c---------', 0o0000 | PermissionBits.IFCHR],
-    ['d---------', 0o0000 | PermissionBits.IFDIR],
-    ['b---------', 0o0000 | PermissionBits.IFBLK],
-    ['----------', 0o0000 | PermissionBits.IFREG],
-    ['p---------', 0o0000 | PermissionBits.IFIFO],
-    ['l---------', 0o0000 | PermissionBits.IFLNK],
-    ['s---------', 0o0000 | PermissionBits.IFSOCK],
+    ["c---------", 0o0000 | PermissionBits.IFCHR],
+    ["d---------", 0o0000 | PermissionBits.IFDIR],
+    ["b---------", 0o0000 | PermissionBits.IFBLK],
+    ["----------", 0o0000 | PermissionBits.IFREG],
+    ["p---------", 0o0000 | PermissionBits.IFIFO],
+    ["l---------", 0o0000 | PermissionBits.IFLNK],
+    ["s---------", 0o0000 | PermissionBits.IFSOCK],
     // Check the extended bits.
-    ['?--s--x--x', 0o4111],
-    ['?--x--s--x', 0o2111],
-    ['?--x--x--t', 0o1111],
+    ["?--s--x--x", 0o4111],
+    ["?--x--s--x", 0o2111],
+    ["?--x--x--t", 0o1111],
     // Check the permission bits with common modes.
-    ['?rwxrwxrwx', 0o0777],
-    ['?rwxr-xr-x', 0o0755],
-    ['?rw-rw-rw-', 0o0666],
-    ['?rw-r--r--', 0o0644],
+    ["?rwxrwxrwx", 0o0777],
+    ["?rwxr-xr-x", 0o0755],
+    ["?rw-rw-rw-", 0o0666],
+    ["?rw-r--r--", 0o0644],
   ];
   data.forEach(([expected, mode]) => {
     assert.equal(expected, bitsToUnixModeLine(mode));
@@ -347,7 +347,7 @@ it('sftpBitsToUnixModeLine', () => {
 /**
  * Check getFileAttrs behavior.
  */
-it('sftpGetFileAttrs', () => {
+it("sftpGetFileAttrs", () => {
   // Start with a simple packet.
   let packet = new Packet([0x00, 0x00, 0x00, 0x00]);
   let attrs = getFileAttrs(packet);
@@ -419,7 +419,7 @@ it('sftpGetFileAttrs', () => {
 /**
  * Check setFileAttrs behavior.
  */
-it('sftpSetFileAttrs', () => {
+it("sftpSetFileAttrs", () => {
   // Start with a simple packet.
   let packet = new Packet();
   setFileAttrs(packet, {flags: 0});
@@ -503,11 +503,11 @@ it('sftpSetFileAttrs', () => {
 /**
  * Check epochToLocal behavior.
  */
-it('sftpEpochToLocal', () => {
+it("sftpEpochToLocal", () => {
   const data = [
-    ['Thu, 01 Jan 1970 00:00:00 GMT', 0],
-    ['Sun, 09 Sep 2001 01:46:40 GMT', 1000000000],
-    ['Fri, 14 Jul 2017 02:40:00 GMT', 1500000000],
+    ["Thu, 01 Jan 1970 00:00:00 GMT", 0],
+    ["Sun, 09 Sep 2001 01:46:40 GMT", 1000000000],
+    ["Fri, 14 Jul 2017 02:40:00 GMT", 1500000000],
   ];
   data.forEach(([expected, seconds]) => {
     assert.equal(expected, epochToLocal(seconds).toUTCString());

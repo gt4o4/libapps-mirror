@@ -23,8 +23,8 @@ export class SshPolicy {
    * }=} options The options object.
    */
   constructor({
-    sshKnownHosts = '',
-    sshConfig = '',
+    sshKnownHosts = "",
+    sshConfig = "",
   } = {}) {
     /** @private {string} */
     this.sshKnownHosts_ = sshKnownHosts;
@@ -75,8 +75,8 @@ export class SshPolicy {
    */
   static from(obj) {
     return new SshPolicy({
-      sshKnownHosts: obj?.sshKnownHosts ?? '',
-      sshConfig: obj?.sshConfig ?? '',
+      sshKnownHosts: obj?.sshKnownHosts ?? "",
+      sshConfig: obj?.sshConfig ?? "",
     });
   }
 }

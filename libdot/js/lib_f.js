@@ -6,7 +6,7 @@
  * @fileoverview Grab bag of utility functions.
  */
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /** @const */
 lib.f = {};
@@ -30,7 +30,7 @@ lib.f = {};
  */
 lib.f.replaceVars = function(str, vars) {
   return str.replace(/%([a-z]*)\(([^)]+)\)/gi, function(match, fn, varname) {
-      if (typeof vars[varname] == 'undefined') {
+      if (typeof vars[varname] == "undefined") {
         throw new Error(`Unknown variable: ${varname}`);
       }
 
@@ -56,11 +56,11 @@ lib.f.replaceVars.functions = {
   encodeURIComponent: encodeURIComponent,
   escapeHTML: function(str) {
     const map = {
-      '<': '&lt;',
-      '>': '&gt;',
-      '&': '&amp;',
-      '"': '&quot;',
-      "'": '&#39;',
+      "<": "&lt;",
+      ">": "&gt;",
+      "&": "&amp;",
+      '"': "&quot;",
+      "'": "&#39;",
     };
 
     return str.replace(/[<>&"']/g, (m) => map[m]);
@@ -79,7 +79,7 @@ lib.f.getURL = function(path) {
   }
 
   // Use current location origin if path is absolute.
-  if (path.startsWith('/')) {
+  if (path.startsWith("/")) {
     return globalThis.location.origin + path;
   }
 
@@ -121,7 +121,7 @@ lib.f.clamp = function(v, min, max) {
  * @return {string} The padded number as a string.
  */
 lib.f.zpad = function(number, length) {
-  return String(number).padStart(length, '0');
+  return String(number).padStart(length, "0");
 };
 
 /**
@@ -178,7 +178,7 @@ lib.f.longestCommonPrefix = function(elements, start = 0) {
  * @return {!Array<string>} The stack frames.
  */
 lib.f.getStack = function(ignoreFrames = 0, count = undefined) {
-  const stackArray = (new Error()).stack.split('\n');
+  const stackArray = (new Error()).stack.split("\n");
 
   // Always ignore the Error() object and getStack call itself.
   // [0] = 'Error'
@@ -194,9 +194,9 @@ lib.f.getStack = function(ignoreFrames = 0, count = undefined) {
 
   // Remove the leading spaces and "at" from each line:
   // '    at window.onload (file:///.../lib_test.js:11:18)'
-  const stackObject = new Array();
+  const stackObject = [];
   for (let i = ignoreFrames; i < count + ignoreFrames; ++i) {
-    stackObject.push(stackArray[i].replace(/^\s*at\s+/, ''));
+    stackObject.push(stackArray[i].replace(/^\s*at\s+/, ""));
   }
 
   return stackObject;
@@ -257,16 +257,16 @@ lib.f.getOs = function() {
   // browser API above.
   if (globalThis.navigator?.userAgent) {
     const ua = navigator.userAgent;
-    if (ua.includes('Mac OS X')) {
-      return Promise.resolve('mac');
-    } else if (ua.includes('CrOS')) {
-      return Promise.resolve('cros');
-    } else if (ua.includes('Linux')) {
-      return Promise.resolve('linux');
-    } else if (ua.includes('Android')) {
-      return Promise.resolve('android');
-    } else if (ua.includes('Windows')) {
-      return Promise.resolve('windows');
+    if (ua.includes("Mac OS X")) {
+      return Promise.resolve("mac");
+    } else if (ua.includes("CrOS")) {
+      return Promise.resolve("cros");
+    } else if (ua.includes("Linux")) {
+      return Promise.resolve("linux");
+    } else if (ua.includes("Android")) {
+      return Promise.resolve("android");
+    } else if (ua.includes("Windows")) {
+      return Promise.resolve("windows");
     }
   }
 
@@ -328,12 +328,12 @@ lib.f.lastError = function(defaultMsg = null) {
  * @return {boolean} Whether the URL is valid.
  */
 lib.f.isValidUrl = function(url) {
-  if (url?.startsWith('/')) {
+  if (url?.startsWith("/")) {
     return true;
   }
 
   try {
-    // eslint-disable-next-line no-new
+     
     new URL(url);
   } catch (e) {
     return false;
@@ -363,12 +363,12 @@ lib.f.openWindow = function(url, name = undefined, features = undefined) {
   // If this context doesn't have an open function, fallback to extension APIs.
   // For example, the background extension service worker.
   if (globalThis.open === undefined) {
-    if (name === '_blank') {
+    if (name === "_blank") {
       chrome.tabs.create({url});
     } else {
       let type = chrome.windows.CreateType.NORMAL;
       // TODO(vapier): features can encode width & height too.
-      if (features !== undefined && features.includes('chrome=no')) {
+      if (features !== undefined && features.includes("chrome=no")) {
         type = chrome.windows.CreateType.POPUP;
       }
       chrome.windows.create({

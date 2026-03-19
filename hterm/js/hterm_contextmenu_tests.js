@@ -6,12 +6,12 @@
  * @fileoverview hterm.ContextMenu unit tests.
  */
 
-import {hterm} from '../index.js';
+import {hterm} from "../index.js";
 
 /**
  * Verify we can show/hide an empty menu.
  */
-it('contextmenu-stub', () => {
+it("contextmenu-stub", () => {
   const menu = new hterm.ContextMenu();
 
   // Show/hide this stub menu.  It should be fine.
@@ -22,13 +22,13 @@ it('contextmenu-stub', () => {
 /**
  * Verify we can show/hide a simple menu.
  */
-it('contextmenu-simple', () => {
+it("contextmenu-simple", () => {
   const document = globalThis.document;
   const menu = new hterm.ContextMenu();
   menu.setDocument(document);
 
   // Create a basic menu.
-  menu.setItems([{name: 'Foo', action: () => {}}]);
+  menu.setItems([{name: "Foo", action: () => {}}]);
 
   // Show/hide this menu.
   menu.show(/** @type {!Event} */ ({clientX: 0, clientY: 0}));
@@ -38,7 +38,7 @@ it('contextmenu-simple', () => {
 /**
  * Check separator handling.
  */
-it('contextmenu-separator', () => {
+it("contextmenu-separator", () => {
   const document = globalThis.document;
   const menu = new hterm.ContextMenu();
   menu.setDocument(document);
@@ -47,7 +47,7 @@ it('contextmenu-separator', () => {
   menu.setItems([{name: hterm.ContextMenu.SEPARATOR}]);
 
   // Check the entries.
-  assert.equal('separator', menu.element_.firstElementChild.className);
+  assert.equal("separator", menu.element_.firstElementChild.className);
 
   // Show/hide this menu.
   menu.show(/** @type {!Event} */ ({clientX: 0, clientY: 0}));

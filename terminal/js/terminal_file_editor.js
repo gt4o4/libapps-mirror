@@ -6,7 +6,7 @@
  * @fileoverview Implement <terminal-file-editor>
  */
 
-import {LitElement, createRef, css, html, ref} from './lit.js';
+import {LitElement, createRef, css, html, ref} from "./lit.js";
 
 /**
  * A text area element that binds to a file in `lib.fs`. Properties
@@ -92,7 +92,7 @@ class TerminalFileEditor extends LitElement {
   }
 
   async load() {
-    let value = '';
+    let value = "";
     try {
       value = await (await this.fileSystemPromise).readFile(this.path);
     } catch (e) {
@@ -108,4 +108,4 @@ class TerminalFileEditor extends LitElement {
   }
 }
 
-customElements.define('terminal-file-editor', TerminalFileEditor);
+customElements.define("terminal-file-editor", TerminalFileEditor);

@@ -9,5 +9,5 @@
 /**
  * indexeddb-fs is used to provide persistance filesystem (e.g. /.ssh/).
  */
-import {createFs} from 'indexeddb-fs';
+import {createFs} from "indexeddb-fs";
 export {createFs};

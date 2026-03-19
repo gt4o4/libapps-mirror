@@ -6,7 +6,7 @@
  * @fileoverview APIs for background processes running in Web Workers.
  */
 
-import * as Process from './process.js';
+import * as Process from "./process.js";
 
 /**
  * Base class for creating your own background worker.
@@ -50,9 +50,9 @@ export class Base {
    */
   bind() {
     // Save a ref for console debugging.
-    globalThis['wassh_worker_'] = this;
+    globalThis["wassh_worker_"] = this;
     this.worker.addEventListener(
-        'message', /** @type {!EventListener} */ (this.onMessage.bind(this)));
+        "message", /** @type {!EventListener} */ (this.onMessage.bind(this)));
   }
 
   /**
@@ -74,8 +74,8 @@ export class Base {
    * @param {...*} args The message to log.
    */
   postError(...args) {
-    this.debug('worker>>> error', args);
-    postMessage({name: 'error', argv: args});
+    this.debug("worker>>> error", args);
+    postMessage({name: "error", argv: args});
   }
 
   /**
@@ -104,7 +104,7 @@ export class Base {
      * }}
      */
     const data = e.data;
-    this.debug('>>>worker onMessage', data);
+    this.debug(">>>worker onMessage", data);
 
     const {name, argv} = data;
 
@@ -132,6 +132,6 @@ export class Base {
   async onMessage_run(executable, argv, environ, sab, handlers) {
     const proc = this.newProcess(executable, argv, environ, sab, handlers);
     const ret = await proc.run();
-    this.postMessage('exit', ret);
+    this.postMessage("exit", ret);
   }
 }

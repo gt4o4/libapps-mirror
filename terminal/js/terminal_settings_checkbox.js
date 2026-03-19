@@ -7,8 +7,8 @@
  *
  * @suppress {moduleLoad}
  */
-import {css, html, ifDefined} from './lit.js';
-import {TerminalSettingsElement} from './terminal_settings_element.js';
+import {css, html, ifDefined} from "./lit.js";
+import {TerminalSettingsElement} from "./terminal_settings_element.js";
 
 
 const DEFAULT_CONVERTER = {
@@ -17,7 +17,7 @@ const DEFAULT_CONVERTER = {
 };
 
 export class TerminalSettingsCheckboxElement extends TerminalSettingsElement {
-  static get is() { return 'terminal-settings-checkbox'; }
+  static get is() { return "terminal-settings-checkbox"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}

@@ -7,9 +7,9 @@
  * @suppress {moduleLoad} closure compiler can't handle node_modules/.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {assert} from '../../node_modules/chai/chai.js';
+import {assert} from "../../node_modules/chai/chai.js";
 
 /**
  * Run the main test page.
@@ -23,13 +23,13 @@ import {assert} from '../../node_modules/chai/chai.js';
  *   base: The prefix to load files from.
  *   files: Test files to import dynamically.
  */
-export function main({globals, base = '', files = []} = {}) {
+export function main({globals, base = "", files = []} = {}) {
   // Setup the mocha framework.
-  mocha.setup({ui: 'bdd', globals});
+  mocha.setup({ui: "bdd", globals});
   mocha.checkLeaks();
 
   // Add a global shortcut to the assert API.
-  globalThis['assert'] = assert;
+  globalThis["assert"] = assert;
 
   // Catch any random errors before the test runner runs.
   let earlyError = null;
@@ -56,11 +56,11 @@ export function main({globals, base = '', files = []} = {}) {
     mocha.run();
   };
 
-  describe('testRunner', () => {
+  describe("testRunner", () => {
     /** Make sure no general framework errors happened (e.g. syntax errors). */
-    it('uncaught framework errors', () => {
+    it("uncaught framework errors", () => {
       if (earlyError !== null) {
-        assert.fail(`uncaught exception detected:\n${earlyError.join('\n')}`);
+        assert.fail(`uncaught exception detected:\n${earlyError.join("\n")}`);
       }
     });
   });
@@ -72,13 +72,13 @@ export function main({globals, base = '', files = []} = {}) {
  * See suiteStart for details.
  */
 const wrappedFunctions = [
-  'after',
-  'afterEach',
-  'before',
-  'beforeEach',
-  'describe',
-  'it',
-  'xit',
+  "after",
+  "afterEach",
+  "before",
+  "beforeEach",
+  "describe",
+  "it",
+  "xit",
 ];
 
 let currentSuite = null;

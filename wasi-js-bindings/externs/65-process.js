@@ -19,7 +19,7 @@ class Process {
    */
   constructor({executable, argv, environ}) {
     /** @type {(string|!Promise<!Response>|!Response|!ArrayBuffer)} */
-    this.executable = '';
+    this.executable = "";
     /** @type {!Array<string>} */
     this.argv = [];
     /** @type {!Object<string, string>} */

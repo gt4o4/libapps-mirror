@@ -6,21 +6,21 @@
  * @fileoverview hterm.Pubsub unit tests.
  */
 
-import {hterm} from '../index.js';
+import {hterm} from "../index.js";
 
 /**
  * Test that the appropriate methods are added to a hterm.PubSub target object.
  */
-it('methods', () => {
+it("methods", () => {
   const obj = {};
   hterm.PubSub.addBehavior(obj);
-  assert.hasAllKeys(obj, ['subscribe', 'unsubscribe', 'publish']);
+  assert.hasAllKeys(obj, ["subscribe", "unsubscribe", "publish"]);
 });
 
 /**
  * Test that subscribers are notified in the proper order.
  */
-it('publish-order', (done) => {
+it("publish-order", (done) => {
   let callbackCount = 0;
 
   function one() { assert.equal(1, ++callbackCount); }
@@ -31,17 +31,17 @@ it('publish-order', (done) => {
   const obj = /** @type {!hterm.PubSub} */ ({});
   hterm.PubSub.addBehavior(obj);
 
-  obj.subscribe('test', one);
-  obj.subscribe('test', two);
-  obj.subscribe('test', three);
+  obj.subscribe("test", one);
+  obj.subscribe("test", two);
+  obj.subscribe("test", three);
 
-  obj.publish('test', null, last);
+  obj.publish("test", null, last);
 });
 
 /**
  * Test that a published parameter is handed off to all subscribers.
  */
-it('parameter', (done) => {
+it("parameter", (done) => {
   const expected = {};
 
   function one(param) { assert.deepStrictEqual(expected, param); }
@@ -52,17 +52,17 @@ it('parameter', (done) => {
   const obj = /** @type {!hterm.PubSub} */ ({});
   hterm.PubSub.addBehavior(obj);
 
-  obj.subscribe('test', one);
-  obj.subscribe('test', two);
-  obj.subscribe('test', three);
+  obj.subscribe("test", one);
+  obj.subscribe("test", two);
+  obj.subscribe("test", three);
 
-  obj.publish('test', expected, last);
+  obj.publish("test", expected, last);
 });
 
 /**
  * Test that the final callback is invoked, even if nobody has subscribed.
  */
-it('forever-alone', (done) => {
+it("forever-alone", (done) => {
   let calledLast = false;
 
   function last(param) { calledLast = true; }
@@ -70,7 +70,7 @@ it('forever-alone', (done) => {
   const obj = /** @type {!hterm.PubSub} */ ({});
   hterm.PubSub.addBehavior(obj);
 
-  obj.publish('test', null, last);
+  obj.publish("test", null, last);
 
   const check = () => {
     if (calledLast) {
@@ -86,7 +86,7 @@ it('forever-alone', (done) => {
  * Test that an exception raised by a subscriber does not stop the remaining
  * notifications.
  */
-it('exception', function(done) {
+it("exception", function(done) {
   // We need to manually disable this.
   // https://github.com/mochajs/mocha/issues/1985
   const oldOnerror = globalThis.onerror;
@@ -96,17 +96,17 @@ it('exception', function(done) {
   let calledBar = false;
   let calledLast = false;
 
-  function foo() { throw new Error('EXPECTED_EXCEPTION'); }
+  function foo() { throw new Error("EXPECTED_EXCEPTION"); }
   function bar() { calledBar = true; }
   function last() { calledLast = true; }
 
   const obj = /** @type {!hterm.PubSub} */ ({});
   hterm.PubSub.addBehavior(obj);
 
-  obj.subscribe('test', foo);
-  obj.subscribe('test', bar);
+  obj.subscribe("test", foo);
+  obj.subscribe("test", bar);
 
-  obj.publish('test', null, last);
+  obj.publish("test", null, last);
 
   const check = () => {
     if (calledLast) {

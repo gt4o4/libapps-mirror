@@ -8,7 +8,7 @@
  *     output.  This makes it hard for the remote to spoof the user.
  */
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Class that controls everything about the notification center.
@@ -30,22 +30,22 @@ hterm.NotificationCenter = class {
 
   /** @return {!Element} */
   newContainer_() {
-    const ele = this.parent_.ownerDocument.createElement('div');
-    ele.setAttribute('role', 'dialog');
+    const ele = this.parent_.ownerDocument.createElement("div");
+    ele.setAttribute("role", "dialog");
     ele.style.cssText =
-        'color: rgb(var(--hterm-background-color));' +
-        'background-color: rgb(var(--hterm-foreground-color));' +
-        'border-radius: 12px;' +
+        "color: rgb(var(--hterm-background-color));" +
+        "background-color: rgb(var(--hterm-foreground-color));" +
+        "border-radius: 12px;" +
         'font: 500 var(--hterm-font-size) "Noto Sans", sans-serif;' +
-        'opacity: 0.75;' +
-        'padding: 0.923em 1.846em;' +
-        'position: absolute;' +
-        'user-select: none;' +
-        'transition: opacity 180ms ease-in;' +
-        'z-index: 10;';
+        "opacity: 0.75;" +
+        "padding: 0.923em 1.846em;" +
+        "position: absolute;" +
+        "user-select: none;" +
+        "transition: opacity 180ms ease-in;" +
+        "z-index: 10;";
 
     // Prevent the dialog from gaining focus.
-    ele.addEventListener('mousedown', function(e) {
+    ele.addEventListener("mousedown", function(e) {
       e.preventDefault();
       e.stopPropagation();
     }, true);
@@ -66,7 +66,7 @@ hterm.NotificationCenter = class {
    *         Pass null to never autohide.
    */
   show(msg, {timeout = 1500} = {}) {
-    const node = typeof msg === 'string' ? new Text(msg) : msg;
+    const node = typeof msg === "string" ? new Text(msg) : msg;
 
     // Hacky heuristic: if we're currently showing a notification w/out a
     // timeout, and the new one includes a timeout, leave the existing one
@@ -78,9 +78,9 @@ hterm.NotificationCenter = class {
     }
 
     // Remove all children first.
-    this.container_.textContent = '';
+    this.container_.textContent = "";
     this.container_.appendChild(node);
-    this.container_.style.opacity = '0.75';
+    this.container_.style.opacity = "0.75";
 
     // Display on the page if it isn't already.
     if (!this.container_.parentNode) {
@@ -105,7 +105,7 @@ hterm.NotificationCenter = class {
       return;
     }
     this.timeout_ = setTimeout(() => {
-      this.container_.style.opacity = '0';
+      this.container_.style.opacity = "0";
       this.timeout_ = setTimeout(() => this.hide(), this.fadeout_);
     }, timeout);
   }
@@ -124,6 +124,6 @@ hterm.NotificationCenter = class {
     this.container_.remove();
     // Remove all children in case there was sensitive content shown that we
     // don't want to leave laying around.
-    this.container_.textContent = '';
+    this.container_.textContent = "";
   }
 };

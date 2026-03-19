@@ -8,7 +8,7 @@
  * @suppress {checkTypes} module$__$wasi_js_bindings$js naming confusion.
  */
 
-import {Process} from '../../wasi-js-bindings/index.js';
+import {Process} from "../../wasi-js-bindings/index.js";
 
 /**
  * Background process w/wassh extensions.

@@ -7,7 +7,7 @@
  */
 
 import {ClientAckPacket, ClientDataPacket, RelayCorpv4WsStream,
-        ServerPacket} from './nassh_stream_relay_corpv4.js';
+        ServerPacket} from "./nassh_stream_relay_corpv4.js";
 
 /**
  * @extends {WebSocket}
@@ -35,7 +35,7 @@ class WebSocketMock {
 /**
  * Check parsing of "empty" packets.
  */
-it('ServerPacket empty', () => {
+it("ServerPacket empty", () => {
   // Big enough for the 16-bit tag.
   const buffer = new ArrayBuffer(2);
   const packet = new ServerPacket(buffer);
@@ -45,7 +45,7 @@ it('ServerPacket empty', () => {
 /**
  * Check parsing of unknown tags.
  */
-it('ServerPacket unknown', () => {
+it("ServerPacket unknown", () => {
   const u8 = new Uint8Array([
     // Tag.
     0x12, 0x34,
@@ -57,7 +57,7 @@ it('ServerPacket unknown', () => {
 /**
  * Check parsing of connect success commands.
  */
-it('ServerPacket connect success', () => {
+it("ServerPacket connect success", () => {
   const te = new TextEncoder();
   const u8 = new Uint8Array([
     // Tag.
@@ -65,17 +65,17 @@ it('ServerPacket connect success', () => {
     // Length.
     0x00, 0x00, 0x00, 0x09,
     // SID.
-    ...te.encode('abc_d-ef$'),
+    ...te.encode("abc_d-ef$"),
   ]);
   const packet = new ServerPacket(u8.buffer);
   assert.equal(1, packet.tag);
-  assert.equal('abc_d-ef$', packet.sid);
+  assert.equal("abc_d-ef$", packet.sid);
 });
 
 /**
  * Check parsing of reconnect success commands.
  */
-it('ServerPacket reconnect success', () => {
+it("ServerPacket reconnect success", () => {
   const u8 = new Uint8Array([
     // Tag.
     0x00, 0x02,
@@ -90,7 +90,7 @@ it('ServerPacket reconnect success', () => {
 /**
  * Check parsing of data commands.
  */
-it('ServerPacket data', () => {
+it("ServerPacket data", () => {
   const u8 = new Uint8Array([
     // Tag.
     0x00, 0x04,
@@ -110,7 +110,7 @@ it('ServerPacket data', () => {
 /**
  * Check parsing of ack commands.
  */
-it('ServerPacket ack', () => {
+it("ServerPacket ack", () => {
   const u8 = new Uint8Array([
     // Tag.
     0x00, 0x07,
@@ -125,7 +125,7 @@ it('ServerPacket ack', () => {
 /**
  * Check creating data packets.
  */
-it('ClientDataPacket', () => {
+it("ClientDataPacket", () => {
   const data = new Uint8Array([0xf0, 0xff, 0xfe, 0xa0, 0x00, 0x10, 0x01, 0x3f]);
   const packet = new ClientDataPacket(data);
   assert.equal(4, packet.tag);
@@ -141,7 +141,7 @@ it('ClientDataPacket', () => {
 /**
  * Check creating ack packets.
  */
-it('ClientAckPacket', () => {
+it("ClientAckPacket", () => {
   const packet = new ClientAckPacket(BigInt(0x123678));
   assert.equal(7, packet.tag);
   assert.equal(0x123678, packet.ack);
@@ -154,7 +154,7 @@ it('ClientAckPacket', () => {
 /**
  * Connect, send some data, disconnect.
  */
-it('RelayCorpv4WS basic', async () => {
+it("RelayCorpv4WS basic", async () => {
   // Initialize state.
   const stream = new RelayCorpv4WsStream();
   /** @this {RelayCorpv4WsStream} */
@@ -184,7 +184,7 @@ it('RelayCorpv4WS basic', async () => {
 
   // The connection is opened.
   stream.socket_.readyState = WebSocket.OPEN;
-  stream.onSocketOpen_(new Event('open'));
+  stream.onSocketOpen_(new Event("open"));
 
   // Wait for the open to finish now that it's "connected".
   await open;
@@ -193,16 +193,16 @@ it('RelayCorpv4WS basic', async () => {
   assert.equal(0, stream.writeCount_);
 
   // Handle CONNECT SUCCESS message from the server.
-  stream.onSocketData_(new MessageEvent('message', {
+  stream.onSocketData_(new MessageEvent("message", {
     data: new Uint8Array([
       0x00, 0x01, 0x00, 0x00, 0x00, 0x03, 0x53, 0x49, 0x44,
     ]).buffer,
   }));
-  assert.equal('SID', stream.sid_);
+  assert.equal("SID", stream.sid_);
   assert.equal(0, stream.readCount_);
 
   // Handle DATA message from the server.
-  stream.onSocketData_(new MessageEvent('message', {
+  stream.onSocketData_(new MessageEvent("message", {
     data: new Uint8Array([
       0x00, 0x04, 0x00, 0x00, 0x00, 0x03, 0xff, 0x00, 0x03,
     ]).buffer,
@@ -228,14 +228,14 @@ it('RelayCorpv4WS basic', async () => {
 
   // Close the socket.
   assert.isNotTrue(streamClosed);
-  stream.onSocketClose_(new CloseEvent('close', {code: 1006, reason: ''}));
+  stream.onSocketClose_(new CloseEvent("close", {code: 1006, reason: ""}));
   assert.isTrue(streamClosed);
 });
 
 /**
  * Receive onSocketError() before completing connect.
  */
-it('RelayCorpv4WS error in connect', async () => {
+it("RelayCorpv4WS error in connect", async () => {
   // Initialize state.
   const stream = new RelayCorpv4WsStream();
   /** @this {RelayCorpv4WsStream} */
@@ -246,20 +246,20 @@ it('RelayCorpv4WS error in connect', async () => {
 
   // Start the connection, then get server error.
   await stream.open({}).catch((e) => {
-    assert.equal('server sent an error', e);
+    assert.equal("server sent an error", e);
   });
 });
 
 /**
  * Reconnect on dirty close.
  */
-it('RelayCorpv4WS reconnect on dirty close', async () => {
+it("RelayCorpv4WS reconnect on dirty close", async () => {
   // Initialize state.
   const stream = new RelayCorpv4WsStream();
   /** @this {RelayCorpv4WsStream} */
   stream.connect_ = function() {
     this.socket_ = new WebSocketMock();
-    this.onSocketOpen_(new Event('open'));
+    this.onSocketOpen_(new Event("open"));
   };
   let closeReason;
   stream.close_ = (reason) => {
@@ -276,10 +276,10 @@ it('RelayCorpv4WS reconnect on dirty close', async () => {
 
   // Clean close - closes with no reconnect.
   const e = /** @type {!CloseEvent} */(
-      {wasClean: true, code: 'foo', reason: 'bar'});
+      {wasClean: true, code: "foo", reason: "bar"});
   stream.onSocketClose_(e);
   assert.isFalse(reconnectCalled);
-  assert.equal('server closed socket: [foo] bar', closeReason);
+  assert.equal("server closed socket: [foo] bar", closeReason);
 
   // Dirty close - reconnects.
   e.wasClean = false;

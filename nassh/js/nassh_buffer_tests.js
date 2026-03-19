@@ -6,22 +6,22 @@
  * @fileoverview Common buffer API tests.
  */
 
-import {newBuffer, setDefaultBackend} from './nassh_buffer.js';
-import {ScatGatBuffer} from './nassh_buffer_scatgat.js';
+import {newBuffer, setDefaultBackend} from "./nassh_buffer.js";
+import {ScatGatBuffer} from "./nassh_buffer_scatgat.js";
 
 /**
  * Check creating data packets.
  */
-it('new', () => {
+it("new", () => {
   // Default is scatgat.
   let ret = newBuffer();
   assert.instanceOf(ret, ScatGatBuffer);
 
   // Bad config still works.
-  setDefaultBackend('foooooo');
+  setDefaultBackend("foooooo");
   ret = newBuffer();
   assert.instanceOf(ret, ScatGatBuffer);
 
   // Restore good state.
-  setDefaultBackend('scatgat');
+  setDefaultBackend("scatgat");
 });

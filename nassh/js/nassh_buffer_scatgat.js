@@ -6,7 +6,7 @@
  * @fileoverview Scatter/gather buffer implementation.
  */
 
-import {BufferInterface} from './nassh_buffer_interface.js';
+import {BufferInterface} from "./nassh_buffer_interface.js";
 
 /**
  * A buffer using the scatter/gather pattern.

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // NB: This file is not loaded as a module because it modifies global scope.
-'use strict';
+"use strict";
 
 /**
  * @fileoverview Stub Chrome APIs for tests.
@@ -39,8 +39,8 @@ chrome.fileSystemProvider = {
 
   /** @type {!chrome.fileSystemProvider.ProviderError} */
   ProviderError: {
-    FAILED: 'FAILED',
-    INVALID_OPERATION: 'INVALID_OPERATION',
-    NOT_FOUND: 'NOT_FOUND',
+    FAILED: "FAILED",
+    INVALID_OPERATION: "INVALID_OPERATION",
+    NOT_FOUND: "NOT_FOUND",
   },
 };

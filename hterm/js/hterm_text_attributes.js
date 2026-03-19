@@ -7,11 +7,11 @@
  * @suppress {moduleLoad}
  */
 
-import {punycode} from './deps_punycode.rollup.js';
+import {punycode} from "./deps_punycode.rollup.js";
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Constructor for TextAttribute objects.
@@ -50,9 +50,9 @@ hterm.TextAttributes = function(document) {
   this.underlineColor = this.DEFAULT_COLOR;
 
   /** @const */
-  this.defaultForeground = 'rgb(var(--hterm-foreground-color))';
+  this.defaultForeground = "rgb(var(--hterm-foreground-color))";
   /** @const */
-  this.defaultBackground = 'rgb(var(--hterm-background-color))';
+  this.defaultBackground = "rgb(var(--hterm-background-color))";
 
   // Any attributes added here that do not default to falsey (e.g. undefined or
   // null) require a bit more care.  createContainer has to always attach the
@@ -101,12 +101,12 @@ hterm.TextAttributes.prototype.enableBoldAsBright = true;
 /**
  * A sentinel constant meaning "whatever the default color is in this context".
  */
-hterm.TextAttributes.prototype.DEFAULT_COLOR = Symbol('DEFAULT_COLOR');
+hterm.TextAttributes.prototype.DEFAULT_COLOR = Symbol("DEFAULT_COLOR");
 
 /**
  * A constant string used to specify that source color is context default.
  */
-hterm.TextAttributes.prototype.SRC_DEFAULT = Symbol('SRC_DEFAULT');
+hterm.TextAttributes.prototype.SRC_DEFAULT = Symbol("SRC_DEFAULT");
 
 /**
  * The document object which should own the DOM nodes created by this instance.
@@ -197,7 +197,7 @@ hterm.TextAttributes.prototype.isDefault = function() {
  * @return {!Node} An HTML span or text nodes styled to match the current
  *     attributes.
  */
-hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
+hterm.TextAttributes.prototype.createContainer = function(textContent = "") {
   if (this.isDefault()) {
     // Only attach attributes where we need an explicit default for the
     // matchContainer logic below.
@@ -206,7 +206,7 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
     return node;
   }
 
-  const span = this.document_.createElement('span');
+  const span = this.document_.createElement("span");
   const style = span.style;
   const classes = [];
 
@@ -219,11 +219,11 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
     // Make sure the span fills the line when changing the background color.
     // Otherwise, if the line happens to be taller than this glyph, we won't
     // fill the color completely leading to visual gaps.
-    style.display = 'inline-block';
+    style.display = "inline-block";
   }
 
   if (this.enableBold && this.bold) {
-    style.fontWeight = 'bold';
+    style.fontWeight = "bold";
   }
 
   if (this.faint) {
@@ -231,18 +231,18 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
   }
 
   if (this.italic) {
-    style.fontStyle = 'italic';
+    style.fontStyle = "italic";
   }
 
   if (this.blink) {
-    classes.push('blink-node');
+    classes.push("blink-node");
     span.blinkNode = true;
   }
 
-  let textDecorationLine = '';
+  let textDecorationLine = "";
   span.underline = this.underline;
-  if (typeof this.underline === 'string') {
-    textDecorationLine += ' underline';
+  if (typeof this.underline === "string") {
+    textDecorationLine += " underline";
     style.textDecorationStyle = this.underline;
   }
   if (this.underlineColor != this.DEFAULT_COLOR) {
@@ -250,7 +250,7 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
     style.textDecorationColor = /** @type {string} */ (this.underlineColor);
   }
   if (this.strikethrough) {
-    textDecorationLine += ' line-through';
+    textDecorationLine += " line-through";
     span.strikethrough = true;
   }
   if (textDecorationLine) {
@@ -258,14 +258,14 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
   }
 
   if (this.wcNode) {
-    classes.push('wc-node');
+    classes.push("wc-node");
     span.wcNode = true;
   }
   span.asciiNode = this.asciiNode;
 
   if (this.tileData != null) {
-    classes.push('tile');
-    classes.push('tile_' + this.tileData);
+    classes.push("tile");
+    classes.push("tile_" + this.tileData);
     span.tileNode = true;
   }
 
@@ -274,7 +274,7 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
   }
 
   if (this.uri) {
-    classes.push('uri-node');
+    classes.push("uri-node");
     span.uriId = this.uriId;
     span.title = this.uri;
     try {
@@ -287,11 +287,11 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
     } catch (e) {
       // If the URL doesn't parse, then it won't open, so don't need a label.
     }
-    span.addEventListener('click', hterm.openUrl.bind(this, this.uri));
+    span.addEventListener("click", hterm.openUrl.bind(this, this.uri));
   }
 
   if (classes.length) {
-    span.className = classes.join(' ');
+    span.className = classes.join(" ");
   }
 
   return span;
@@ -311,7 +311,7 @@ hterm.TextAttributes.prototype.createContainer = function(textContent = '') {
  *     this attributes instance.
  */
 hterm.TextAttributes.prototype.matchesContainer = function(obj) {
-  if (typeof obj == 'string' || obj.nodeType == Node.TEXT_NODE) {
+  if (typeof obj == "string" || obj.nodeType == Node.TEXT_NODE) {
     return this.isDefault();
   }
 
@@ -327,11 +327,11 @@ hterm.TextAttributes.prototype.matchesContainer = function(obj) {
           !(this.tileData != null || obj.tileNode) &&
           this.uriId == obj.uriId &&
           (this.foreground == this.DEFAULT_COLOR &&
-           style.color == '') &&
+           style.color == "") &&
           (this.background == this.DEFAULT_COLOR &&
-           style.backgroundColor == '') &&
+           style.backgroundColor == "") &&
           (this.underlineColor == this.DEFAULT_COLOR &&
-           style.textDecorationColor == '') &&
+           style.textDecorationColor == "") &&
           (this.enableBold && this.bold) == !!style.fontWeight &&
           this.blink == !!obj.blinkNode &&
           this.italic == !!style.fontStyle &&
@@ -365,7 +365,7 @@ hterm.TextAttributes.prototype.syncColors = function() {
   // https://github.com/google/closure-compiler/pull/3472.
 
   if (this.enableBoldAsBright && this.bold) {
-    if (typeof this.foregroundSource == 'number' &&
+    if (typeof this.foregroundSource == "number" &&
         Number.isInteger(this.foregroundSource)) {
       this.foregroundSource = getBrightIndex(this.foregroundSource);
     }
@@ -378,7 +378,7 @@ hterm.TextAttributes.prototype.syncColors = function() {
   const colorFromSource = (source) => {
     if (source == this.SRC_DEFAULT) {
       return this.DEFAULT_COLOR;
-    } else if (typeof source == 'number' && Number.isInteger(source)) {
+    } else if (typeof source == "number" && Number.isInteger(source)) {
       return `rgb(var(--hterm-color-${source}))`;
     } else {
       return source.toString();
@@ -389,8 +389,8 @@ hterm.TextAttributes.prototype.syncColors = function() {
 
   if (this.faint) {
     if (this.foreground == this.DEFAULT_COLOR) {
-      this.foreground = 'rgba(var(--hterm-foreground-color), 0.67)';
-    } else if (typeof this.foregroundSource == 'number' &&
+      this.foreground = "rgba(var(--hterm-foreground-color), 0.67)";
+    } else if (typeof this.foregroundSource == "number" &&
         Number.isInteger(this.foregroundSource)) {
       this.foreground =
           `rgba(var(--hterm-color-${this.foregroundSource}), 0.67)`;
@@ -428,7 +428,7 @@ hterm.TextAttributes.prototype.syncColors = function() {
  * @return {boolean} True if the containers have the same style.
  */
 hterm.TextAttributes.containersMatch = function(obj1, obj2) {
-  if (typeof obj1 == 'string') {
+  if (typeof obj1 == "string") {
     return hterm.TextAttributes.containerIsDefault(obj2);
   }
 
@@ -463,7 +463,7 @@ hterm.TextAttributes.containersMatch = function(obj1, obj2) {
  * @return {boolean} True if the object is unstyled.
  */
 hterm.TextAttributes.containerIsDefault = function(obj) {
-  return typeof obj == 'string' || obj.nodeType == Node.TEXT_NODE;
+  return typeof obj == "string" || obj.nodeType == Node.TEXT_NODE;
 };
 
 /**
@@ -530,7 +530,7 @@ hterm.TextAttributes.nodeSubstring = function(node, start, end) {
  *     that contain only ASCII content, its asciiNode property is set to true.
  */
 hterm.TextAttributes.splitWidecharString = function(str) {
-  const asciiRegex = new RegExp('^[\u0020-\u007f]*$');
+  const asciiRegex = new RegExp("^[\u0020-\u007f]*$");
 
   // Optimize for printable ASCII.  This should only take ~1ms/MB, but cuts out
   // 40ms+/MB when true.  If we're dealing with UTF8, then it's already slow.
@@ -547,7 +547,7 @@ hterm.TextAttributes.splitWidecharString = function(str) {
   // strings.  We want to keep narrow and wide characters separate, and the
   // fewer overall segments we have, the faster we'll be as processing each
   // segment in the terminal print code is a bit slow.
-  const segmenter = new Intl.Segmenter(undefined, {type: 'grapheme'});
+  const segmenter = new Intl.Segmenter(undefined, {type: "grapheme"});
   const it = segmenter.segment(str);
 
   const rv = [];

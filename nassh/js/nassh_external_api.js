@@ -6,15 +6,15 @@
  * @fileoverview A remote API for external apps/extensions.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {getSyncStorage} from './nassh.js';
-import {exportPreferences, importPreferences} from './nassh_background.js';
-import {CommandInstance} from './nassh_command_instance.js';
-import {Client as sftpClient} from './nassh_sftp_client.js';
-import {SftpFsp} from './nassh_sftp_fsp.js';
+import {getSyncStorage} from "./nassh.js";
+import {exportPreferences, importPreferences} from "./nassh_background.js";
+import {CommandInstance} from "./nassh_command_instance.js";
+import {Client as sftpClient} from "./nassh_sftp_client.js";
+import {SftpFsp} from "./nassh_sftp_fsp.js";
 
 /**
  * Commands available.
@@ -25,14 +25,14 @@ const COMMANDS = new Map();
  * Our own extension ids.
  */
 const selfExtIds = new Set([
-  'pnhechapfaindjhompbnflcldabbghjo',  // Secure Shell App (stable).
-  'okddffdblfhhnmhodogpojmfkjmhinfp',  // Secure Shell App (dev).
-  'iodihamcpbpeioajjeobimgagajmlibd',  // Secure Shell Extension (stable).
-  'algkcnfjnajfhgimadimbjhmpaeohhln',  // Secure Shell Extension (dev).
-  'nkoccljplnhpfnfiajclkommnmllphnl',  // Crosh.
+  "pnhechapfaindjhompbnflcldabbghjo",  // Secure Shell App (stable).
+  "okddffdblfhhnmhodogpojmfkjmhinfp",  // Secure Shell App (dev).
+  "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension (stable).
+  "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev).
+  "nkoccljplnhpfnfiajclkommnmllphnl",  // Crosh.
 ]);
 
-COMMANDS.set('hello',
+COMMANDS.set("hello",
 /**
  * Probe the extension.
  *
@@ -43,7 +43,7 @@ COMMANDS.set('hello',
 function(request, sender, sendResponse) {
   sendResponse({
     error: false,
-    message: 'hello',
+    message: "hello",
     internal: sender.internal,
     id: sender.id,
   });
@@ -58,7 +58,7 @@ export class MountInfo {
    */
   constructor(client = undefined) {
     /** @type {string} */
-    this.basePath = '';
+    this.basePath = "";
     /** @type {number} */
     this.readChunkSize = 0;
     /** @type {number} */
@@ -72,7 +72,7 @@ export class MountInfo {
     /** @type {number} */
     this.requestId = 0;
     /** @type {string} */
-    this.buffer = '';
+    this.buffer = "";
     /** @type {!Array<string>} */
     this.pendingRequests = [];
     /** @type {!Array<string>} */
@@ -110,33 +110,33 @@ export class MountInfo {
    */
   static toClient(info, client) {
     if (info.basePath !== undefined) {
-      if (typeof info.basePath !== 'string') {
-        throw new Error('basePath must be a string');
+      if (typeof info.basePath !== "string") {
+        throw new Error("basePath must be a string");
       }
       // The path has to always have a trailing slash.
-      if (info.basePath.length && info.basePath[-1] != '/') {
-        info.basePath += '/';
+      if (info.basePath.length && info.basePath[-1] != "/") {
+        info.basePath += "/";
       }
       client.basePath_ = info.basePath;
     }
 
     if (client.readChunkSize !== undefined) {
-      if (typeof client.readChunkSize !== 'number') {
-        throw new Error('readChunkSize must be a number');
+      if (typeof client.readChunkSize !== "number") {
+        throw new Error("readChunkSize must be a number");
       }
       client.readChunkSize = info.readChunkSize;
     }
 
     if (client.writeChunkSize !== undefined) {
-      if (typeof client.writeChunkSize !== 'number') {
-        throw new Error('writeChunkSize must be a number');
+      if (typeof client.writeChunkSize !== "number") {
+        throw new Error("writeChunkSize must be a number");
       }
       client.writeChunkSize = info.writeChunkSize;
     }
   }
 }
 
-COMMANDS.set('getMountInfo',
+COMMANDS.set("getMountInfo",
 /**
  * Get information about an existing mount.
  *
@@ -147,7 +147,7 @@ COMMANDS.set('getMountInfo',
 function(request, sender, sendResponse) {
   if (!sender.internal && !selfExtIds.has(sender.id)) {
     sendResponse(
-        {error: true, message: 'getMountInfo: External access not allowed'});
+        {error: true, message: "getMountInfo: External access not allowed"});
     return;
   }
 
@@ -165,7 +165,7 @@ function(request, sender, sendResponse) {
   });
 });
 
-COMMANDS.set('setMountInfo',
+COMMANDS.set("setMountInfo",
 /**
  * Set information in an existing mount.
  *
@@ -177,7 +177,7 @@ COMMANDS.set('setMountInfo',
 function(request, sender, sendResponse) {
   if (!sender.internal && !selfExtIds.has(sender.id)) {
     sendResponse(
-        {error: true, message: 'setMountInfo: External access not allowed'});
+        {error: true, message: "setMountInfo: External access not allowed"});
     return;
   }
 
@@ -211,24 +211,24 @@ export let NewWindowSettings;
  */
 function newWindow_(response, request, sender, sendResponse) {
   const width = request.width ?? 735;
-  if (typeof width !== 'number') {
+  if (typeof width !== "number") {
     sendResponse({error: true, message: `width: invalid number: ${width}`});
     return;
   }
 
   const height = request.height ?? 440;
-  if (typeof height !== 'number') {
+  if (typeof height !== "number") {
     sendResponse({error: true, message: `height: invalid number: ${height}`});
     return;
   }
 
-  lib.f.openWindow(request.url, '',
-                   'chrome=no,close=yes,resize=yes,scrollbars=yes,' +
+  lib.f.openWindow(request.url, "",
+                   "chrome=no,close=yes,resize=yes,scrollbars=yes," +
                    `minimizable=yes,width=${width},height=${height}`);
   sendResponse(response);
 }
 
-COMMANDS.set('crosh',
+COMMANDS.set("crosh",
 /**
  * Opens a new crosh window.
  *
@@ -242,15 +242,15 @@ function(request, sender, sendResponse) {
   }
 
   request = /** @type {!NewWindowSettings} */ (Object.assign({
-    url: lib.f.getURL('/html/crosh.html'),
+    url: lib.f.getURL("/html/crosh.html"),
   }, request));
 
   newWindow_(
-      {error: false, message: 'openCrosh'},
+      {error: false, message: "openCrosh"},
       request, sender, sendResponse);
 });
 
-COMMANDS.set('nassh',
+COMMANDS.set("nassh",
 /**
  * Opens a new nassh window.
  *
@@ -264,15 +264,15 @@ function(request, sender, sendResponse) {
   }
 
   request = /** @type {!NewWindowSettings} */ (Object.assign({
-    url: lib.f.getURL('/html/nassh_connect_dialog.html'),
+    url: lib.f.getURL("/html/nassh_connect_dialog.html"),
   }, request));
 
   newWindow_(
-      {error: false, message: 'openNassh'},
+      {error: false, message: "openNassh"},
       request, sender, sendResponse);
 });
 
-COMMANDS.set('prefsImport',
+COMMANDS.set("prefsImport",
 /**
  * Import new preferences.
  *
@@ -283,23 +283,23 @@ COMMANDS.set('prefsImport',
 async function(request, sender, sendResponse) {
   if (!sender.internal && !selfExtIds.has(sender.id)) {
     sendResponse(
-        {error: true, message: 'prefsImport: External access not allowed'});
+        {error: true, message: "prefsImport: External access not allowed"});
     return;
   }
 
   let prefs;
   if (request.asJson) {
-    lib.assert(typeof request.prefs == 'string');
+    lib.assert(typeof request.prefs == "string");
     prefs = /** @type {!Object} */ (JSON.parse(request.prefs));
   } else {
-    lib.assert(typeof request.prefs == 'object');
+    lib.assert(typeof request.prefs == "object");
     prefs = request.prefs;
   }
   await importPreferences(prefs);
-  sendResponse({error: false, message: 'prefsImport'});
+  sendResponse({error: false, message: "prefsImport"});
 });
 
-COMMANDS.set('prefsExport',
+COMMANDS.set("prefsExport",
 /**
  * Export existing preferences.
  *
@@ -310,7 +310,7 @@ COMMANDS.set('prefsExport',
 async function(request, sender, sendResponse) {
   if (!sender.internal && !selfExtIds.has(sender.id)) {
     sendResponse(
-        {error: true, message: 'prefsExport: External access not allowed'});
+        {error: true, message: "prefsExport: External access not allowed"});
     return;
   }
 
@@ -318,10 +318,10 @@ async function(request, sender, sendResponse) {
   if (request.asJson) {
     prefs = JSON.stringify(prefs);
   }
-  sendResponse({error: false, message: 'prefsExport', prefs: prefs});
+  sendResponse({error: false, message: "prefsExport", prefs: prefs});
 });
 
-COMMANDS.set('openProtoReg',
+COMMANDS.set("openProtoReg",
 /**
  * Show the protocol registration dialog.
  *
@@ -330,9 +330,9 @@ COMMANDS.set('openProtoReg',
  * @param {function(!Object=)} sendResponse Called to send response.
  */
 function(request, sender, sendResponse) {
-  lib.f.openWindow(lib.f.getURL('/html/nassh_preferences_editor.html#handlers'),
-                   '_blank');
-  sendResponse({error: false, message: 'openProtoReg'});
+  lib.f.openWindow(lib.f.getURL("/html/nassh_preferences_editor.html#handlers"),
+                   "_blank");
+  sendResponse({error: false, message: "openProtoReg"});
 });
 
 /** @typedef {{command:string}} */
@@ -362,7 +362,7 @@ function dispatchMessage_(internal, request, sender, sendResponse) {
   sender.internal = internal;
 
   // Execute specified command.
-  if (typeof request != 'object') {
+  if (typeof request != "object") {
     sendResponse({error: true, message: `invalid request: ${request}`});
     return false;
   } else if (!COMMANDS.has(request.command)) {
@@ -423,7 +423,7 @@ function onMessage_(request, sender, sendResponse) {
  */
 const CONNECTIONS = new Map();
 
-CONNECTIONS.set('hello',
+CONNECTIONS.set("hello",
 /**
  * Probe the extension.
  *
@@ -446,14 +446,14 @@ function(port) {
   // Process each incoming message.
   port.onMessage.addListener((msg) => {
     switch (msg) {
-      case 'hello':
-        post({...responseBase, message: 'hello indeed'});
+      case "hello":
+        post({...responseBase, message: "hello indeed"});
         break;
-      case 'hi':
-        post({...responseBase, message: 'おはよう'});
+      case "hi":
+        post({...responseBase, message: "おはよう"});
         break;
-      case 'bye':
-        post({...responseBase, message: 'tschüß!'});
+      case "bye":
+        post({...responseBase, message: "tschüß!"});
         port.disconnect();
         break;
       default:
@@ -465,7 +465,7 @@ function(port) {
   });
 });
 
-CONNECTIONS.set('mount',
+CONNECTIONS.set("mount",
 /**
  * Performs interactive mount.
  *
@@ -485,7 +485,7 @@ function(port) {
   // Not sure we want to open this up to anyone else (yet?).
   const {sender} = port;
   if (!sender.internal && !selfExtIds.has(sender.id)) {
-    post({error: true, message: 'mount: External access not allowed'});
+    post({error: true, message: "mount: External access not allowed"});
     port.disconnect();
     return;
   }
@@ -495,13 +495,13 @@ function(port) {
   const stubTerminal = /** @type {!hterm.Terminal} */ ({
     interpret: (message) => {
       // SSH wants to send something to the user (terminal).
-      post({error: false, command: 'write', message});
+      post({error: false, command: "write", message});
     },
     clearHome: () => {},
     setProfile: () => {},
     screenSize: {width: 0, height: 0},
     showOverlay: (message, timeout) => {
-      post({error: false, command: 'overlay', message, timeout});
+      post({error: false, command: "overlay", message, timeout});
     },
   });
   const pipeIo = new hterm.Terminal.IO(stubTerminal);
@@ -514,23 +514,23 @@ function(port) {
   port.onMessage.addListener((msg) => {
     const {command} = msg;
     switch (command) {
-      case 'connect': {
+      case "connect": {
         // UI wants us to start a connection.
         const {argv, connectOptions} = msg;
         argv.io = pipeIo;
         argv.fsp = this.fsp_;
         argv.syncStorage = getSyncStorage();
         argv.onExit = (status) => {
-          post({error: false, command: 'exit', status});
+          post({error: false, command: "exit", status});
           port.disconnect();
         };
         argv.sftpStartupCallback = (success, message) => {
-          post({error: !success, command: 'done', message});
+          post({error: !success, command: "done", message});
           port.disconnect();
         };
         instance = new CommandInstance(argv);
         instance.secureInput = (message, buf_len, echo) => {
-          post({error: false, command: 'input', message, echo, buf_len});
+          post({error: false, command: "input", message, echo, buf_len});
           return new Promise((resolve) => {
             inputResolve = resolve;
           });
@@ -542,10 +542,10 @@ function(port) {
         break;
       }
 
-      case 'write': {
+      case "write": {
         // UI (probably the user) wants to send something to ssh.
         if (instance === undefined) {
-          post({error: true, message: 'not connected'});
+          post({error: true, message: "not connected"});
           port.disconnect();
           return;
         }
@@ -553,7 +553,7 @@ function(port) {
         break;
       }
 
-      case 'input': {
+      case "input": {
         inputResolve(msg.data);
         inputResolve = null;
         break;
@@ -596,7 +596,7 @@ function dispatchConnect_(internal, port) {
         message: `unsupported connection '${name}'`,
       });
     } catch (e) {
-      console.log('API: ignoring error during early disconnect', e);
+      console.log("API: ignoring error during early disconnect", e);
     }
     port.disconnect();
     return false;
@@ -627,7 +627,7 @@ function dispatchConnect_(internal, port) {
     try {
       port.postMessage({error: true, message: e.message, stack: e.stack});
     } catch (e) {
-      console.log('API: ignoring error during late disconnect', e);
+      console.log("API: ignoring error during late disconnect", e);
     }
     port.disconnect();
     return false;

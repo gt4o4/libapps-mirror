@@ -7,10 +7,10 @@
  * @suppress {moduleLoad} closure compiler can't handle node_modules/.
  */
 
-import {assert, config} from '../../node_modules/chai/chai.js';
+import {assert, config} from "../../node_modules/chai/chai.js";
 
 // Setup the mocha framework.
-mocha.setup('bdd');
+mocha.setup("bdd");
 mocha.checkLeaks();
 
 // Make failure output more useful.
@@ -19,7 +19,7 @@ config.showDiff = true;
 config.truncateThreshold = 0;
 
 // Add a global shortcut to the assert API.
-globalThis['assert'] = assert;
+globalThis["assert"] = assert;
 
 // Catch any random errors before the test runner runs.
 let earlyError = null;
@@ -38,12 +38,12 @@ window.onload = async function() {
   mocha.run();
 };
 
-describe('runner.js', () => {
+describe("runner.js", () => {
 
   /** Make sure no general framework errors happened (e.g. missing include). */
-  it('uncaught framework errors', () => {
+  it("uncaught framework errors", () => {
     if (earlyError !== null) {
-      assert.fail(`uncaught exception detected:\n${earlyError.join('\n')}`);
+      assert.fail(`uncaught exception detected:\n${earlyError.join("\n")}`);
     }
   });
 

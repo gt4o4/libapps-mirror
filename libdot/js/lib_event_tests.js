@@ -7,15 +7,15 @@
  * @suppress {missingProperties} https://github.com/google/closure-compiler/issues/946
  */
 
-import {lib} from '../index.js';
+import {lib} from "../index.js";
 
-it('complete', () => {
+it("complete", () => {
   const event = new lib.Event();
 
   // Post events w/no listeners.
   event.emit();
   event.emit(1);
-  event.emit('a', 'b');
+  event.emit("a", "b");
 
   // Add listener.
   const events1 = [];
@@ -25,8 +25,8 @@ it('complete', () => {
   // Post more events.
   event.emit();
   event.emit(2);
-  event.emit('c', 'd');
-  assert.deepStrictEqual(events1, [[], [2], ['c', 'd']]);
+  event.emit("c", "d");
+  assert.deepStrictEqual(events1, [[], [2], ["c", "d"]]);
 
   // Add another listener.
   const events2 = [];
@@ -36,7 +36,7 @@ it('complete', () => {
   // Post more events.
   event.emit(null);
   event.emit([1, 2]);
-  assert.deepStrictEqual(events1, [[], [2], ['c', 'd'], [null], [[1, 2]]]);
+  assert.deepStrictEqual(events1, [[], [2], ["c", "d"], [null], [[1, 2]]]);
   assert.deepStrictEqual(events2, [[null], [[1, 2]]]);
 
   // Remove the first listener.
@@ -44,22 +44,22 @@ it('complete', () => {
 
   // Post more events.
   event.emit(undefined);
-  assert.deepStrictEqual(events1, [[], [2], ['c', 'd'], [null], [[1, 2]]]);
+  assert.deepStrictEqual(events1, [[], [2], ["c", "d"], [null], [[1, 2]]]);
   assert.deepStrictEqual(events2, [[null], [[1, 2]], [undefined]]);
 
   // Remove the second listener.
   event.removeListener(callback2);
 
   // Post more events.
-  event.emit('final');
-  assert.deepStrictEqual(events1, [[], [2], ['c', 'd'], [null], [[1, 2]]]);
+  event.emit("final");
+  assert.deepStrictEqual(events1, [[], [2], ["c", "d"], [null], [[1, 2]]]);
   assert.deepStrictEqual(events2, [[null], [[1, 2]], [undefined]]);
 });
 
 /**
  * Verify unknown listeners are ignored when removing.
  */
-it('remove unknown listeners', () => {
+it("remove unknown listeners", () => {
   const event = new lib.Event();
   assert.deepEqual(event.observers, []);
   event.removeListener(() => {});

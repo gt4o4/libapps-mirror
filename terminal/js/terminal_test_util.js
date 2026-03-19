@@ -6,7 +6,7 @@
  * @fileoverview Various test helpers meant to be reused by other modules.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
 /**
  * Listens for the next change to the specified preference.

@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
 import {
   disableTabDiscarding, getSyncStorage, isCrOSSystemApp, loadWebFonts,
   openOptionsPage, osc8Link, sendFeedback, setupForWebApp, sgrText,
-} from './nassh.js';
+} from "./nassh.js";
 
 /**
  * CSP means that we can't kick off the initialization from the html file,
  * so we do it like this instead.
  */
-globalThis.addEventListener('DOMContentLoaded', async (event) => {
+globalThis.addEventListener("DOMContentLoaded", async (event) => {
   // If we're being opened by a link from another page, clear the opener setting
   // so we can't reach back into them.  They should have used noopener, but help
   // cover if they don't.
@@ -28,20 +28,20 @@ globalThis.addEventListener('DOMContentLoaded', async (event) => {
   const params = new URLSearchParams(globalThis.location.search);
 
   // Make it easy to re-open as a window.
-  const openas = params.get('openas');
+  const openas = params.get("openas");
   switch (openas) {
-    case 'window': {
+    case "window": {
       // Delete the 'openas' string so we don't get into a loop.  We want to
       // preserve the rest of the query string when opening the window.
-      params.delete('openas');
+      params.delete("openas");
       const url = new URL(globalThis.location.toString());
       url.search = params.toString();
       Crosh.openNewWindow_(url.href).then(() => globalThis.close());
       return;
     }
 
-    case 'fullscreen':
-    case 'maximized':
+    case "fullscreen":
+    case "maximized":
       chrome.windows.getCurrent({populate: true}, (win) => {
         if (win.tabs.length > 1) {
           // If the current window has multiple tabs, create a new window and
@@ -112,7 +112,7 @@ Crosh.msg = function(name, args) {
  */
 Crosh.init = function() {
   const params = new URLSearchParams(globalThis.location.search);
-  const profileId = params.get('profile');
+  const profileId = params.get("profile");
   const storage = getSyncStorage();
   const terminal = new hterm.Terminal({profileId, storage});
   // Use legacy pasting when running as an extension to avoid prompt.
@@ -123,13 +123,13 @@ Crosh.init = function() {
   // If we want to execute something other than the default crosh.
   // Since Terminal has shipped and supports Crostini now, we don't need to
   // support anything else, so hardcode crosh.
-  const commandName = 'crosh';
+  const commandName = "crosh";
   globalThis.document.title = commandName;
 
-  terminal.decorate(lib.notNull(document.querySelector('#terminal')));
+  terminal.decorate(lib.notNull(document.querySelector("#terminal")));
   terminal.installKeyboard();
   const runCrosh = function() {
-    terminal.keyboard.bindings.addBinding('Ctrl+Shift+P', function() {
+    terminal.keyboard.bindings.addBinding("Ctrl+Shift+P", function() {
       openOptionsPage();
       return hterm.Keyboard.KeyActions.CANCEL;
     });
@@ -140,7 +140,7 @@ Crosh.init = function() {
     const crosh = new Crosh({
       commandName,
       terminal,
-      args: params.getAll('args[]'),
+      args: params.getAll("args[]"),
     });
     crosh.run();
   };
@@ -154,7 +154,7 @@ Crosh.init = function() {
       return;
     }
 
-    const prefKey = 'settings.accessibility';
+    const prefKey = "settings.accessibility";
     const prefChanged = (prefs) => {
       if (prefs.hasOwnProperty(prefKey)) {
         terminal.setAccessibilityEnabled(prefs[prefKey]);
@@ -168,22 +168,22 @@ Crosh.init = function() {
   };
 
   terminal.contextMenu.setItems([
-    {name: Crosh.msg('TERMINAL_CLEAR_MENU_LABEL'),
+    {name: Crosh.msg("TERMINAL_CLEAR_MENU_LABEL"),
      action: function() { terminal.wipeContents(); }},
-    {name: Crosh.msg('TERMINAL_RESET_MENU_LABEL'),
+    {name: Crosh.msg("TERMINAL_RESET_MENU_LABEL"),
      action: function() { terminal.reset(); }},
-    {name: Crosh.msg('NEW_WINDOW_MENU_LABEL'),
+    {name: Crosh.msg("NEW_WINDOW_MENU_LABEL"),
      action: function() {
        // Preserve the full URI in case it has args like for vmshell.
        Crosh.openNewWindow_(globalThis.location.href);
      }},
-    {name: Crosh.msg('FAQ_MENU_LABEL'),
+    {name: Crosh.msg("FAQ_MENU_LABEL"),
      action: function() {
-       lib.f.openWindow('https://hterm.org/x/ssh/faq', '_blank');
+       lib.f.openWindow("https://hterm.org/x/ssh/faq", "_blank");
      }},
-    {name: Crosh.msg('HTERM_OPTIONS_BUTTON_LABEL'),
+    {name: Crosh.msg("HTERM_OPTIONS_BUTTON_LABEL"),
      action: function() { openOptionsPage(); }},
-    {name: Crosh.msg('SEND_FEEDBACK_LABEL'),
+    {name: Crosh.msg("SEND_FEEDBACK_LABEL"),
      action: sendFeedback},
   ]);
 
@@ -213,7 +213,7 @@ Crosh.openNewWindow_ = function(url) {
       width: globalThis.innerWidth,
       height: globalThis.innerHeight,
       focused: true,
-      type: 'popup',
+      type: "popup",
     }, resolve);
   });
 };
@@ -232,7 +232,7 @@ Crosh.prototype.onProcessOutput_ = function(id, type, data) {
     return;
   }
 
-  if (type == 'exit') {
+  if (type == "exit") {
     this.exit(0);
     return;
   }
@@ -252,21 +252,21 @@ Crosh.prototype.onProcessOutput_ = function(id, type, data) {
 Crosh.prototype.run = function() {
   // We're not currently a window, so show a message to the user with a link to
   // open as a new window.
-  if (hterm.windowType !== 'app' &&
-      hterm.windowType !== 'popup' &&
+  if (hterm.windowType !== "app" &&
+      hterm.windowType !== "popup" &&
       !isCrOSSystemApp()) {
     const params = new URLSearchParams(globalThis.location.search);
-    params.set('openas', 'window');
+    params.set("openas", "window");
     const url = new URL(globalThis.location.toString());
     url.search = params.toString();
     this.io.println(Crosh.msg(
-        'OPEN_AS_WINDOW_TIP',
-        [sgrText(osc8Link(url.href, '[crosh]'), {bold: true})]));
-    this.io.println('');
+        "OPEN_AS_WINDOW_TIP",
+        [sgrText(osc8Link(url.href, "[crosh]"), {bold: true})]));
+    this.io.println("");
   }
 
   if (!chrome.terminalPrivate) {
-    this.io.println(Crosh.msg('COMMAND_NOT_SUPPORTED', [this.commandName]));
+    this.io.println(Crosh.msg("COMMAND_NOT_SUPPORTED", [this.commandName]));
     this.exit(1);
     return;
   }
@@ -280,8 +280,8 @@ Crosh.prototype.run = function() {
 
   const pidInit = (id) => {
     if (id === undefined) {
-      this.io.println(Crosh.msg('COMMAND_STARTUP_FAILED',
-                                [this.commandName, lib.f.lastError('')]));
+      this.io.println(Crosh.msg("COMMAND_STARTUP_FAILED",
+                                [this.commandName, lib.f.lastError("")]));
       this.exit(1);
       return;
     }
@@ -349,7 +349,7 @@ Crosh.prototype.onTerminalResize_ = function(width, height) {
       Number(width), Number(height),
       function(success) {
         if (!success) {
-          console.warn('terminalPrivate.onTerminalResize failed');
+          console.warn("terminalPrivate.onTerminalResize failed");
         }
       },
   );
@@ -365,7 +365,7 @@ Crosh.prototype.exit = function(code) {
   globalThis.onbeforeunload = null;
 
   const onExit = () => {
-    if (this.terminal.getPrefs().get('close-on-exit')) {
+    if (this.terminal.getPrefs().get("close-on-exit")) {
       globalThis.close();
     }
   };
@@ -375,23 +375,23 @@ Crosh.prototype.exit = function(code) {
     return;
   }
 
-  this.io.println(Crosh.msg('COMMAND_COMPLETE', [this.commandName, code]));
-  this.io.println(Crosh.msg('RECONNECT_MESSAGE'));
+  this.io.println(Crosh.msg("COMMAND_COMPLETE", [this.commandName, code]));
+  this.io.println(Crosh.msg("RECONNECT_MESSAGE"));
   this.io.onVTKeystroke = (string) => {
     const ch = string.toLowerCase();
-    if (ch == 'r' || ch == ' ' || ch == '\x0d' /* enter */ ||
-        ch == '\x12' /* ctrl-r */) {
+    if (ch == "r" || ch == " " || ch == "\x0d" /* enter */ ||
+        ch == "\x12" /* ctrl-r */) {
       globalThis.location.reload();
       return;
     }
 
-    if (ch == 'c') {
-      globalThis.location.replace('/html/nassh_connect_dialog.html');
+    if (ch == "c") {
+      globalThis.location.replace("/html/nassh_connect_dialog.html");
       return;
     }
 
-    if (ch == 'e' || ch == 'x' || ch == '\x1b' /* ESC */ ||
-        ch == '\x17' /* C-w */) {
+    if (ch == "e" || ch == "x" || ch == "\x1b" /* ESC */ ||
+        ch == "\x17" /* C-w */) {
       onExit();
     }
   };

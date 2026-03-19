@@ -7,16 +7,16 @@
  * nassh and package them into a single, minified ES6 module.
  */
 
-import image from '@rollup/plugin-image';
-import resolve from '@rollup/plugin-node-resolve';
-import commonjs from '@rollup/plugin-commonjs';
-import terser from '@rollup/plugin-terser';
-import yaml from '@rollup/plugin-yaml';
-import gitInfo from 'rollup-plugin-git-info';
+import image from "@rollup/plugin-image";
+import resolve from "@rollup/plugin-node-resolve";
+import commonjs from "@rollup/plugin-commonjs";
+import terser from "@rollup/plugin-terser";
+import yaml from "@rollup/plugin-yaml";
+import gitInfo from "rollup-plugin-git-info";
 
 const plugins = [
   resolve({
-    mainFields: ['module', 'jsnext:main'],
+    mainFields: ["module", "jsnext:main"],
     preferBuiltins: false
   }),
   terser(),
@@ -30,7 +30,7 @@ const plugins = [
 const output = {
   // This only disables the '__esModule' symbol hack.
   esModule: false,
-  format: 'es',
+  format: "es",
   indent: false,
   preferConst: true,
 };
@@ -54,41 +54,41 @@ function nassh_dep(name) {
 
 let targets = [
   {
-    input: '../libdot/index.js',
+    input: "../libdot/index.js",
     output: {
       ...output,
-      file: 'dist/libdot.js',
+      file: "dist/libdot.js",
     },
     plugins: plugins,
   },
   {
-    input: '../hterm/index.js',
+    input: "../hterm/index.js",
     output: {
       ...output,
-      file: 'dist/hterm.js',
+      file: "dist/hterm.js",
     },
     external: [
-      '../../../libdot/index.js',
-      '../../libdot/index.js',
-      '../libdot/index.js',
+      "../../../libdot/index.js",
+      "../../libdot/index.js",
+      "../libdot/index.js",
     ],
     plugins: plugins,
   },
   {
-    input: '../wasi-js-bindings/index.js',
+    input: "../wasi-js-bindings/index.js",
     output: {
       ...output,
-      file: 'dist/wjb.js',
+      file: "dist/wjb.js",
     },
     plugins: plugins,
   },
 
-  nassh_dep('indexeddb-fs'),
-  nassh_dep('lit'),
-  nassh_dep('pkijs'),
-  nassh_dep('punycode'),
-  nassh_dep('resources'),
-  nassh_dep('xterm'),
+  nassh_dep("indexeddb-fs"),
+  nassh_dep("lit"),
+  nassh_dep("pkijs"),
+  nassh_dep("punycode"),
+  nassh_dep("resources"),
+  nassh_dep("xterm"),
 ];
 
 export default [...targets];

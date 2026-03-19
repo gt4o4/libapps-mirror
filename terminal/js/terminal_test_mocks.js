@@ -59,7 +59,7 @@ export function MockTerminalPrivate() {
   this.onPrefChanged = new MockEvent();
 
   /** @type {string} */
-  this.openVmshellProcessId = '';
+  this.openVmshellProcessId = "";
   this.croshSettings = {};
   this.prefs = {};
 }
@@ -165,7 +165,7 @@ MockTerminalPrivate.prototype.notifyObservers_ = function(fnName, args) {
 MockTerminalPrivate.prototype.openVmshellProcess = function(args, callback) {
   setTimeout(() => {
     callback(this.openVmshellProcessId);
-    this.notifyObservers_('openVmshellProcess', [args, callback]);
+    this.notifyObservers_("openVmshellProcess", [args, callback]);
   }, 0);
 };
 
@@ -179,7 +179,7 @@ MockTerminalPrivate.prototype.openVmshellProcess = function(args, callback) {
 MockTerminalPrivate.prototype.closeTerminalProcess = function(id, callback) {
   setTimeout(() => {
     callback(true);
-    this.notifyObservers_('closeTerminalProcess', [id, callback]);
+    this.notifyObservers_("closeTerminalProcess", [id, callback]);
   }, 0);
 };
 
@@ -195,7 +195,7 @@ MockTerminalPrivate.prototype.closeTerminalProcess = function(id, callback) {
 MockTerminalPrivate.prototype.sendInput = function(id, input, callback) {
   setTimeout(() => {
     callback(true);
-    this.notifyObservers_('sendInput', [id, input, callback]);
+    this.notifyObservers_("sendInput", [id, input, callback]);
   }, 0);
 };
 
@@ -212,7 +212,7 @@ MockTerminalPrivate.prototype.onTerminalResize = function(
     id, width, height, callback) {
   setTimeout(() => {
     callback(true);
-    this.notifyObservers_('onTerminalResize', [id, width, height, callback]);
+    this.notifyObservers_("onTerminalResize", [id, width, height, callback]);
   }, 0);
 };
 
@@ -226,7 +226,7 @@ MockTerminalPrivate.prototype.onTerminalResize = function(
 MockTerminalPrivate.prototype.getPrefs = function(prefPaths, callback) {
   setTimeout(() => {
     callback(this.prefs);
-    this.notifyObservers_('getPrefs', [prefPaths, callback]);
+    this.notifyObservers_("getPrefs", [prefPaths, callback]);
   }, 0);
 };
 
@@ -238,7 +238,7 @@ MockTerminalPrivate.prototype.getPrefs = function(prefPaths, callback) {
 MockTerminalPrivate.prototype.openOptionsPage = function(callback) {
   setTimeout(() => {
     callback();
-    this.notifyObservers_('openOptionsPage', [callback]);
+    this.notifyObservers_("openOptionsPage", [callback]);
   }, 0);
 };
 
@@ -249,7 +249,7 @@ MockTerminalPrivate.prototype.openOptionsPage = function(callback) {
  */
 MockTerminalPrivate.prototype.openWindow = function(data) {
   setTimeout(() => {
-    this.notifyObservers_('openWindow', [data]);
+    this.notifyObservers_("openWindow", [data]);
   }, 0);
 };
 
@@ -261,7 +261,7 @@ MockTerminalPrivate.prototype.openWindow = function(data) {
  */
 function MockWindow() {
   /** @type {{hash: string}} */
-  this.location = {hash: '#'};
+  this.location = {hash: "#"};
 
   /** @type {!Object<string, !MockEvent>} */
   this.events = new Proxy({}, {
@@ -526,7 +526,7 @@ export class MockObject {
     }
 
     if (methodData.waiter) {
-      throw new Error('waiter is not empty');
+      throw new Error("waiter is not empty");
     }
 
     return new Promise((resolve) => {
@@ -555,7 +555,7 @@ export class MockObject {
 export class MockFunction {
   constructor() {
     this.mockObject_ = new MockObject();
-    this.name_ = 'foo';
+    this.name_ = "foo";
   }
 
   /**

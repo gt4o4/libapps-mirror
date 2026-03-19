@@ -7,9 +7,9 @@
  * rely on syscall handlers to implement the actual syscall.
  */
 
-import {WasiView} from './dataview.js';
-import * as util from './util.js';
-import * as WASI from './wasi.js';
+import {WasiView} from "./dataview.js";
+import * as util from "./util.js";
+import * as WASI from "./wasi.js";
 
 /**
  * While the runtime has a Function builtin, there isn't one for async.
@@ -38,7 +38,7 @@ export class Base {
     this.process_ = process;
     this.bindHandlers_(sys_handlers);
     /** @type {string} */
-    this.namespace = '';
+    this.namespace = "";
   }
 
   /**
@@ -106,19 +106,19 @@ export class Base {
    * @return {!WASI_t.errno}
    */
   traceCall(func, prefix, ...args) {
-    this.logGroup(`${prefix}(${args.join(', ')})`);
+    this.logGroup(`${prefix}(${args.join(", ")})`);
     const ret = func(...args);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       let style;
       switch (ret) {
         case WASI.errno.ESUCCESS:
-          style = '';
+          style = "";
           break;
         case WASI.errno.ENOSYS:
-          style = 'font-weight: bold; color: #fc036f';
+          style = "font-weight: bold; color: #fc036f";
           break;
         default:
-          style = 'color: #d44';
+          style = "color: #d44";
           break;
       }
       this.debug(`${prefix} -> %c${util.strerror(ret)}`, style);
@@ -212,7 +212,7 @@ export class Base {
    */
   getSyscalls_() {
     return Array.from(util.getAllPropertyNames(this))
-      .filter((/** @type {string} */ key) => key.startsWith('sys_'));
+      .filter((/** @type {string} */ key) => key.startsWith("sys_"));
   }
 
   /**
@@ -240,7 +240,7 @@ export class Base {
 export class WasiPreview1 extends Base {
   constructor(...args) {
     super(...args);
-    this.namespace = 'wasi_snapshot_preview1';
+    this.namespace = "wasi_snapshot_preview1";
   }
 
   /**
@@ -270,7 +270,7 @@ export class WasiPreview1 extends Base {
    */
   sys_args_get(argv, argv_buf) {
     const ret = this.handle_args_get();
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -282,7 +282,7 @@ export class WasiPreview1 extends Base {
       dvArgv.setUint32(i * 4, ptr, true);
       let length;
       const arg = ret.argv[i];
-      if (typeof arg === 'string') {
+      if (typeof arg === "string") {
         length = util.encodeIntoSab(te, arg, buf);
       } else {
         buf.set(arg);
@@ -302,7 +302,7 @@ export class WasiPreview1 extends Base {
    */
   sys_args_sizes_get(argc, argv_size) {
     const ret = this.handle_args_sizes_get();
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -321,7 +321,7 @@ export class WasiPreview1 extends Base {
    */
   sys_clock_res_get(clockid, resolution_ptr) {
     const ret = this.handle_clock_res_get(clockid);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -340,7 +340,7 @@ export class WasiPreview1 extends Base {
   sys_clock_time_get(clockid, precision, time_ptr) {
     // TODO: Figure out what to do with precision.
     const ret = this.handle_clock_time_get(clockid);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -357,7 +357,7 @@ export class WasiPreview1 extends Base {
    */
   sys_environ_get(envp, env_buf) {
     const ret = this.handle_environ_get();
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -370,7 +370,7 @@ export class WasiPreview1 extends Base {
       dvEnvp.setUint32(i * 4, ptr, true);
       let length;
       const arg = env[i];
-      if (typeof arg === 'string') {
+      if (typeof arg === "string") {
         length = util.encodeIntoSab(te, arg, buf);
       } else {
         buf.set(arg);
@@ -392,7 +392,7 @@ export class WasiPreview1 extends Base {
    */
   sys_environ_sizes_get(env_size, env_buf) {
     const ret = this.handle_environ_sizes_get();
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -454,7 +454,7 @@ export class WasiPreview1 extends Base {
    */
   sys_fd_fdstat_get(fd, buf) {
     const ret = this.handle_fd_fdstat_get(fd);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -493,7 +493,7 @@ export class WasiPreview1 extends Base {
    */
   sys_fd_filestat_get(fd, filestat_ptr) {
     const ret = this.handle_fd_filestat_get(fd);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -541,7 +541,7 @@ export class WasiPreview1 extends Base {
       const iovec = dvIovs.getIovec(iovs_off, true);
       const buf = this.getMem_(iovec.buf, iovec.buf + iovec.buf_len);
       const ret = this.handle_fd_pread(fd, iovec.buf_len, offset);
-      if (typeof ret === 'number') {
+      if (typeof ret === "number") {
         if (ret === WASI.errno.ESUCCESS) {
           nread += iovec.buf_len;
         } else {
@@ -575,7 +575,7 @@ export class WasiPreview1 extends Base {
    */
   sys_fd_prestat_dir_name(fd, path_ptr, path_len) {
     const ret = this.handle_fd_prestat_dir_name(fd);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -593,7 +593,7 @@ export class WasiPreview1 extends Base {
    */
   sys_fd_prestat_get(fd, buf) {
     const ret = this.handle_fd_prestat_get(fd);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -622,7 +622,7 @@ export class WasiPreview1 extends Base {
       const iovec = dvIovs.getIovec(iovs_off, true);
       const buf = this.getMem_(iovec.buf, iovec.buf + iovec.buf_len);
       const ret = this.handle_fd_pwrite(fd, Uint8Array.from(buf), offset);
-      if (typeof ret === 'number') {
+      if (typeof ret === "number") {
         if (ret === WASI.errno.ESUCCESS) {
           nwritten += iovec.buf_len;
         } else {
@@ -656,7 +656,7 @@ export class WasiPreview1 extends Base {
       const iovec = dvIovs.getIovec(iovs_off, true);
       const buf = this.getMem_(iovec.buf, iovec.buf + iovec.buf_len);
       const ret = this.handle_fd_read(fd, iovec.buf_len);
-      if (typeof ret === 'number') {
+      if (typeof ret === "number") {
         if (ret === WASI.errno.ESUCCESS) {
           nread += iovec.buf_len;
         } else {
@@ -666,7 +666,7 @@ export class WasiPreview1 extends Base {
         if (ret.buf !== undefined) {
           const u8 = new Uint8Array(ret.buf);
           if (u8.length > iovec.buf_len) {
-            this.logError('handle_fd_read returned too many bytes: ' +
+            this.logError("handle_fd_read returned too many bytes: " +
                           `${u8.length} > ${iovec.buf_len}`);
           }
           buf.set(u8);
@@ -696,7 +696,7 @@ export class WasiPreview1 extends Base {
   sys_fd_readdir(fd, buf_ptr, buf_len, cookie, size_ptr) {
     const buf = this.getMem_(buf_ptr, buf_ptr + buf_len);
     const ret = this.handle_fd_readdir(fd, buf, cookie);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -729,7 +729,7 @@ export class WasiPreview1 extends Base {
     }
 
     const ret = this.handle_fd_seek(fd, offset, whence);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -755,7 +755,7 @@ export class WasiPreview1 extends Base {
    */
   sys_fd_tell(fd, offset_ptr) {
     const ret = this.handle_fd_tell(fd);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -780,7 +780,7 @@ export class WasiPreview1 extends Base {
       const iovec = dvIovs.getIovec(iovs_off, true);
       const buf = this.getMem_(iovec.buf, iovec.buf + iovec.buf_len);
       const ret = this.handle_fd_write(fd, Uint8Array.from(buf));
-      if (typeof ret === 'number') {
+      if (typeof ret === "number") {
         if (ret === WASI.errno.ESUCCESS) {
           nwritten += iovec.buf_len;
         } else {
@@ -806,7 +806,7 @@ export class WasiPreview1 extends Base {
    */
   sys_path_create_directory(fd, path_ptr, path_len) {
     const path = this.get_nullable_path_(path_ptr, path_len);
-    if (typeof path === 'number') {
+    if (typeof path === "number") {
       return path;
     }
 
@@ -824,12 +824,12 @@ export class WasiPreview1 extends Base {
    */
   sys_path_filestat_get(fd, lookupflags, path_ptr, path_len, filestat_ptr) {
     const path = this.get_nullable_path_(path_ptr, path_len);
-    if (typeof path === 'number') {
+    if (typeof path === "number") {
       return path;
     }
 
     const ret = this.handle_path_filestat_get(fd, lookupflags, path);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -852,7 +852,7 @@ export class WasiPreview1 extends Base {
   sys_path_filestat_set_times(fd, flags, path_ptr, path_len, atim, mtim,
                               fst_flags) {
     const path = this.get_nullable_path_(path_ptr, path_len);
-    if (typeof path === 'number') {
+    if (typeof path === "number") {
       return path;
     }
 
@@ -874,12 +874,12 @@ export class WasiPreview1 extends Base {
   sys_path_link(old_fd, old_flags, old_path_ptr, old_path_len, new_fd,
                 new_path_ptr, new_path_len) {
     const old_path = this.get_nullable_path_(old_path_ptr, old_path_len);
-    if (typeof old_path === 'number') {
+    if (typeof old_path === "number") {
       return old_path;
     }
 
     const new_path = this.get_nullable_path_(new_path_ptr, new_path_len);
-    if (typeof new_path === 'number') {
+    if (typeof new_path === "number") {
       return new_path;
     }
 
@@ -902,7 +902,7 @@ export class WasiPreview1 extends Base {
   sys_path_open(dirfd, dirflags, path_ptr, path_len, o_flags, fs_rights_base,
                 fs_rights_inheriting, fdflags, fd_ptr) {
     const path = this.get_nullable_path_(path_ptr, path_len);
-    if (typeof path === 'number') {
+    if (typeof path === "number") {
       return path;
     }
     this.debug(`  path = "${path}"`);
@@ -910,7 +910,7 @@ export class WasiPreview1 extends Base {
     const ret = this.handle_path_open(
         dirfd, dirflags, path, o_flags, fs_rights_base, fs_rights_inheriting,
         fdflags);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -931,13 +931,13 @@ export class WasiPreview1 extends Base {
    */
   sys_path_readlink(fd, path_ptr, path_len, buf_ptr, buf_len, bufused_ptr) {
     const path = this.get_nullable_path_(path_ptr, path_len);
-    if (typeof path === 'number') {
+    if (typeof path === "number") {
       return path;
     }
 
     const buf = this.getMem_(buf_ptr, buf_ptr + buf_len);
     const ret = this.handle_path_readlink(fd, path, buf);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -955,7 +955,7 @@ export class WasiPreview1 extends Base {
    */
   sys_path_remove_directory(fd, path_ptr, path_len) {
     const path = this.get_nullable_path_(path_ptr, path_len);
-    if (typeof path === 'number') {
+    if (typeof path === "number") {
       return path;
     }
 
@@ -975,12 +975,12 @@ export class WasiPreview1 extends Base {
   sys_path_rename(fd, old_path_ptr, old_path_len, new_fd, new_path_ptr,
                   new_path_len) {
     const old_path = this.get_nullable_path_(old_path_ptr, old_path_len);
-    if (typeof old_path === 'number') {
+    if (typeof old_path === "number") {
       return old_path;
     }
 
     const new_path = this.get_nullable_path_(new_path_ptr, new_path_len);
-    if (typeof new_path === 'number') {
+    if (typeof new_path === "number") {
       return new_path;
     }
 
@@ -998,12 +998,12 @@ export class WasiPreview1 extends Base {
    */
   sys_path_symlink(old_path_ptr, old_path_len, fd, new_path_ptr, new_path_len) {
     const old_path = this.get_nullable_path_(old_path_ptr, old_path_len);
-    if (typeof old_path === 'number') {
+    if (typeof old_path === "number") {
       return old_path;
     }
 
     const new_path = this.get_nullable_path_(new_path_ptr, new_path_len);
-    if (typeof new_path === 'number') {
+    if (typeof new_path === "number") {
       return new_path;
     }
 
@@ -1019,7 +1019,7 @@ export class WasiPreview1 extends Base {
    */
   sys_path_unlink_file(fd, path_ptr, path_len) {
     const path = this.get_nullable_path_(path_ptr, path_len);
-    if (typeof path === 'number') {
+    if (typeof path === "number") {
       return path;
     }
 
@@ -1054,7 +1054,7 @@ export class WasiPreview1 extends Base {
     }
 
     const ret = this.handle_poll_oneoff(subscriptions);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 

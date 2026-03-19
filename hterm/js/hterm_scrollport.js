@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * The RowProvider should return rows rooted by the custom tag name 'x-row'.
@@ -335,9 +335,9 @@ hterm.ScrollPort.Selection.prototype.setAutoScrollEnabled = function(enabled) {
   this.autoScrollEnabled_ = enabled;
   const doc = this.scrollPort_.getDocument();
   if (enabled) {
-    doc.addEventListener('mousemove', this.autoScrollOnMouseMoveBound_);
+    doc.addEventListener("mousemove", this.autoScrollOnMouseMoveBound_);
   } else {
-    doc.removeEventListener('mousemove', this.autoScrollOnMouseMoveBound_);
+    doc.removeEventListener("mousemove", this.autoScrollOnMouseMoveBound_);
     this.stopAutoScroll_();
   }
 };
@@ -430,7 +430,7 @@ hterm.ScrollPort.Selection.prototype.sync = function() {
   this.isCollapsed = !selection || selection.isCollapsed;
 
   let anchorRow = selection.anchorNode;
-  while (anchorRow && anchorRow.nodeName != 'X-ROW') {
+  while (anchorRow && anchorRow.nodeName != "X-ROW") {
     anchorRow = anchorRow.parentNode;
   }
 
@@ -464,7 +464,7 @@ hterm.ScrollPort.Selection.prototype.sync = function() {
     focusIsEndOfBottomRow();
   }
 
-  while (focusRow && focusRow.nodeName != 'X-ROW') {
+  while (focusRow && focusRow.nodeName != "X-ROW") {
     focusRow = focusRow.parentNode;
   }
 
@@ -510,7 +510,7 @@ hterm.ScrollPort.Selection.prototype.sync = function() {
         anchorRow, [selection.anchorNode, focusNode]);
 
     if (!firstNode) {
-      throw new Error('Unexpected error syncing selection.');
+      throw new Error("Unexpected error syncing selection.");
     }
 
     if (firstNode == selection.anchorNode) {
@@ -532,12 +532,12 @@ hterm.ScrollPort.Selection.prototype.sync = function() {
 hterm.ScrollPort.prototype.decorate = function(div, callback) {
   this.div_ = div;
 
-  this.iframe_ = div.ownerDocument.createElement('iframe');
+  this.iframe_ = div.ownerDocument.createElement("iframe");
   this.iframe_.style.cssText = (
-      'border: 0;' +
-      'height: 100%;' +
-      'position: absolute;' +
-      'width: 100%');
+      "border: 0;" +
+      "height: 100%;" +
+      "position: absolute;" +
+      "width: 100%");
 
   div.appendChild(this.iframe_);
 
@@ -550,8 +550,8 @@ hterm.ScrollPort.prototype.decorate = function(div, callback) {
 
   // Insert Iframe content asynchronously in FF.  Otherwise when the frame's
   // load event fires in FF it clears out the content of the iframe.
-  if ('mozInnerScreenX' in globalThis) { // detect a FF only property
-    this.iframe_.addEventListener('load', () => onLoad());
+  if ("mozInnerScreenX" in globalThis) { // detect a FF only property
+    this.iframe_.addEventListener("load", () => onLoad());
   } else {
     onLoad();
   }
@@ -565,21 +565,21 @@ hterm.ScrollPort.prototype.decorate = function(div, callback) {
  * @private
  */
 hterm.ScrollPort.prototype.paintIframeContents_ = function() {
-  this.iframe_.contentWindow.addEventListener('resize',
+  this.iframe_.contentWindow.addEventListener("resize",
                                               this.onResize_.bind(this));
 
   const doc = this.document_ = this.iframe_.contentDocument;
   doc.body.style.cssText = (
-      'margin: 0px;' +
-      'padding: 0px;' +
-      'height: 100%;' +
-      'width: 100%;' +
-      'overflow: hidden;' +
-      'cursor: var(--hterm-mouse-cursor-style);' +
-      'user-select: none;');
+      "margin: 0px;" +
+      "padding: 0px;" +
+      "height: 100%;" +
+      "width: 100%;" +
+      "overflow: hidden;" +
+      "cursor: var(--hterm-mouse-cursor-style);" +
+      "user-select: none;");
 
-  const metaCharset = doc.createElement('meta');
-  metaCharset.setAttribute('charset', 'utf-8');
+  const metaCharset = doc.createElement("meta");
+  metaCharset.setAttribute("charset", "utf-8");
   doc.head.appendChild(metaCharset);
 
   if (this.DEBUG_) {
@@ -587,22 +587,22 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
     // elements are visible.
     this.document_.body.style.paddingTop =
         this.document_.body.style.paddingBottom =
-        'calc(var(--hterm-charsize-height) * 3)';
+        "calc(var(--hterm-charsize-height) * 3)";
   }
 
-  const style = doc.createElement('style');
+  const style = doc.createElement("style");
   style.textContent = (
-      'x-row {' +
-      '  display: block;' +
-      '  height: var(--hterm-charsize-height);' +
-      '  line-height: var(--hterm-charsize-height);' +
-      '}');
+      "x-row {" +
+      "  display: block;" +
+      "  height: var(--hterm-charsize-height);" +
+      "  line-height: var(--hterm-charsize-height);" +
+      "}");
   doc.head.appendChild(style);
 
-  this.userCssLink_ = doc.createElement('link');
-  this.userCssLink_.setAttribute('rel', 'stylesheet');
+  this.userCssLink_ = doc.createElement("link");
+  this.userCssLink_.setAttribute("rel", "stylesheet");
 
-  this.userCssText_ = doc.createElement('style');
+  this.userCssText_ = doc.createElement("style");
   doc.head.appendChild(this.userCssText_);
 
   // TODO(rginda): Sorry, this 'screen_' isn't the same thing as hterm.Screen
@@ -614,12 +614,12 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
   // that doesn't make sense here, and might inadvertently mung or save input.
   // Some of these attributes are standard while others are browser specific,
   // but should be safely ignored by other browsers.
-  this.screen_ = doc.createElement('x-screen');
-  this.screen_.setAttribute('contenteditable', 'true');
-  this.screen_.setAttribute('spellcheck', 'false');
-  this.screen_.setAttribute('autocomplete', 'off');
-  this.screen_.setAttribute('autocorrect', 'off');
-  this.screen_.setAttribute('autocapitalize', 'none');
+  this.screen_ = doc.createElement("x-screen");
+  this.screen_.setAttribute("contenteditable", "true");
+  this.screen_.setAttribute("spellcheck", "false");
+  this.screen_.setAttribute("autocomplete", "off");
+  this.screen_.setAttribute("autocorrect", "off");
+  this.screen_.setAttribute("autocapitalize", "none");
 
   // In some ways the terminal behaves like a text box but not in all ways. It
   // is not editable in the same ways a text box is editable and the content we
@@ -629,16 +629,16 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
   // selection changes. The announcements that we want spoken are generated
   // by a separate live region, which gives more control over what will be
   // spoken.
-  this.screen_.setAttribute('role', 'log');
-  this.screen_.setAttribute('aria-live', 'off');
-  this.screen_.setAttribute('aria-roledescription', 'Terminal');
+  this.screen_.setAttribute("role", "log");
+  this.screen_.setAttribute("aria-live", "off");
+  this.screen_.setAttribute("aria-roledescription", "Terminal");
 
   // Set aria-readonly to indicate to the screen reader that the text on the
   // screen is not modifiable by the html cursor. It may be modifiable by
   // sending input to the application running in the terminal, but this is
   // orthogonal to the DOM's notion of modifiable.
-  this.screen_.setAttribute('aria-readonly', 'true');
-  this.screen_.setAttribute('tabindex', '-1');
+  this.screen_.setAttribute("aria-readonly", "true");
+  this.screen_.setAttribute("tabindex", "-1");
   this.screen_.style.cssText = `
       background-color: rgb(var(--hterm-background-color));
       caret-color: transparent;
@@ -660,17 +660,17 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
    * @return {!EventListener}
    */
   const el = (f) => /** @type {!EventListener} */ (f);
-  this.screen_.addEventListener('scroll', el(this.onScroll_.bind(this)));
-  this.screen_.addEventListener('wheel', el(this.onScrollWheel_.bind(this)));
-  this.screen_.addEventListener('touchstart', el(this.onTouch_.bind(this)));
-  this.screen_.addEventListener('touchmove', el(this.onTouch_.bind(this)));
-  this.screen_.addEventListener('touchend', el(this.onTouch_.bind(this)));
-  this.screen_.addEventListener('touchcancel', el(this.onTouch_.bind(this)));
-  this.screen_.addEventListener('copy', el(this.onCopy_.bind(this)));
-  this.screen_.addEventListener('paste', el(this.onPaste_.bind(this)));
-  this.screen_.addEventListener('drop', el(this.onDragAndDrop_.bind(this)));
+  this.screen_.addEventListener("scroll", el(this.onScroll_.bind(this)));
+  this.screen_.addEventListener("wheel", el(this.onScrollWheel_.bind(this)));
+  this.screen_.addEventListener("touchstart", el(this.onTouch_.bind(this)));
+  this.screen_.addEventListener("touchmove", el(this.onTouch_.bind(this)));
+  this.screen_.addEventListener("touchend", el(this.onTouch_.bind(this)));
+  this.screen_.addEventListener("touchcancel", el(this.onTouch_.bind(this)));
+  this.screen_.addEventListener("copy", el(this.onCopy_.bind(this)));
+  this.screen_.addEventListener("paste", el(this.onPaste_.bind(this)));
+  this.screen_.addEventListener("drop", el(this.onDragAndDrop_.bind(this)));
 
-  doc.body.addEventListener('keydown', this.onBodyKeyDown_.bind(this));
+  doc.body.addEventListener("keydown", this.onBodyKeyDown_.bind(this));
 
   // Add buttons to make accessible scrolling through terminal history work
   // well. These are positioned off-screen until they are selected, at which
@@ -696,33 +696,33 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
   // Note: we use a <div> rather than a <button> because we don't want it to be
   // focusable. If it's focusable this interferes with the contenteditable
   // focus.
-  this.scrollUpButton_ = this.document_.createElement('div');
-  this.scrollUpButton_.id = 'hterm:a11y:page-up';
-  this.scrollUpButton_.innerText = hterm.msg('BUTTON_PAGE_UP', [], 'Page up');
-  this.scrollUpButton_.setAttribute('role', 'button');
+  this.scrollUpButton_ = this.document_.createElement("div");
+  this.scrollUpButton_.id = "hterm:a11y:page-up";
+  this.scrollUpButton_.innerText = hterm.msg("BUTTON_PAGE_UP", [], "Page up");
+  this.scrollUpButton_.setAttribute("role", "button");
   this.scrollUpButton_.style.cssText = a11yButtonStyle;
   this.scrollUpButton_.style.top = `${-a11yButtonTotalHeight}px`;
-  this.scrollUpButton_.addEventListener('click', this.scrollPageUp.bind(this));
+  this.scrollUpButton_.addEventListener("click", this.scrollPageUp.bind(this));
 
-  this.scrollDownButton_ = this.document_.createElement('div');
-  this.scrollDownButton_.id = 'hterm:a11y:page-down';
+  this.scrollDownButton_ = this.document_.createElement("div");
+  this.scrollDownButton_.id = "hterm:a11y:page-down";
   this.scrollDownButton_.innerText =
-      hterm.msg('BUTTON_PAGE_DOWN', [], 'Page down');
-  this.scrollDownButton_.setAttribute('role', 'button');
+      hterm.msg("BUTTON_PAGE_DOWN", [], "Page down");
+  this.scrollDownButton_.setAttribute("role", "button");
   this.scrollDownButton_.style.cssText = a11yButtonStyle;
   this.scrollDownButton_.style.bottom = `${-a11yButtonTotalHeight}px`;
   this.scrollDownButton_.addEventListener(
-      'click', this.scrollPageDown.bind(this));
+      "click", this.scrollPageDown.bind(this));
 
-  this.optionsButton_ = this.document_.createElement('div');
-  this.optionsButton_.id = 'hterm:a11y:options';
+  this.optionsButton_ = this.document_.createElement("div");
+  this.optionsButton_.id = "hterm:a11y:options";
   this.optionsButton_.innerText =
-      hterm.msg('OPTIONS_BUTTON_LABEL', [], 'Options');
-  this.optionsButton_.setAttribute('role', 'button');
+      hterm.msg("OPTIONS_BUTTON_LABEL", [], "Options");
+  this.optionsButton_.setAttribute("role", "button");
   this.optionsButton_.style.cssText = a11yButtonStyle;
   this.optionsButton_.style.bottom = `${-2 * a11yButtonTotalHeight}px`;
   this.optionsButton_.addEventListener(
-      'click', this.publish.bind(this, 'options'));
+      "click", this.publish.bind(this, "options"));
 
   doc.body.appendChild(this.scrollUpButton_);
   doc.body.appendChild(this.screen_);
@@ -735,7 +735,7 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
   // element, which will get focussed on page load.
   this.allowA11yButtonsToDisplay_ = false;
   setTimeout(() => { this.allowA11yButtonsToDisplay_ = true; }, 500);
-  this.document_.addEventListener('selectionchange', () => {
+  this.document_.addEventListener("selectionchange", () => {
     this.selection.sync();
 
     if (!this.allowA11yButtonsToDisplay_) {
@@ -768,30 +768,30 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
   });
 
   // This is the main container for the fixed rows.
-  this.rowNodes_ = doc.createElement('div');
-  this.rowNodes_.id = 'hterm:row-nodes';
+  this.rowNodes_ = doc.createElement("div");
+  this.rowNodes_.id = "hterm:row-nodes";
   this.rowNodes_.style.cssText = (
-      'display: block;' +
-      'position: fixed;' +
-      'overflow: hidden;' +
-      'user-select: text;');
+      "display: block;" +
+      "position: fixed;" +
+      "overflow: hidden;" +
+      "user-select: text;");
   this.screen_.appendChild(this.rowNodes_);
 
   // Two nodes to hold offscreen text during the copy event.
-  this.topSelectBag_ = doc.createElement('x-select-bag');
+  this.topSelectBag_ = doc.createElement("x-select-bag");
   this.topSelectBag_.style.cssText = (
-      'display: block;' +
-      'overflow: hidden;' +
-      'height: var(--hterm-charsize-height);' +
-      'white-space: pre;');
+      "display: block;" +
+      "overflow: hidden;" +
+      "height: var(--hterm-charsize-height);" +
+      "white-space: pre;");
 
   this.bottomSelectBag_ = this.topSelectBag_.cloneNode();
 
   // Nodes above the top fold and below the bottom fold are hidden.  They are
   // only used to hold rows that are part of the selection but are currently
   // scrolled off the top or bottom of the visible range.
-  this.topFold_ = doc.createElement('x-fold');
-  this.topFold_.id = 'hterm:top-fold-for-row-selection';
+  this.topFold_ = doc.createElement("x-fold");
+  this.topFold_.id = "hterm:top-fold-for-row-selection";
   this.topFold_.style.cssText = `
     display: block;
     height: var(--hterm-screen-padding-size);
@@ -799,7 +799,7 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
   this.rowNodes_.appendChild(this.topFold_);
 
   this.bottomFold_ = this.topFold_.cloneNode();
-  this.bottomFold_.id = 'hterm:bottom-fold-for-row-selection';
+  this.bottomFold_.id = "hterm:bottom-fold-for-row-selection";
   this.rowNodes_.appendChild(this.bottomFold_);
 
   // This hidden div accounts for the vertical space that would be consumed by
@@ -811,29 +811,29 @@ hterm.ScrollPort.prototype.paintIframeContents_ = function() {
   // it in the selection when a user 'drag selects' upwards (drag the mouse to
   // select and scroll at the same time).  Without this, the selection gets
   // out of whack.
-  this.scrollArea_ = doc.createElement('div');
-  this.scrollArea_.id = 'hterm:scrollarea';
-  this.scrollArea_.style.cssText = 'visibility: hidden';
+  this.scrollArea_ = doc.createElement("div");
+  this.scrollArea_.id = "hterm:scrollarea";
+  this.scrollArea_.style.cssText = "visibility: hidden";
   this.screen_.appendChild(this.scrollArea_);
 
   // We send focus to this element just before a paste happens, so we can
   // capture the pasted text and forward it on to someone who cares.
-  this.pasteTarget_ = doc.createElement('textarea');
-  this.pasteTarget_.id = 'hterm:ctrl-v-paste-target';
-  this.pasteTarget_.setAttribute('tabindex', '-1');
-  this.pasteTarget_.setAttribute('aria-hidden', 'true');
+  this.pasteTarget_ = doc.createElement("textarea");
+  this.pasteTarget_.id = "hterm:ctrl-v-paste-target";
+  this.pasteTarget_.setAttribute("tabindex", "-1");
+  this.pasteTarget_.setAttribute("aria-hidden", "true");
   this.pasteTarget_.style.cssText = (
-    'position: absolute;' +
-    'height: 1px;' +
-    'width: 1px;' +
-    'left: 0px; ' +
-    'bottom: 0px;' +
-    'opacity: 0');
+    "position: absolute;" +
+    "height: 1px;" +
+    "width: 1px;" +
+    "left: 0px; " +
+    "bottom: 0px;" +
+    "opacity: 0");
   this.pasteTarget_.contentEditable = true;
 
   this.screen_.appendChild(this.pasteTarget_);
   this.pasteTarget_.addEventListener(
-      'textInput', this.handlePasteTargetTextInput_.bind(this));
+      "textInput", this.handlePasteTargetTextInput_.bind(this));
 
   this.resize();
 };
@@ -888,7 +888,7 @@ hterm.ScrollPort.prototype.scrollPageDown = function() {
  *     Defaults to an empty string if not specified.
  */
 hterm.ScrollPort.prototype.setFontFamily = function(
-    fontFamily, smoothing = '') {
+    fontFamily, smoothing = "") {
   this.screen_.style.fontFamily = fontFamily;
   this.screen_.style.webkitFontSmoothing = smoothing;
 
@@ -910,7 +910,7 @@ hterm.ScrollPort.prototype.getFontFamily = function() {
  */
 hterm.ScrollPort.prototype.setUserCssUrl = function(url) {
   if (url) {
-    this.userCssLink_.setAttribute('href', url);
+    this.userCssLink_.setAttribute("href", url);
 
     if (!this.userCssLink_.parentNode) {
       this.document_.head.appendChild(this.userCssLink_);
@@ -929,7 +929,7 @@ hterm.ScrollPort.prototype.setUserCssText = function(text) {
 hterm.ScrollPort.prototype.focus = function() {
   this.iframe_.focus();
   this.screen_.focus();
-  this.publish('focus');
+  this.publish("focus");
 };
 
 /**
@@ -1111,7 +1111,7 @@ hterm.ScrollPort.prototype.scheduleInvalidate = function() {
  * @param {number} px
  */
 hterm.ScrollPort.prototype.setFontSize = function(px) {
-  this.screen_.style.fontSize = px + 'px';
+  this.screen_.style.fontSize = px + "px";
   this.syncCharacterSize();
 };
 
@@ -1131,19 +1131,19 @@ hterm.ScrollPort.prototype.getFontSize = function() {
  *     omitted.
  * @return {!hterm.Size} A new hterm.Size object.
  */
-hterm.ScrollPort.prototype.measureCharacterSize = function(weight = '') {
+hterm.ScrollPort.prototype.measureCharacterSize = function(weight = "") {
   let ruler = this.ruler_;
   if (!ruler) {
-    ruler = this.ruler_ = this.document_.createElement('canvas');
+    ruler = this.ruler_ = this.document_.createElement("canvas");
   }
-  const context = ruler.getContext('2d');
+  const context = ruler.getContext("2d");
   context.font = `${weight} ${this.getFontSize()}px ${this.getFontFamily()}`;
-  const heightBox = context.measureText('X\u{2588}');
+  const heightBox = context.measureText("X\u{2588}");
   const ascent =
       heightBox.actualBoundingBoxAscent || heightBox.fontBoundingBoxAscent;
   const descent =
       heightBox.actualBoundingBoxDescent || heightBox.fontBoundingBoxDescent;
-  const widthBox = context.measureText('X');
+  const widthBox = context.measureText("X");
   return new hterm.Size(widthBox.width,
                         ascent + descent + this.lineHeightPaddingSize);
 };
@@ -1170,7 +1170,7 @@ hterm.ScrollPort.prototype.resize = function() {
   this.syncRowNodesDimensions_();
 
   this.publish(
-      'resize', {scrollPort: this},
+      "resize", {scrollPort: this},
       () => this.scheduleRedraw());
 };
 
@@ -1188,14 +1188,14 @@ hterm.ScrollPort.prototype.assertiveAnnounce_ = function() {
   let percentScrolled = 100 * topRow /
       Math.max(1, this.rowProvider_.getRowCount() - this.visibleRowCount);
   percentScrolled = Math.min(100, Math.round(percentScrolled));
-  let currentScreenContent = hterm.msg('ANNOUNCE_CURRENT_SCREEN_HEADER',
+  let currentScreenContent = hterm.msg("ANNOUNCE_CURRENT_SCREEN_HEADER",
                                        [percentScrolled],
-                                       '$1% scrolled,');
-  currentScreenContent += '\n';
+                                       "$1% scrolled,");
+  currentScreenContent += "\n";
 
   for (let i = topRow; i <= bottomRow; ++i) {
     const node = this.fetchRowNode_(i);
-    currentScreenContent += node.textContent + '\n';
+    currentScreenContent += node.textContent + "\n";
   }
 
   this.accessibilityReader_.assertiveAnnounce(currentScreenContent);
@@ -1224,7 +1224,7 @@ hterm.ScrollPort.prototype.syncRowNodesDimensions_ = function() {
   this.visibleRowTopMargin = 0;
   this.visibleRowBottomMargin = screenSize.height - this.visibleRowsHeight;
 
-  this.topFold_.style.marginBottom = this.visibleRowTopMargin + 'px';
+  this.topFold_.style.marginBottom = this.visibleRowTopMargin + "px";
 
 
   let topFoldOffset = 0;
@@ -1235,13 +1235,13 @@ hterm.ScrollPort.prototype.syncRowNodesDimensions_ = function() {
   }
 
   // Set the dimensions of the visible rows container.
-  this.rowNodes_.style.width = screenSize.width + 'px';
+  this.rowNodes_.style.width = screenSize.width + "px";
   this.rowNodes_.style.height =
-      this.visibleRowsHeight + topFoldOffset + this.screenPaddingSize + 'px';
+      this.visibleRowsHeight + topFoldOffset + this.screenPaddingSize + "px";
   this.rowNodes_.style.left =
-      this.screen_.offsetLeft + this.screenPaddingSize + 'px';
+      this.screen_.offsetLeft + this.screenPaddingSize + "px";
   this.rowNodes_.style.top =
-      this.screen_.offsetTop - topFoldOffset + 'px';
+      this.screen_.offsetTop - topFoldOffset + "px";
 };
 
 /**
@@ -1267,7 +1267,7 @@ hterm.ScrollPort.prototype.syncScrollHeight = function() {
                                    (2 * this.screenPaddingSize) +
                                    this.visibleRowTopMargin +
                                    this.visibleRowBottomMargin +
-                                   'px');
+                                   "px");
 };
 
 /**
@@ -1295,7 +1295,7 @@ hterm.ScrollPort.prototype.scheduleRedraw = function() {
  */
 hterm.ScrollPort.prototype.updateScrollButtonState_ = function() {
   const setButton = (button, disabled) => {
-    button.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+    button.setAttribute("aria-disabled", disabled ? "true" : "false");
     button.style.opacity = disabled ? 0.5 : 1;
   };
   setButton(this.scrollUpButton_, this.getTopRowIndex() == 0);
@@ -1469,11 +1469,11 @@ hterm.ScrollPort.prototype.drawVisibleRows_ = function(
   const removeUntilNode = (currentNode, targetNode) => {
     while (currentNode != targetNode) {
       if (!currentNode) {
-        throw new Error('Did not encounter target node');
+        throw new Error("Did not encounter target node");
       }
 
       if (currentNode == this.bottomFold_) {
-        throw new Error('Encountered bottom fold before target node');
+        throw new Error("Encountered bottom fold before target node");
       }
 
       const deadNode = currentNode;
@@ -1583,12 +1583,12 @@ hterm.ScrollPort.prototype.ariaHideOffscreenSelectionRows_ = function(
   const hiddenRows = this.ariaHiddenSelectionRows_;
   let row;
   while ((row = hiddenRows.pop())) {
-    row.removeAttribute('aria-hidden');
+    row.removeAttribute("aria-hidden");
   }
 
   function checkRow(row) {
     if (row && (row.rowIndex < topRowIndex || row.rowIndex > bottomRowIndex)) {
-      row.setAttribute('aria-hidden', 'true');
+      row.setAttribute("aria-hidden", "true");
       hiddenRows.push(row);
     }
   }
@@ -1605,12 +1605,12 @@ hterm.ScrollPort.prototype.ariaHideOffscreenSelectionRows_ = function(
  */
 hterm.ScrollPort.prototype.resetSelectBags_ = function() {
   if (this.topSelectBag_.parentNode) {
-    this.topSelectBag_.textContent = '';
+    this.topSelectBag_.textContent = "";
     this.topSelectBag_.remove();
   }
 
   if (this.bottomSelectBag_.parentNode) {
-    this.bottomSelectBag_.textContent = '';
+    this.bottomSelectBag_.textContent = "";
     this.bottomSelectBag_.remove();
   }
 };
@@ -1805,7 +1805,7 @@ hterm.ScrollPort.prototype.onScroll_ = function(e) {
   }
 
   this.redraw_();
-  this.publish('scroll', {scrollPort: this});
+  this.publish("scroll", {scrollPort: this});
 };
 
 /**
@@ -1936,10 +1936,10 @@ hterm.ScrollPort.prototype.onTouch_ = function(e) {
 
   let i, touch;
   switch (e.type) {
-    case 'touchstart':
+    case "touchstart":
       // Workaround focus bug on CrOS if possible.
       // TODO(vapier): Drop this once https://crbug.com/919222 is fixed.
-      if (hterm.os == 'cros' && globalThis.chrome?.windows?.getCurrent) {
+      if (hterm.os == "cros" && globalThis.chrome?.windows?.getCurrent) {
         chrome.windows.getCurrent((win) => {
           if (!win.focused) {
             chrome.windows.update(win.id, {focused: true});
@@ -1954,15 +1954,15 @@ hterm.ScrollPort.prototype.onTouch_ = function(e) {
       }
       break;
 
-    case 'touchcancel':
-    case 'touchend':
+    case "touchcancel":
+    case "touchend":
       // Throw away existing touches that we're finished with.
       for (i = 0; i < e.changedTouches.length; ++i) {
         delete this.lastTouch_[e.changedTouches[i].identifier];
       }
       break;
 
-    case 'touchmove': {
+    case "touchmove": {
       // Walk all of the touches in this one event and merge all of their
       // changes into one delta.  This lets multiple fingers scroll faster.
       let delta = 0;
@@ -2112,8 +2112,8 @@ hterm.ScrollPort.prototype.onPaste_ = function(e) {
   this.pasteTarget_.focus();
 
   setTimeout(() => {
-    this.publish('paste', {text: this.pasteTarget_.value});
-    this.pasteTarget_.value = '';
+    this.publish("paste", {text: this.pasteTarget_.value});
+    this.pasteTarget_.value = "";
     this.focus();
   });
 };
@@ -2152,7 +2152,7 @@ hterm.ScrollPort.prototype.onDragAndDrop_ = function(e) {
   // text).  e.g. text/html is OK.
   if (e.shiftKey) {
     e.dataTransfer.types.forEach((t) => {
-      if (!format && t != 'text/plain' && t.startsWith('text/')) {
+      if (!format && t != "text/plain" && t.startsWith("text/")) {
         format = t;
       }
     });
@@ -2165,11 +2165,11 @@ hterm.ScrollPort.prototype.onDragAndDrop_ = function(e) {
 
   // If we haven't loaded anything useful, fall back to plain text.
   if (!data) {
-    data = e.dataTransfer.getData('text/plain');
+    data = e.dataTransfer.getData("text/plain");
   }
 
   if (data) {
-    this.publish('paste', {text: data});
+    this.publish("paste", {text: data});
   }
 };
 
@@ -2180,11 +2180,11 @@ hterm.ScrollPort.prototype.onDragAndDrop_ = function(e) {
  */
 hterm.ScrollPort.prototype.setScrollbarVisible = function(state) {
   if (state) {
-    this.screen_.style.overflowY = 'scroll';
+    this.screen_.style.overflowY = "scroll";
     this.currentScrollbarWidthPx = hterm.ScrollPort.DEFAULT_SCROLLBAR_WIDTH;
     this.syncScrollbarWidth_();
   } else {
-    this.screen_.style.overflowY = 'hidden';
+    this.screen_.style.overflowY = "hidden";
     this.currentScrollbarWidthPx = 0;
   }
 };

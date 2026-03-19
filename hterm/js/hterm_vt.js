@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Constructor for the VT escape sequence interpreter.
@@ -40,11 +40,11 @@ hterm.VT = function(terminal) {
 
   // Any "leading modifiers" for the escape sequence, such as '?', ' ', or the
   // other modifiers handled in this.parseCSI_.
-  this.leadingModifier_ = '';
+  this.leadingModifier_ = "";
 
   // Any "trailing modifiers".  Same character set as a leading modifier,
   // except these are found after the numeric arguments.
-  this.trailingModifier_ = '';
+  this.trailingModifier_ = "";
 
   // Whether or not to respect the escape codes for setting terminal width.
   this.allowColumnWidthChanges_ = false;
@@ -105,7 +105,7 @@ hterm.VT = function(terminal) {
    * of the maps are in at any particular time.
    */
   this.G0 = this.G1 = this.G2 = this.G3 =
-      this.characterMaps.getMap('B');
+      this.characterMaps.getMap("B");
 
   /**
    * The 7-bit visible character set.
@@ -115,7 +115,7 @@ hterm.VT = function(terminal) {
    *
    * The default GL set is 'B', US ASCII.
    */
-  this.GL = 'G0';
+  this.GL = "G0";
 
   /**
    * The 8-bit visible character set.
@@ -123,7 +123,7 @@ hterm.VT = function(terminal) {
    * This is a mapping from inbound data to display glyph.  The GR set
    * contains the 94 bytes from 0xa1 to 0xfe.
    */
-  this.GR = 'G0';
+  this.GR = "G0";
 
   /**
    * The current encoding of the terminal.
@@ -210,7 +210,7 @@ hterm.VT.ParseState = function(defaultFunction, buf = null) {
  *
  * @param {string=} buf Optional string to use as the current buffer.
  */
-hterm.VT.ParseState.prototype.reset = function(buf = '') {
+hterm.VT.ParseState.prototype.reset = function(buf = "") {
   this.resetParseFunction();
   this.resetBuf(buf);
   this.resetArguments();
@@ -370,10 +370,10 @@ hterm.VT.prototype.resetParseState = function() {
  */
 hterm.VT.prototype.reset = function() {
   this.G0 = this.G1 = this.G2 = this.G3 =
-      this.characterMaps.getMap('B');
+      this.characterMaps.getMap("B");
 
-  this.GL = 'G0';
-  this.GR = 'G0';
+  this.GL = "G0";
+  this.GR = "G0";
 
   this.mouseReport = this.MOUSE_REPORT_DISABLED;
   this.mouseCoordinates = this.MOUSE_COORDINATES_X10;
@@ -392,7 +392,7 @@ hterm.VT.prototype.onTerminalMouse_ = function(e) {
   if (this.mouseReport == this.MOUSE_REPORT_DISABLED) {
     return;
   } else if (this.mouseReport != this.MOUSE_REPORT_DRAG &&
-             e.type == 'mousemove') {
+             e.type == "mousemove") {
     return;
   }
 
@@ -438,7 +438,7 @@ hterm.VT.prototype.onTerminalMouse_ = function(e) {
 
   let b;
   switch (e.type) {
-    case 'wheel':
+    case "wheel":
       // Mouse wheel is treated as button 1 or 2 plus an additional 64.
       b = (((e.deltaY * -1) > 0) ? 0 : 1) + 64;
       b |= mod;
@@ -446,14 +446,14 @@ hterm.VT.prototype.onTerminalMouse_ = function(e) {
         response = `\x1b[<${b};${x};${y}M`;
       } else {
         // X10 based modes (including UTF8) add 32 for legacy encoding reasons.
-        response = '\x1b[M' + String.fromCharCode(b + 32) + x + y;
+        response = "\x1b[M" + String.fromCharCode(b + 32) + x + y;
       }
 
       // Keep the terminal from scrolling.
       e.preventDefault();
       break;
 
-    case 'mousedown':
+    case "mousedown":
       // Buttons are encoded as button number.
       b = Math.min(e.button, 2);
       // X10 based modes (including UTF8) add 32 for legacy encoding reasons.
@@ -467,23 +467,23 @@ hterm.VT.prototype.onTerminalMouse_ = function(e) {
       if (this.mouseCoordinates == this.MOUSE_COORDINATES_SGR) {
         response = `\x1b[<${b};${x};${y}M`;
       } else {
-        response = '\x1b[M' + String.fromCharCode(b) + x + y;
+        response = "\x1b[M" + String.fromCharCode(b) + x + y;
       }
       break;
 
-    case 'mouseup':
+    case "mouseup":
       if (this.mouseReport != this.MOUSE_REPORT_PRESS) {
         if (this.mouseCoordinates == this.MOUSE_COORDINATES_SGR) {
           // SGR mode can report the released button.
           response = `\x1b[<${e.button};${x};${y}m`;
         } else {
           // X10 mode has no indication of which button was released.
-          response = '\x1b[M\x23' + x + y;
+          response = "\x1b[M\x23" + x + y;
         }
       }
       break;
 
-    case 'mousemove':
+    case "mousemove":
       if (this.mouseReport == this.MOUSE_REPORT_DRAG && e.buttons) {
         // Standard button bits.  The XTerm protocol only reports the first
         // button press (e.g. if left & right are pressed, right is ignored),
@@ -516,14 +516,14 @@ hterm.VT.prototype.onTerminalMouse_ = function(e) {
         if (this.mouseCoordinates == this.MOUSE_COORDINATES_SGR) {
           response = `\x1b[<${b};${x};${y}M`;
         } else {
-          response = '\x1b[M' + String.fromCharCode(b) + x + y;
+          response = "\x1b[M" + String.fromCharCode(b) + x + y;
         }
 
         // If we were going to report the same cell because we moved pixels
         // within, suppress the report.  This is what xterm does and cuts
         // down on duplicate messages.
         if (this.lastMouseDragResponse_ == response) {
-          response = '';
+          response = "";
         } else {
           this.lastMouseDragResponse_ = response;
         }
@@ -531,12 +531,12 @@ hterm.VT.prototype.onTerminalMouse_ = function(e) {
 
       break;
 
-    case 'click':
-    case 'dblclick':
+    case "click":
+    case "dblclick":
       break;
 
     default:
-      console.error('Unknown mouse event: ' + e.type, e);
+      console.error("Unknown mouse event: " + e.type, e);
       break;
   }
 
@@ -563,7 +563,7 @@ hterm.VT.prototype.interpret = function(buf) {
 
     if (this.parseState_.func == func && this.parseState_.pos == pos &&
         this.parseState_.buf == buf) {
-      throw new Error('Parser did not alter the state!');
+      throw new Error("Parser did not alter the state!");
     }
   }
 };
@@ -578,15 +578,15 @@ hterm.VT.prototype.setEncoding = function(encoding) {
     default:
       console.warn('Invalid value for "terminal-encoding": ' + encoding);
       // Fall through.
-    case 'iso-2022':
+    case "iso-2022":
       this.codingSystemUtf8_ = false;
       this.codingSystemLocked_ = false;
       break;
-    case 'utf-8-locked':
+    case "utf-8-locked":
       this.codingSystemUtf8_ = true;
       this.codingSystemLocked_ = true;
       break;
-    case 'utf-8':
+    case "utf-8":
       this.codingSystemUtf8_ = true;
       this.codingSystemLocked_ = false;
       break;
@@ -603,8 +603,8 @@ hterm.VT.prototype.updateEncodingState_ = function() {
   // see those -- everything should be UTF8!
   const cc1 = Object.keys(hterm.VT.CC1)
       .filter((e) => !this.codingSystemUtf8_ || e.charCodeAt() < 0x80)
-      .map((e) => '\\x' + lib.f.zpad(e.charCodeAt().toString(16), 2))
-      .join('');
+      .map((e) => "\\x" + lib.f.zpad(e.charCodeAt().toString(16), 2))
+      .join("");
   this.cc1Pattern_ = new RegExp(`[${cc1}]`);
 };
 
@@ -632,7 +632,7 @@ hterm.VT.prototype.parseUnknown_ = function(parseState) {
 
   if (nextControl == 0) {
     // We've stumbled right into a control character.
-    this.dispatch('CC1', buf.substr(0, 1), parseState);
+    this.dispatch("CC1", buf.substr(0, 1), parseState);
     parseState.advance(1);
     return;
   }
@@ -645,7 +645,7 @@ hterm.VT.prototype.parseUnknown_ = function(parseState) {
   }
 
   print(buf.substr(0, nextControl));
-  this.dispatch('CC1', buf.substr(nextControl, 1), parseState);
+  this.dispatch("CC1", buf.substr(nextControl, 1), parseState);
   parseState.advance(nextControl + 1);
 };
 
@@ -670,13 +670,13 @@ hterm.VT.prototype.parseCSI_ = function(parseState) {
     parseState.resetParseFunction();
   };
 
-  if (ch >= '@' && ch <= '~') {
+  if (ch >= "@" && ch <= "~") {
     // This is the final character.
-    this.dispatch('CSI', this.leadingModifier_ + this.trailingModifier_ + ch,
+    this.dispatch("CSI", this.leadingModifier_ + this.trailingModifier_ + ch,
                   parseState);
     finishParsing();
 
-  } else if (ch == ';') {
+  } else if (ch == ";") {
     // Parameter delimiter.
     if (this.trailingModifier_) {
       // Parameter delimiter after the trailing modifier.  That's a paddlin'.
@@ -685,13 +685,13 @@ hterm.VT.prototype.parseCSI_ = function(parseState) {
     } else {
       if (!args.length) {
         // They omitted the first param, we need to supply it.
-        args.push('');
+        args.push("");
       }
 
-      args.push('');
+      args.push("");
     }
 
-  } else if (ch >= '0' && ch <= '9' || ch == ':') {
+  } else if (ch >= "0" && ch <= "9" || ch == ":") {
     // Next byte in the current parameter.
 
     if (this.trailingModifier_) {
@@ -705,12 +705,12 @@ hterm.VT.prototype.parseCSI_ = function(parseState) {
       }
 
       // Possible sub-parameters.
-      if (ch == ':') {
+      if (ch == ":") {
         parseState.argSetSubargs(args.length - 1);
       }
     }
 
-  } else if (ch >= ' ' && ch <= '?') {
+  } else if (ch >= " " && ch <= "?") {
     // Modifier character.
     if (!args.length) {
       this.leadingModifier_ += ch;
@@ -720,7 +720,7 @@ hterm.VT.prototype.parseCSI_ = function(parseState) {
 
   } else if (this.cc1Pattern_.test(ch)) {
     // Control character.
-    this.dispatch('CC1', ch, parseState);
+    this.dispatch("CC1", ch, parseState);
 
   } else {
     // Unexpected character in sequence, bail out.
@@ -749,10 +749,10 @@ hterm.VT.prototype.parseDCS_ = function(parseState) {
     parseState.resetParseFunction();
   };
 
-  if (ch >= '@' && ch <= '~') {
+  if (ch >= "@" && ch <= "~") {
     // This is the final character.
     parseState.advance(1);
-    this.dispatch('DCS', this.leadingModifier_ + this.trailingModifier_ + ch,
+    this.dispatch("DCS", this.leadingModifier_ + this.trailingModifier_ + ch,
                   parseState);
 
     // Don't reset the parser function if it's being handled.
@@ -762,7 +762,7 @@ hterm.VT.prototype.parseDCS_ = function(parseState) {
     }
     return;
 
-  } else if (ch === ';') {
+  } else if (ch === ";") {
     // Parameter delimiter.
     if (this.trailingModifier_) {
       // Parameter delimiter after the trailing modifier.  Abort parsing.
@@ -771,13 +771,13 @@ hterm.VT.prototype.parseDCS_ = function(parseState) {
     } else {
       if (!args.length) {
         // They omitted the first param, we need to supply it.
-        args.push('');
+        args.push("");
       }
 
-      args.push('');
+      args.push("");
     }
 
-  } else if (ch >= '0' && ch <= '9') {
+  } else if (ch >= "0" && ch <= "9") {
     // Next byte in the current parameter.
 
     if (this.trailingModifier_) {
@@ -791,7 +791,7 @@ hterm.VT.prototype.parseDCS_ = function(parseState) {
       }
     }
 
-  } else if (ch >= ' ' && ch <= '?') {
+  } else if (ch >= " " && ch <= "?") {
     // Modifier character.
     if (!args.length) {
       this.leadingModifier_ += ch;
@@ -801,7 +801,7 @@ hterm.VT.prototype.parseDCS_ = function(parseState) {
 
   } else if (this.cc1Pattern_.test(ch)) {
     // Control character.
-    this.dispatch('CC1', ch, parseState);
+    this.dispatch("CC1", ch, parseState);
 
   } else {
     // Unexpected character in sequence, bail out.
@@ -821,13 +821,13 @@ hterm.VT.prototype.parseTmuxControlModeData_ = function(parseState) {
   const args = parseState.args;
   if (!args.length) {
     // This stores the unfinished line.
-    args[0] = '';
+    args[0] = "";
   }
   // Consume as many lines as possible.
   while (true) {
     const args0InitialLength = args[0].length;
     const buf = args[0] + parseState.peekRemainingBuf();
-    args[0] = '';
+    args[0] = "";
 
     // Find either ST or line break.
     // eslint-disable-next-line no-control-regex
@@ -842,7 +842,7 @@ hterm.VT.prototype.parseTmuxControlModeData_ = function(parseState) {
     parseState.advance(index + 2 - args0InitialLength);
 
     // Check if buf ends with ST.
-    if (buf[index] === '\x1b') {
+    if (buf[index] === "\x1b") {
       if (data) {
         console.error(`unexpected data before ST: ${data}`);
       }
@@ -879,15 +879,15 @@ hterm.VT.prototype.parseUntilStringTerminator_ = function(parseState) {
   let bufInserted = 0;
 
   if (!args.length) {
-    args[0] = '';
+    args[0] = "";
     args[1] = new Date().getTime();
   } else {
     // If our saved buffer ends with an escape, it's because we were hoping
     // it's an ST split across two buffers.  Move it from our saved buffer
     // to the start of our current buffer for processing anew.
-    if (args[0].slice(-1) == '\x1b') {
+    if (args[0].slice(-1) == "\x1b") {
       args[0] = args[0].slice(0, -1);
-      buf = '\x1b' + buf;
+      buf = "\x1b" + buf;
       bufInserted = 1;
     }
   }
@@ -899,7 +899,7 @@ hterm.VT.prototype.parseUntilStringTerminator_ = function(parseState) {
 
   // If the next escape we see is not a start of a ST, fall through.  This will
   // either be invalid (embedded escape), or we'll queue it up (wait for \\).
-  if (terminator == '\x1b' && buf[nextTerminator + 1] != '\\') {
+  if (terminator == "\x1b" && buf[nextTerminator + 1] != "\\") {
     foundTerminator = false;
   } else {
     foundTerminator = (nextTerminator != -1);
@@ -915,8 +915,8 @@ hterm.VT.prototype.parseUntilStringTerminator_ = function(parseState) {
     // Special case: If our buffering happens to split the ST (\e\\), we have to
     // buffer the content temporarily.  So don't reject a trailing escape here,
     // instead we let it timeout or be rejected in the next pass.
-    if (terminator == '\x1b' && nextTerminator != buf.length - 1) {
-      abortReason = 'embedded escape: ' + nextTerminator;
+    if (terminator == "\x1b" && nextTerminator != buf.length - 1) {
+      abortReason = "embedded escape: " + nextTerminator;
     }
 
     // We stuffed a Date into args[1] above.
@@ -927,7 +927,7 @@ hterm.VT.prototype.parseUntilStringTerminator_ = function(parseState) {
 
     if (abortReason) {
       if (this.warnUnimplemented) {
-        console.log('parseUntilStringTerminator_: aborting: ' + abortReason,
+        console.log("parseUntilStringTerminator_: aborting: " + abortReason,
                     args[0]);
       }
       parseState.reset(args[0]);
@@ -942,7 +942,7 @@ hterm.VT.prototype.parseUntilStringTerminator_ = function(parseState) {
 
   parseState.resetParseFunction();
   parseState.advance(nextTerminator +
-                     (terminator == '\x1b' ? 2 : 1) - bufInserted);
+                     (terminator == "\x1b" ? 2 : 1) - bufInserted);
 
   return true;
 };
@@ -977,7 +977,7 @@ hterm.VT.prototype.dispatch = function(type, code, parseState) {
     return;
   }
 
-  if (type == 'CC1' && code > '\x7f' && !this.enable8BitControl) {
+  if (type == "CC1" && code > "\x7f" && !this.enable8BitControl) {
     // It's kind of a hack to put this here, but...
     //
     // If we're dispatching a 'CC1' code, and it's got the eighth bit set,
@@ -986,7 +986,7 @@ hterm.VT.prototype.dispatch = function(type, code, parseState) {
     // This prevents an errant (DCS, '\x90'), (OSC, '\x9d'), (PM, '\x9e') or
     // (APC, '\x9f') from locking up the terminal waiting for its expected
     // (ST, '\x9c') or (BEL, '\x07').
-    console.warn('Ignoring 8-bit control code: 0x' +
+    console.warn("Ignoring 8-bit control code: 0x" +
                  code.charCodeAt(0).toString(16));
     return;
   }
@@ -1010,7 +1010,7 @@ hterm.VT.prototype.setANSIMode = function(code, state) {
   } else if (code == 20) {  // Automatic Newline (LNM)
     this.terminal.setAutoCarriageReturn(state);
   } else if (this.warnUnimplemented) {
-    console.warn('Unimplemented ANSI Mode: ' + code);
+    console.warn("Unimplemented ANSI Mode: " + code);
   }
 };
 
@@ -1128,7 +1128,7 @@ hterm.VT.prototype.setDECMode = function(code, state) {
         if (!this.terminal.keyboard.previousAltSendsWhat_) {
           this.terminal.keyboard.previousAltSendsWhat_ =
               this.terminal.keyboard.altSendsWhat;
-          this.terminal.keyboard.altSendsWhat = 'escape';
+          this.terminal.keyboard.altSendsWhat = "escape";
         }
       } else if (this.terminal.keyboard.previousAltSendsWhat_) {
         this.terminal.keyboard.altSendsWhat =
@@ -1168,7 +1168,7 @@ hterm.VT.prototype.setDECMode = function(code, state) {
 
     default:
       if (this.warnUnimplemented) {
-        console.warn('Unimplemented DEC Private Mode: ' + code);
+        console.warn("Unimplemented DEC Private Mode: " + code);
       }
       break;
   }
@@ -1234,7 +1234,7 @@ hterm.VT.VT52 = {};
  *
  * Silently ignored.
  */
-hterm.VT.CC1['\x00'] = hterm.VT.ignore;
+hterm.VT.CC1["\x00"] = hterm.VT.ignore;
 
 /**
  * Enquiry (ENQ).
@@ -1244,14 +1244,14 @@ hterm.VT.CC1['\x00'] = hterm.VT.ignore;
  * The default answerback message in xterm is an empty string, so we just
  * ignore this.
  */
-hterm.VT.CC1['\x05'] = hterm.VT.ignore;
+hterm.VT.CC1["\x05"] = hterm.VT.ignore;
 
 /**
  * Ring Bell (BEL).
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x07'] = function() {
+hterm.VT.CC1["\x07"] = function() {
   this.terminal.ringBell();
 };
 
@@ -1263,7 +1263,7 @@ hterm.VT.CC1['\x07'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x08'] = function() {
+hterm.VT.CC1["\x08"] = function() {
   this.terminal.cursorLeft(1);
 };
 
@@ -1275,7 +1275,7 @@ hterm.VT.CC1['\x08'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x09'] = function() {
+hterm.VT.CC1["\x09"] = function() {
   this.terminal.forwardTabStop();
 };
 
@@ -1287,7 +1287,7 @@ hterm.VT.CC1['\x09'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x0a'] = function() {
+hterm.VT.CC1["\x0a"] = function() {
   this.terminal.formFeed();
 };
 
@@ -1296,14 +1296,14 @@ hterm.VT.CC1['\x0a'] = function() {
  *
  * Interpreted as LF.
  */
-hterm.VT.CC1['\x0b'] = hterm.VT.CC1['\x0a'];
+hterm.VT.CC1["\x0b"] = hterm.VT.CC1["\x0a"];
 
 /**
  * Form Feed (FF).
  *
  * Interpreted as LF.
  */
-hterm.VT.CC1['\x0c'] = hterm.VT.CC1['\x0a'];
+hterm.VT.CC1["\x0c"] = hterm.VT.CC1["\x0a"];
 
 /**
  * Carriage Return (CR).
@@ -1312,7 +1312,7 @@ hterm.VT.CC1['\x0c'] = hterm.VT.CC1['\x0a'];
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x0d'] = function() {
+hterm.VT.CC1["\x0d"] = function() {
   this.terminal.setCursorColumn(0);
 };
 
@@ -1322,8 +1322,8 @@ hterm.VT.CC1['\x0d'] = function() {
  * @this {!hterm.VT}
  * Invoke G1 character set in GL.
  */
-hterm.VT.CC1['\x0e'] = function() {
-  this.GL = 'G1';
+hterm.VT.CC1["\x0e"] = function() {
+  this.GL = "G1";
 };
 
 /**
@@ -1333,8 +1333,8 @@ hterm.VT.CC1['\x0e'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x0f'] = function() {
-  this.GL = 'G0';
+hterm.VT.CC1["\x0f"] = function() {
+  this.GL = "G0";
 };
 
 /**
@@ -1344,7 +1344,7 @@ hterm.VT.CC1['\x0f'] = function() {
  *
  * TODO(rginda): Implement?
  */
-hterm.VT.CC1['\x11'] = hterm.VT.ignore;
+hterm.VT.CC1["\x11"] = hterm.VT.ignore;
 
 /**
  * Transmit Off (XOFF).
@@ -1353,7 +1353,7 @@ hterm.VT.CC1['\x11'] = hterm.VT.ignore;
  *
  * TODO(rginda): Implement?
  */
-hterm.VT.CC1['\x13'] = hterm.VT.ignore;
+hterm.VT.CC1["\x13"] = hterm.VT.ignore;
 
 /**
  * Cancel (CAN).
@@ -1366,14 +1366,14 @@ hterm.VT.CC1['\x13'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CC1['\x18'] = function(parseState) {
+hterm.VT.CC1["\x18"] = function(parseState) {
   // If we've shifted in the G1 character set, shift it back out to
   // the default character set.
-  if (this.GL == 'G1') {
-    this.GL = 'G0';
+  if (this.GL == "G1") {
+    this.GL = "G0";
   }
   parseState.resetParseFunction();
-  this.terminal.print('?');
+  this.terminal.print("?");
 };
 
 /**
@@ -1381,7 +1381,7 @@ hterm.VT.CC1['\x18'] = function(parseState) {
  *
  * Interpreted as CAN.
  */
-hterm.VT.CC1['\x1a'] = hterm.VT.CC1['\x18'];
+hterm.VT.CC1["\x1a"] = hterm.VT.CC1["\x18"];
 
 /**
  * Escape (ESC).
@@ -1389,15 +1389,15 @@ hterm.VT.CC1['\x1a'] = hterm.VT.CC1['\x18'];
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CC1['\x1b'] = function(parseState) {
+hterm.VT.CC1["\x1b"] = function(parseState) {
   function parseESC(parseState) {
     const ch = parseState.consumeChar();
 
-    if (ch == '\x1b') {
+    if (ch == "\x1b") {
       return;
     }
 
-    this.dispatch('ESC', ch, parseState);
+    this.dispatch("ESC", ch, parseState);
 
     if (parseState.func == parseESC) {
       parseState.resetParseFunction();
@@ -1410,7 +1410,7 @@ hterm.VT.CC1['\x1b'] = function(parseState) {
 /**
  * Delete (DEL).
  */
-hterm.VT.CC1['\x7f'] = hterm.VT.ignore;
+hterm.VT.CC1["\x7f"] = hterm.VT.ignore;
 
 // 8 bit control characters and their two byte equivalents, below...
 
@@ -1421,8 +1421,8 @@ hterm.VT.CC1['\x7f'] = hterm.VT.ignore;
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x84'] =
-hterm.VT.ESC['D'] = function() {
+hterm.VT.CC1["\x84"] =
+hterm.VT.ESC["D"] = function() {
   this.terminal.lineFeed();
 };
 
@@ -1433,8 +1433,8 @@ hterm.VT.ESC['D'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x85'] =
-hterm.VT.ESC['E'] = function() {
+hterm.VT.CC1["\x85"] =
+hterm.VT.ESC["E"] = function() {
   this.terminal.setCursorColumn(0);
   this.terminal.cursorDown(1);
 };
@@ -1444,8 +1444,8 @@ hterm.VT.ESC['E'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x88'] =
-hterm.VT.ESC['H'] = function() {
+hterm.VT.CC1["\x88"] =
+hterm.VT.ESC["H"] = function() {
   this.terminal.setTabStop(this.terminal.getCursorColumn());
 };
 
@@ -1456,8 +1456,8 @@ hterm.VT.ESC['H'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x8d'] =
-hterm.VT.ESC['M'] = function() {
+hterm.VT.CC1["\x8d"] =
+hterm.VT.ESC["M"] = function() {
   this.terminal.reverseLineFeed();
 };
 
@@ -1468,8 +1468,8 @@ hterm.VT.ESC['M'] = function() {
  *
  * Not currently implemented.
  */
-hterm.VT.CC1['\x8e'] =
-hterm.VT.ESC['N'] = hterm.VT.ignore;
+hterm.VT.CC1["\x8e"] =
+hterm.VT.ESC["N"] = hterm.VT.ignore;
 
 /**
  * Single Shift 3 (SS3).
@@ -1478,8 +1478,8 @@ hterm.VT.ESC['N'] = hterm.VT.ignore;
  *
  * Not currently implemented.
  */
-hterm.VT.CC1['\x8f'] =
-hterm.VT.ESC['O'] = hterm.VT.ignore;
+hterm.VT.CC1["\x8f"] =
+hterm.VT.ESC["O"] = hterm.VT.ignore;
 
 /**
  * Device Control String (DCS).
@@ -1491,11 +1491,11 @@ hterm.VT.ESC['O'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CC1['\x90'] =
-hterm.VT.ESC['P'] = function(parseState) {
+hterm.VT.CC1["\x90"] =
+hterm.VT.ESC["P"] = function(parseState) {
   parseState.resetArguments();
-  this.leadingModifier_ = '';
-  this.trailingModifier_ = '';
+  this.leadingModifier_ = "";
+  this.trailingModifier_ = "";
   parseState.func = this.parseDCS_;
 };
 
@@ -1504,24 +1504,24 @@ hterm.VT.ESC['P'] = function(parseState) {
  *
  * Will not implement.
  */
-hterm.VT.CC1['\x96'] =
-hterm.VT.ESC['V'] = hterm.VT.ignore;
+hterm.VT.CC1["\x96"] =
+hterm.VT.ESC["V"] = hterm.VT.ignore;
 
 /**
  * End of Guarded Area (EPA).
  *
  * Will not implement.
  */
-hterm.VT.CC1['\x97'] =
-hterm.VT.ESC['W'] = hterm.VT.ignore;
+hterm.VT.CC1["\x97"] =
+hterm.VT.ESC["W"] = hterm.VT.ignore;
 
 /**
  * Start of String (SOS).
  *
  * Will not implement.
  */
-hterm.VT.CC1['\x98'] =
-hterm.VT.ESC['X'] = hterm.VT.ignore;
+hterm.VT.CC1["\x98"] =
+hterm.VT.ESC["X"] = hterm.VT.ignore;
 
 /**
  * Single Character Introducer (SCI, also DECID).
@@ -1530,9 +1530,9 @@ hterm.VT.ESC['X'] = hterm.VT.ignore;
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CC1['\x9a'] =
-hterm.VT.ESC['Z'] = function() {
-  this.terminal.io.sendString('\x1b[?1;2c');
+hterm.VT.CC1["\x9a"] =
+hterm.VT.ESC["Z"] = function() {
+  this.terminal.io.sendString("\x1b[?1;2c");
 };
 
 /**
@@ -1543,11 +1543,11 @@ hterm.VT.ESC['Z'] = function() {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CC1['\x9b'] =
-hterm.VT.ESC['['] = function(parseState) {
+hterm.VT.CC1["\x9b"] =
+hterm.VT.ESC["["] = function(parseState) {
   parseState.resetArguments();
-  this.leadingModifier_ = '';
-  this.trailingModifier_ = '';
+  this.leadingModifier_ = "";
+  this.trailingModifier_ = "";
   parseState.func = this.parseCSI_;
 };
 
@@ -1559,8 +1559,8 @@ hterm.VT.ESC['['] = function(parseState) {
  * We don't directly handle it here, as it's only used to terminate other
  * sequences.  See the 'parseUntilStringTerminator_' method.
  */
-hterm.VT.CC1['\x9c'] =
-hterm.VT.ESC['\\'] = hterm.VT.ignore;
+hterm.VT.CC1["\x9c"] =
+hterm.VT.ESC["\\"] = hterm.VT.ignore;
 
 /**
  * Operating System Command (OSC).
@@ -1570,8 +1570,8 @@ hterm.VT.ESC['\\'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CC1['\x9d'] =
-hterm.VT.ESC[']'] = function(parseState) {
+hterm.VT.CC1["\x9d"] =
+hterm.VT.ESC["]"] = function(parseState) {
   parseState.resetArguments();
 
   /**
@@ -1592,9 +1592,9 @@ hterm.VT.ESC[']'] = function(parseState) {
     const ary = parseState.args[0].match(/^(\d+);?(.*)$/);
     if (ary) {
       parseState.args[0] = ary[2];
-      this.dispatch('OSC', ary[1], parseState);
+      this.dispatch("OSC", ary[1], parseState);
     } else {
-      console.warn('Invalid OSC: ' + JSON.stringify(parseState.args[0]));
+      console.warn("Invalid OSC: " + JSON.stringify(parseState.args[0]));
     }
 
     // Resetting the arguments isn't strictly necessary, but it makes debugging
@@ -1614,8 +1614,8 @@ hterm.VT.ESC[']'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CC1['\x9e'] =
-hterm.VT.ESC['^'] = function(parseState) {
+hterm.VT.CC1["\x9e"] =
+hterm.VT.ESC["^"] = function(parseState) {
   parseState.resetArguments();
   parseState.func = this.parseUntilStringTerminator_;
 };
@@ -1628,8 +1628,8 @@ hterm.VT.ESC['^'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CC1['\x9f'] =
-hterm.VT.ESC['_'] = function(parseState) {
+hterm.VT.CC1["\x9f"] =
+hterm.VT.ESC["_"] = function(parseState) {
   parseState.resetArguments();
   parseState.func = this.parseUntilStringTerminator_;
 };
@@ -1650,11 +1650,11 @@ hterm.VT.ESC['_'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.ESC['\x20'] = function(parseState) {
+hterm.VT.ESC["\x20"] = function(parseState) {
   parseState.func = function(parseState) {
     const ch = parseState.consumeChar();
     if (this.warnUnimplemented) {
-      console.warn('Unimplemented sequence: ESC 0x20 ' + ch);
+      console.warn("Unimplemented sequence: ESC 0x20 " + ch);
     }
     parseState.resetParseFunction();
   };
@@ -1666,13 +1666,13 @@ hterm.VT.ESC['\x20'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.ESC['#'] = function(parseState) {
+hterm.VT.ESC["#"] = function(parseState) {
   parseState.func = function(parseState) {
     const ch = parseState.consumeChar();
-    if (ch == '8') {
+    if (ch == "8") {
       // DEC Screen Alignment Test (DECALN).
       this.terminal.setCursorPosition(0, 0);
-      this.terminal.fill('E');
+      this.terminal.fill("E");
     }
 
     parseState.resetParseFunction();
@@ -1685,13 +1685,13 @@ hterm.VT.ESC['#'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.ESC['%'] = function(parseState) {
+hterm.VT.ESC["%"] = function(parseState) {
   parseState.func = function(parseState) {
     let ch = parseState.consumeChar();
 
     // If we've locked the encoding, then just eat the bytes and return.
     if (this.codingSystemLocked_) {
-      if (ch == '/') {
+      if (ch == "/") {
         parseState.consumeChar();
       }
       parseState.resetParseFunction();
@@ -1700,30 +1700,30 @@ hterm.VT.ESC['%'] = function(parseState) {
 
     // Process the encoding requests.
     switch (ch) {
-      case '@':
+      case "@":
         // Switch to ECMA 35.
-        this.setEncoding('iso-2022');
+        this.setEncoding("iso-2022");
         break;
 
-      case 'G':
+      case "G":
         // Switch to UTF-8.
-        this.setEncoding('utf-8');
+        this.setEncoding("utf-8");
         break;
 
-      case '/':
+      case "/":
         // One way transition to something else.
         ch = parseState.consumeChar();
         switch (ch) {
-          case 'G':  // UTF-8 Level 1.
-          case 'H':  // UTF-8 Level 2.
-          case 'I':  // UTF-8 Level 3.
+          case "G":  // UTF-8 Level 1.
+          case "H":  // UTF-8 Level 2.
+          case "I":  // UTF-8 Level 3.
             // We treat all UTF-8 levels the same.
-            this.setEncoding('utf-8-locked');
+            this.setEncoding("utf-8-locked");
             break;
 
           default:
             if (this.warnUnimplemented) {
-              console.warn('Unknown ESC % / argument: ' + JSON.stringify(ch));
+              console.warn("Unknown ESC % / argument: " + JSON.stringify(ch));
             }
             break;
         }
@@ -1731,7 +1731,7 @@ hterm.VT.ESC['%'] = function(parseState) {
 
       default:
         if (this.warnUnimplemented) {
-          console.warn('Unknown ESC % argument: ' + JSON.stringify(ch));
+          console.warn("Unknown ESC % argument: " + JSON.stringify(ch));
         }
         break;
     }
@@ -1757,15 +1757,15 @@ hterm.VT.ESC['%'] = function(parseState) {
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  * @param {string} code
  */
-hterm.VT.ESC['('] =
-hterm.VT.ESC[')'] =
-hterm.VT.ESC['*'] =
-hterm.VT.ESC['+'] =
-hterm.VT.ESC['-'] =
-hterm.VT.ESC['.'] =
-hterm.VT.ESC['/'] = function(parseState, code) {
+hterm.VT.ESC["("] =
+hterm.VT.ESC[")"] =
+hterm.VT.ESC["*"] =
+hterm.VT.ESC["+"] =
+hterm.VT.ESC["-"] =
+hterm.VT.ESC["."] =
+hterm.VT.ESC["/"] = function(parseState, code) {
   parseState.func = function(parseState) {
-    if (parseState.peekChar() === '\x1b') {
+    if (parseState.peekChar() === "\x1b") {
       // Invalid SCS sequence, treat this ESC as a new sequence starting.
       parseState.resetParseFunction();
       return;
@@ -1773,13 +1773,13 @@ hterm.VT.ESC['/'] = function(parseState, code) {
     const ch = parseState.consumeChar();
     const map = this.characterMaps.getMap(ch);
     if (map !== undefined) {
-      if (code == '(') {
+      if (code == "(") {
         this.G0 = map;
-      } else if (code == ')' || code == '-') {
+      } else if (code == ")" || code == "-") {
         this.G1 = map;
-      } else if (code == '*' || code == '.') {
+      } else if (code == "*" || code == ".") {
         this.G2 = map;
-      } else if (code == '+' || code == '/') {
+      } else if (code == "+" || code == "/") {
         this.G3 = map;
       }
     } else if (this.warnUnimplemented) {
@@ -1795,14 +1795,14 @@ hterm.VT.ESC['/'] = function(parseState, code) {
  *
  * VT420 and up.  Not currently implemented.
  */
-hterm.VT.ESC['6'] = hterm.VT.ignore;
+hterm.VT.ESC["6"] = hterm.VT.ignore;
 
 /**
  * Save Cursor (DECSC).
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['7'] = function() {
+hterm.VT.ESC["7"] = function() {
   this.terminal.saveCursorAndState();
 };
 
@@ -1811,7 +1811,7 @@ hterm.VT.ESC['7'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['8'] = function() {
+hterm.VT.ESC["8"] = function() {
   this.terminal.restoreCursorAndState();
 };
 
@@ -1820,14 +1820,14 @@ hterm.VT.ESC['8'] = function() {
  *
  * VT210 and up.  Not currently implemented.
  */
-hterm.VT.ESC['9'] = hterm.VT.ignore;
+hterm.VT.ESC["9"] = hterm.VT.ignore;
 
 /**
  * Application keypad (DECKPAM).
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['='] = function() {
+hterm.VT.ESC["="] = function() {
   this.terminal.keyboard.applicationKeypad = true;
 };
 
@@ -1836,7 +1836,7 @@ hterm.VT.ESC['='] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['>'] = function() {
+hterm.VT.ESC[">"] = function() {
   this.terminal.keyboard.applicationKeypad = false;
 };
 
@@ -1848,14 +1848,14 @@ hterm.VT.ESC['>'] = function() {
  * This is only recognized by xterm when the hpLowerleftBugCompat resource is
  * set.
  */
-hterm.VT.ESC['F'] = hterm.VT.ignore;
+hterm.VT.ESC["F"] = hterm.VT.ignore;
 
 /**
  * Full Reset (RIS).
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['c'] = function() {
+hterm.VT.ESC["c"] = function() {
   this.terminal.reset();
 };
 
@@ -1866,7 +1866,7 @@ hterm.VT.ESC['c'] = function() {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.ESC['k'] = function(parseState) {
+hterm.VT.ESC["k"] = function(parseState) {
   function parse(parseState) {
     if (!this.parseUntilStringTerminator_(parseState)) {
       // The string sequence was too long.
@@ -1891,8 +1891,8 @@ hterm.VT.ESC['k'] = function(parseState) {
  *
  * Will not implement.
  */
-hterm.VT.ESC['l'] =
-hterm.VT.ESC['m'] = hterm.VT.ignore;
+hterm.VT.ESC["l"] =
+hterm.VT.ESC["m"] = hterm.VT.ignore;
 
 /**
  * Lock Shift 2 (LS2)
@@ -1901,8 +1901,8 @@ hterm.VT.ESC['m'] = hterm.VT.ignore;
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['n'] = function() {
-  this.GL = 'G2';
+hterm.VT.ESC["n"] = function() {
+  this.GL = "G2";
 };
 
 /**
@@ -1912,8 +1912,8 @@ hterm.VT.ESC['n'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['o'] = function() {
-  this.GL = 'G3';
+hterm.VT.ESC["o"] = function() {
+  this.GL = "G3";
 };
 
 /**
@@ -1923,8 +1923,8 @@ hterm.VT.ESC['o'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['|'] = function() {
-  this.GR = 'G3';
+hterm.VT.ESC["|"] = function() {
+  this.GR = "G3";
 };
 
 /**
@@ -1934,8 +1934,8 @@ hterm.VT.ESC['|'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['}'] = function() {
-  this.GR = 'G2';
+hterm.VT.ESC["}"] = function() {
+  this.GR = "G2";
 };
 
 /**
@@ -1945,8 +1945,8 @@ hterm.VT.ESC['}'] = function() {
  *
  * @this {!hterm.VT}
  */
-hterm.VT.ESC['~'] = function() {
-  this.GR = 'G1';
+hterm.VT.ESC["~"] = function() {
+  this.GR = "G1";
 };
 
 /**
@@ -1955,8 +1955,8 @@ hterm.VT.ESC['~'] = function() {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.DCS['p'] = function(parseState) {
-  if (parseState.args.length === 1 && parseState.args[0] === '1000') {
+hterm.VT.DCS["p"] = function(parseState) {
+  if (parseState.args.length === 1 && parseState.args[0] === "1000") {
     parseState.resetArguments();
     parseState.func = this.parseTmuxControlModeData_;
   }
@@ -1970,14 +1970,14 @@ hterm.VT.DCS['p'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['0'] = function(parseState) {
+hterm.VT.OSC["0"] = function(parseState) {
   this.terminal.setWindowTitle(parseState.args[0]);
 };
 
 /**
  * Change window title.
  */
-hterm.VT.OSC['2'] = hterm.VT.OSC['0'];
+hterm.VT.OSC["2"] = hterm.VT.OSC["0"];
 
 /**
  * Set/read color palette.
@@ -1985,10 +1985,10 @@ hterm.VT.OSC['2'] = hterm.VT.OSC['0'];
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['4'] = function(parseState) {
+hterm.VT.OSC["4"] = function(parseState) {
   // Args come in as a single 'index1;rgb1 ... ;indexN;rgbN' string.
   // We split on the semicolon and iterate through the pairs.
-  const args = parseState.args[0].split(';');
+  const args = parseState.args[0].split(";");
 
   const pairCount = Math.floor(args.length / 2);
   const responseArray = [];
@@ -2001,12 +2001,12 @@ hterm.VT.OSC['4'] = function(parseState) {
       continue;
     }
 
-    if (colorValue == '?') {
+    if (colorValue == "?") {
       // '?' means we should report back the current color value.
       colorValue = lib.colors.rgbToX11(
           this.terminal.getColorPalette(colorIndex));
       if (colorValue) {
-        responseArray.push(colorIndex + ';' + colorValue);
+        responseArray.push(colorIndex + ";" + colorValue);
       }
 
       continue;
@@ -2019,7 +2019,7 @@ hterm.VT.OSC['4'] = function(parseState) {
   }
 
   if (responseArray.length) {
-    this.terminal.io.sendString('\x1b]4;' + responseArray.join(';') + '\x07');
+    this.terminal.io.sendString("\x1b]4;" + responseArray.join(";") + "\x07");
   }
 };
 
@@ -2037,18 +2037,18 @@ hterm.VT.OSC['4'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['8'] = function(parseState) {
-  const args = parseState.args[0].split(';');
+hterm.VT.OSC["8"] = function(parseState) {
+  const args = parseState.args[0].split(";");
   let id = null;
   let uri = null;
 
   // If it doesn't take this exact form, we'll fall thru & reset the link.
   if (args.length === 2 && args[1].length) {
     // Pull out any colon separated parameters in the first argument.
-    const params = args[0].split(':');
-    id = '';
+    const params = args[0].split(":");
+    id = "";
     params.forEach((param) => {
-      const idx = param.indexOf('=');
+      const idx = param.indexOf("=");
       if (idx == -1) {
         return;
       }
@@ -2056,7 +2056,7 @@ hterm.VT.OSC['8'] = function(parseState) {
       const key = param.slice(0, idx);
       const value = param.slice(idx + 1);
       switch (key) {
-        case 'id':
+        case "id":
           id = value;
           break;
         default:
@@ -2079,9 +2079,9 @@ hterm.VT.OSC['8'] = function(parseState) {
  *
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['9'] = function(parseState) {
+hterm.VT.OSC["9"] = function(parseState) {
   // This just dumps the entire string as the message.
-  hterm.notify({'body': parseState.args[0]});
+  hterm.notify({"body": parseState.args[0]});
 };
 
 /**
@@ -2090,10 +2090,10 @@ hterm.VT.OSC['9'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['10'] = function(parseState) {
+hterm.VT.OSC["10"] = function(parseState) {
   // Args come in as a single string, but extra args will chain to the following
   // OSC sequences.
-  const args = parseState.args[0].split(';');
+  const args = parseState.args[0].split(";");
   if (!args) {
     return;
   }
@@ -2104,8 +2104,8 @@ hterm.VT.OSC['10'] = function(parseState) {
   }
 
   if (args.length > 0) {
-    parseState.args[0] = args.join(';');
-    hterm.VT.OSC['11'].apply(this, [parseState]);
+    parseState.args[0] = args.join(";");
+    hterm.VT.OSC["11"].apply(this, [parseState]);
   }
 };
 
@@ -2115,10 +2115,10 @@ hterm.VT.OSC['10'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['11'] = function(parseState) {
+hterm.VT.OSC["11"] = function(parseState) {
   // Args come in as a single string, but extra args will chain to the following
   // OSC sequences.
-  const args = parseState.args[0].split(';');
+  const args = parseState.args[0].split(";");
   if (!args) {
     return;
   }
@@ -2129,8 +2129,8 @@ hterm.VT.OSC['11'] = function(parseState) {
   }
 
   if (args.length > 0) {
-    parseState.args[0] = args.join(';');
-    hterm.VT.OSC['12'].apply(this, [parseState]);
+    parseState.args[0] = args.join(";");
+    hterm.VT.OSC["12"].apply(this, [parseState]);
   }
 };
 
@@ -2140,10 +2140,10 @@ hterm.VT.OSC['11'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['12'] = function(parseState) {
+hterm.VT.OSC["12"] = function(parseState) {
   // Args come in as a single string, but extra args will chain to the following
   // OSC sequences.
-  const args = parseState.args[0].split(';');
+  const args = parseState.args[0].split(";");
   if (!args) {
     return;
   }
@@ -2186,19 +2186,19 @@ hterm.VT.OSC['12'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['50'] = function(parseState) {
+hterm.VT.OSC["50"] = function(parseState) {
   const args = parseState.args[0].match(/CursorShape=(.)/i);
   if (!args) {
-    console.warn('Could not parse OSC 50 args: ' + parseState.args[0]);
+    console.warn("Could not parse OSC 50 args: " + parseState.args[0]);
     return;
   }
 
   switch (args[1]) {
-    case '1':  // CursorShape=1: I-Beam.
+    case "1":  // CursorShape=1: I-Beam.
       this.terminal.setCursorShape(hterm.Terminal.cursorShape.BEAM);
       break;
 
-    case '2':  // CursorShape=2: Underline.
+    case "2":  // CursorShape=2: Underline.
       this.terminal.setCursorShape(hterm.Terminal.cursorShape.UNDERLINE);
       break;
 
@@ -2217,7 +2217,7 @@ hterm.VT.OSC['50'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['52'] = function(parseState) {
+hterm.VT.OSC["52"] = function(parseState) {
   if (!this.enableClipboardWrite) {
     return;
   }
@@ -2251,7 +2251,7 @@ hterm.VT.OSC['52'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['104'] = function(parseState) {
+hterm.VT.OSC["104"] = function(parseState) {
   // If there are no args, we reset the entire palette.
   if (!parseState.args[0]) {
     this.terminal.resetColorPalette();
@@ -2260,7 +2260,7 @@ hterm.VT.OSC['104'] = function(parseState) {
 
   // Args come in as a single 'index1;index2;...;indexN' string.
   // Split on the semicolon and iterate through the colors.
-  const args = parseState.args[0].split(';');
+  const args = parseState.args[0].split(";");
   args.forEach((c) => this.terminal.resetColor(c));
 };
 
@@ -2270,7 +2270,7 @@ hterm.VT.OSC['104'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['110'] = function(parseState) {
+hterm.VT.OSC["110"] = function(parseState) {
   this.terminal.setForegroundColor();
 };
 
@@ -2280,7 +2280,7 @@ hterm.VT.OSC['110'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['111'] = function(parseState) {
+hterm.VT.OSC["111"] = function(parseState) {
   this.terminal.setBackgroundColor();
 };
 
@@ -2290,7 +2290,7 @@ hterm.VT.OSC['111'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['112'] = function(parseState) {
+hterm.VT.OSC["112"] = function(parseState) {
   this.terminal.setCursorColor();
 };
 
@@ -2302,7 +2302,7 @@ hterm.VT.OSC['112'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['1337'] = function(parseState) {
+hterm.VT.OSC["1337"] = function(parseState) {
   // Args come in as a set of key value pairs followed by data.
   // File=name=<base64>;size=123;inline=1:<base64 data>
   const args = parseState.args[0].match(/^File=([^:]*):([\s\S]*)$/m);
@@ -2314,18 +2314,18 @@ hterm.VT.OSC['1337'] = function(parseState) {
   }
 
   const options = {
-    name: '',
+    name: "",
     size: 0,
     preserveAspectRatio: true,
     inline: false,
-    width: 'auto',
-    height: 'auto',
-    align: 'left',
-    type: '',
+    width: "auto",
+    height: "auto",
+    align: "left",
+    type: "",
     buffer: lib.codec.stringToCodeUnitArray(atob(args[2])).buffer,
   };
   // Walk the "key=value;" sets.
-  args[1].split(';').forEach((ele) => {
+  args[1].split(";").forEach((ele) => {
     const kv = ele.match(/^([^=]+)=(.*)$/m);
     if (!kv) {
       return;
@@ -2333,37 +2333,37 @@ hterm.VT.OSC['1337'] = function(parseState) {
 
     // Sanitize values nicely.
     switch (kv[1]) {
-      case 'name':
+      case "name":
         try {
           options.name = globalThis.atob(kv[2]);
         } catch (e) {
           // Ignore invalid base64 from user.
         }
         break;
-      case 'size':
+      case "size":
         try {
           options.size = parseInt(kv[2], 10);
         } catch (e) {
           // Ignore invalid numbers from user.
         }
         break;
-      case 'width':
+      case "width":
         options.width = kv[2];
         break;
-      case 'height':
+      case "height":
         options.height = kv[2];
         break;
-      case 'preserveAspectRatio':
-        options.preserveAspectRatio = !(kv[2] == '0');
+      case "preserveAspectRatio":
+        options.preserveAspectRatio = !(kv[2] == "0");
         break;
-      case 'inline':
-        options.inline = !(kv[2] == '0');
+      case "inline":
+        options.inline = !(kv[2] == "0");
         break;
       // hterm-specific keys.
-      case 'align':
+      case "align":
         options.align = kv[2];
         break;
-      case 'type':
+      case "type":
         options.type = kv[2];
         break;
       default:
@@ -2399,12 +2399,12 @@ hterm.VT.OSC['1337'] = function(parseState) {
  *
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.OSC['777'] = function(parseState) {
+hterm.VT.OSC["777"] = function(parseState) {
   let ary;
-  const urxvtMod = parseState.args[0].split(';', 1)[0];
+  const urxvtMod = parseState.args[0].split(";", 1)[0];
 
   switch (urxvtMod) {
-    case 'notify': {
+    case "notify": {
       // Format:
       // notify;title;message
       let title;
@@ -2414,12 +2414,12 @@ hterm.VT.OSC['777'] = function(parseState) {
         title = ary[1];
         message = ary[3];
       }
-      hterm.notify({'title': title, 'body': message});
+      hterm.notify({"title": title, "body": message});
       break;
     }
 
     default:
-      console.warn('Unknown urxvt module: ' + parseState.args[0]);
+      console.warn("Unknown urxvt module: " + parseState.args[0]);
       break;
   }
 };
@@ -2430,7 +2430,7 @@ hterm.VT.OSC['777'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['@'] = function(parseState) {
+hterm.VT.CSI["@"] = function(parseState) {
   this.terminal.insertSpace(parseState.iarg(0, 1));
 };
 
@@ -2440,7 +2440,7 @@ hterm.VT.CSI['@'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['A'] = function(parseState) {
+hterm.VT.CSI["A"] = function(parseState) {
   this.terminal.cursorUp(parseState.iarg(0, 1));
 };
 
@@ -2450,7 +2450,7 @@ hterm.VT.CSI['A'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['B'] = function(parseState) {
+hterm.VT.CSI["B"] = function(parseState) {
   this.terminal.cursorDown(parseState.iarg(0, 1));
 };
 
@@ -2460,7 +2460,7 @@ hterm.VT.CSI['B'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['C'] = function(parseState) {
+hterm.VT.CSI["C"] = function(parseState) {
   this.terminal.cursorRight(parseState.iarg(0, 1));
 };
 
@@ -2470,7 +2470,7 @@ hterm.VT.CSI['C'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['D'] = function(parseState) {
+hterm.VT.CSI["D"] = function(parseState) {
   this.terminal.cursorLeft(parseState.iarg(0, 1));
 };
 
@@ -2483,7 +2483,7 @@ hterm.VT.CSI['D'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['E'] = function(parseState) {
+hterm.VT.CSI["E"] = function(parseState) {
   this.terminal.cursorDown(parseState.iarg(0, 1));
   this.terminal.setCursorColumn(0);
 };
@@ -2497,7 +2497,7 @@ hterm.VT.CSI['E'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['F'] = function(parseState) {
+hterm.VT.CSI["F"] = function(parseState) {
   this.terminal.cursorUp(parseState.iarg(0, 1));
   this.terminal.setCursorColumn(0);
 };
@@ -2510,7 +2510,7 @@ hterm.VT.CSI['F'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['G'] = function(parseState) {
+hterm.VT.CSI["G"] = function(parseState) {
   this.terminal.setCursorColumn(parseState.iarg(0, 1) - 1);
 };
 
@@ -2520,7 +2520,7 @@ hterm.VT.CSI['G'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['H'] = function(parseState) {
+hterm.VT.CSI["H"] = function(parseState) {
   this.terminal.setCursorPosition(parseState.iarg(0, 1) - 1,
                                   parseState.iarg(1, 1) - 1);
 };
@@ -2531,7 +2531,7 @@ hterm.VT.CSI['H'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['I'] = function(parseState) {
+hterm.VT.CSI["I"] = function(parseState) {
   let count = parseState.iarg(0, 1);
   count = lib.f.clamp(count, 1, this.terminal.screenSize.width);
   for (let i = 0; i < count; i++) {
@@ -2545,8 +2545,8 @@ hterm.VT.CSI['I'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['J'] =
-hterm.VT.CSI['?J'] = function(parseState) {
+hterm.VT.CSI["J"] =
+hterm.VT.CSI["?J"] = function(parseState) {
   const arg = parseState.args[0];
 
   if (!arg || arg == 0) {
@@ -2568,8 +2568,8 @@ hterm.VT.CSI['?J'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['K'] =
-hterm.VT.CSI['?K'] = function(parseState) {
+hterm.VT.CSI["K"] =
+hterm.VT.CSI["?K"] = function(parseState) {
   const arg = parseState.args[0];
 
   if (!arg || arg == 0) {
@@ -2587,7 +2587,7 @@ hterm.VT.CSI['?K'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['L'] = function(parseState) {
+hterm.VT.CSI["L"] = function(parseState) {
   this.terminal.insertLines(parseState.iarg(0, 1));
 };
 
@@ -2597,7 +2597,7 @@ hterm.VT.CSI['L'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['M'] = function(parseState) {
+hterm.VT.CSI["M"] = function(parseState) {
   this.terminal.deleteLines(parseState.iarg(0, 1));
 };
 
@@ -2609,7 +2609,7 @@ hterm.VT.CSI['M'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['P'] = function(parseState) {
+hterm.VT.CSI["P"] = function(parseState) {
   this.terminal.deleteChars(parseState.iarg(0, 1));
 };
 
@@ -2619,7 +2619,7 @@ hterm.VT.CSI['P'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['S'] = function(parseState) {
+hterm.VT.CSI["S"] = function(parseState) {
   this.terminal.vtScrollUp(parseState.iarg(0, 1));
 };
 
@@ -2630,7 +2630,7 @@ hterm.VT.CSI['S'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['T'] = function(parseState) {
+hterm.VT.CSI["T"] = function(parseState) {
   if (parseState.args.length <= 1) {
     this.terminal.vtScrollDown(parseState.iarg(0, 1));
   }
@@ -2653,7 +2653,7 @@ hterm.VT.CSI['T'] = function(parseState) {
  *
  * Will not implement.
  */
-hterm.VT.CSI['>T'] = hterm.VT.ignore;
+hterm.VT.CSI[">T"] = hterm.VT.ignore;
 
 /**
  * Erase Characters (ECH).
@@ -2661,7 +2661,7 @@ hterm.VT.CSI['>T'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['X'] = function(parseState) {
+hterm.VT.CSI["X"] = function(parseState) {
   this.terminal.eraseToRight(parseState.iarg(0, 1));
 };
 
@@ -2671,7 +2671,7 @@ hterm.VT.CSI['X'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['Z'] = function(parseState) {
+hterm.VT.CSI["Z"] = function(parseState) {
   let count = parseState.iarg(0, 1);
   count = lib.f.clamp(count, 1, this.terminal.screenSize.width);
   for (let i = 0; i < count; i++) {
@@ -2684,7 +2684,7 @@ hterm.VT.CSI['Z'] = function(parseState) {
  *
  * Same as Cursor Horizontal Absolute (CHA).
  */
-hterm.VT.CSI['`'] = hterm.VT.CSI['G'];
+hterm.VT.CSI["`"] = hterm.VT.CSI["G"];
 
 /**
  * Character Position Relative (HPR).
@@ -2692,7 +2692,7 @@ hterm.VT.CSI['`'] = hterm.VT.CSI['G'];
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['a'] = function(parseState) {
+hterm.VT.CSI["a"] = function(parseState) {
   this.terminal.setCursorColumn(this.terminal.getCursorColumn() +
                                 parseState.iarg(0, 1));
 };
@@ -2702,7 +2702,7 @@ hterm.VT.CSI['a'] = function(parseState) {
  *
  * Not currently implemented.
  */
-hterm.VT.CSI['b'] = hterm.VT.ignore;
+hterm.VT.CSI["b"] = hterm.VT.ignore;
 
 /**
  * Send Device Attributes (Primary DA).
@@ -2714,9 +2714,9 @@ hterm.VT.CSI['b'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['c'] = function(parseState) {
+hterm.VT.CSI["c"] = function(parseState) {
   if (!parseState.args[0] || parseState.args[0] == 0) {
-    this.terminal.io.sendString('\x1b[?1;2c');
+    this.terminal.io.sendString("\x1b[?1;2c");
   }
 };
 
@@ -2730,8 +2730,8 @@ hterm.VT.CSI['c'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['>c'] = function(parseState) {
-  this.terminal.io.sendString('\x1b[>0;256;0c');
+hterm.VT.CSI[">c"] = function(parseState) {
+  this.terminal.io.sendString("\x1b[>0;256;0c");
 };
 
 /**
@@ -2740,7 +2740,7 @@ hterm.VT.CSI['>c'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['d'] = function(parseState) {
+hterm.VT.CSI["d"] = function(parseState) {
   this.terminal.setAbsoluteCursorRow(parseState.iarg(0, 1) - 1);
 };
 
@@ -2749,7 +2749,7 @@ hterm.VT.CSI['d'] = function(parseState) {
  *
  * Same as Cursor Position (CUP).
  */
-hterm.VT.CSI['f'] = hterm.VT.CSI['H'];
+hterm.VT.CSI["f"] = hterm.VT.CSI["H"];
 
 /**
  * Tab Clear (TBC).
@@ -2757,7 +2757,7 @@ hterm.VT.CSI['f'] = hterm.VT.CSI['H'];
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['g'] = function(parseState) {
+hterm.VT.CSI["g"] = function(parseState) {
   if (!parseState.args[0] || parseState.args[0] == 0) {
     // Clear tab stop at cursor.
     this.terminal.clearTabStopAtCursor();
@@ -2773,7 +2773,7 @@ hterm.VT.CSI['g'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['h'] = function(parseState) {
+hterm.VT.CSI["h"] = function(parseState) {
   for (let i = 0; i < parseState.args.length; i++) {
     this.setANSIMode(parseState.args[i], true);
   }
@@ -2785,7 +2785,7 @@ hterm.VT.CSI['h'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['?h'] = function(parseState) {
+hterm.VT.CSI["?h"] = function(parseState) {
   for (let i = 0; i < parseState.args.length; i++) {
     this.setDECMode(parseState.args[i], true);
   }
@@ -2797,8 +2797,8 @@ hterm.VT.CSI['?h'] = function(parseState) {
  *
  * These commands control the printer.  Will not implement.
  */
-hterm.VT.CSI['i'] =
-hterm.VT.CSI['?i'] = hterm.VT.ignore;
+hterm.VT.CSI["i"] =
+hterm.VT.CSI["?i"] = hterm.VT.ignore;
 
 /**
  * Reset Mode (RM).
@@ -2806,7 +2806,7 @@ hterm.VT.CSI['?i'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['l'] = function(parseState) {
+hterm.VT.CSI["l"] = function(parseState) {
   for (let i = 0; i < parseState.args.length; i++) {
     this.setANSIMode(parseState.args[i], false);
   }
@@ -2818,7 +2818,7 @@ hterm.VT.CSI['l'] = function(parseState) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState The current parse state.
  */
-hterm.VT.CSI['?l'] = function(parseState) {
+hterm.VT.CSI["?l"] = function(parseState) {
   for (let i = 0; i < parseState.args.length; i++) {
     this.setDECMode(parseState.args[i], false);
   }
@@ -2845,7 +2845,7 @@ hterm.VT.prototype.parseSgrExtendedColors = function(parseState, i, attrs) {
   if (parseState.argHasSubargs(i)) {
     // The ISO 8613-6 compliant form.
     // e.g. 38:[color choice]:[arg1]:[arg2]:...
-    ary = parseState.args[i].split(':');
+    ary = parseState.args[i].split(":");
     ary.shift();  // Remove "38".
     usedSubargs = true;
   } else if (parseState.argHasSubargs(i + 1)) {
@@ -2877,7 +2877,7 @@ hterm.VT.prototype.parseSgrExtendedColors = function(parseState, i, attrs) {
       }
 
       return {
-        color: 'rgb(0, 0, 0, 0)',
+        color: "rgb(0, 0, 0, 0)",
         skipCount: 0,
       };
     }
@@ -2994,7 +2994,7 @@ hterm.VT.prototype.parseSgrExtendedColors = function(parseState, i, attrs) {
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState
  */
-hterm.VT.CSI['m'] = function(parseState) {
+hterm.VT.CSI["m"] = function(parseState) {
   const attrs = this.terminal.getTextAttributes();
 
   if (!parseState.args.length) {
@@ -3018,22 +3018,22 @@ hterm.VT.CSI['m'] = function(parseState) {
         attrs.italic = true;
       } else if (arg == 4) {  // Underline.
         if (parseState.argHasSubargs(i)) {
-          const uarg = parseState.args[i].split(':')[1];
+          const uarg = parseState.args[i].split(":")[1];
           if (uarg == 0) {
             attrs.underline = false;
           } else if (uarg == 1) {
-            attrs.underline = 'solid';
+            attrs.underline = "solid";
           } else if (uarg == 2) {
-            attrs.underline = 'double';
+            attrs.underline = "double";
           } else if (uarg == 3) {
-            attrs.underline = 'wavy';
+            attrs.underline = "wavy";
           } else if (uarg == 4) {
-            attrs.underline = 'dotted';
+            attrs.underline = "dotted";
           } else if (uarg == 5) {
-            attrs.underline = 'dashed';
+            attrs.underline = "dashed";
           }
         } else {
-          attrs.underline = 'solid';
+          attrs.underline = "solid";
         }
       } else if (arg == 5) {  // Blink.
         attrs.blink = true;
@@ -3044,7 +3044,7 @@ hterm.VT.CSI['m'] = function(parseState) {
       } else if (arg == 9) {  // Crossed out.
         attrs.strikethrough = true;
       } else if (arg == 21) {  // Double underlined.
-        attrs.underline = 'double';
+        attrs.underline = "double";
       } else if (arg == 22) {  // Not bold & not faint.
         attrs.bold = false;
         attrs.faint = false;
@@ -3115,14 +3115,14 @@ hterm.VT.CSI['m'] = function(parseState) {
 };
 
 // SGR calls can handle subargs.
-hterm.VT.CSI['m'].supportsSubargs = true;
+hterm.VT.CSI["m"].supportsSubargs = true;
 
 /**
  * Set xterm-specific keyboard modes.
  *
  * Will not implement.
  */
-hterm.VT.CSI['>m'] = hterm.VT.ignore;
+hterm.VT.CSI[">m"] = hterm.VT.ignore;
 
 /**
  * Device Status Report (DSR, DEC Specific).
@@ -3133,13 +3133,13 @@ hterm.VT.CSI['>m'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState
  */
-hterm.VT.CSI['n'] = function(parseState) {
+hterm.VT.CSI["n"] = function(parseState) {
   if (parseState.args[0] == 5) {
-    this.terminal.io.sendString('\x1b0n');
+    this.terminal.io.sendString("\x1b0n");
   } else if (parseState.args[0] == 6) {
     const row = this.terminal.getCursorRow() + 1;
     const col = this.terminal.getCursorColumn() + 1;
-    this.terminal.io.sendString('\x1b[' + row + ';' + col + 'R');
+    this.terminal.io.sendString("\x1b[" + row + ";" + col + "R");
   }
 };
 
@@ -3148,7 +3148,7 @@ hterm.VT.CSI['n'] = function(parseState) {
  *
  * Will not implement.
  */
-hterm.VT.CSI['>n'] = hterm.VT.ignore;
+hterm.VT.CSI[">n"] = hterm.VT.ignore;
 
 /**
  * Device Status Report (DSR, DEC Specific).
@@ -3166,19 +3166,19 @@ hterm.VT.CSI['>n'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState
  */
-hterm.VT.CSI['?n'] = function(parseState) {
+hterm.VT.CSI["?n"] = function(parseState) {
   if (parseState.args[0] == 6) {
     const row = this.terminal.getCursorRow() + 1;
     const col = this.terminal.getCursorColumn() + 1;
-    this.terminal.io.sendString('\x1b[' + row + ';' + col + 'R');
+    this.terminal.io.sendString("\x1b[" + row + ";" + col + "R");
   } else if (parseState.args[0] == 15) {
-    this.terminal.io.sendString('\x1b[?11n');
+    this.terminal.io.sendString("\x1b[?11n");
   } else if (parseState.args[0] == 25) {
-    this.terminal.io.sendString('\x1b[?21n');
+    this.terminal.io.sendString("\x1b[?21n");
   } else if (parseState.args[0] == 26) {
-    this.terminal.io.sendString('\x1b[?12;1;0;0n');
+    this.terminal.io.sendString("\x1b[?12;1;0;0n");
   } else if (parseState.args[0] == 53) {
-    this.terminal.io.sendString('\x1b[?50n');
+    this.terminal.io.sendString("\x1b[?50n");
   }
 };
 
@@ -3195,14 +3195,14 @@ hterm.VT.CSI['?n'] = function(parseState) {
  *
  * Not currently implemented.
  */
-hterm.VT.CSI['>p'] = hterm.VT.ignore;
+hterm.VT.CSI[">p"] = hterm.VT.ignore;
 
 /**
  * Soft terminal reset (DECSTR).
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CSI['!p'] = function() {
+hterm.VT.CSI["!p"] = function() {
   this.terminal.softReset();
 };
 
@@ -3211,8 +3211,8 @@ hterm.VT.CSI['!p'] = function() {
  *
  * Not currently implemented.
  */
-hterm.VT.CSI['$p'] = hterm.VT.ignore;
-hterm.VT.CSI['?$p'] = hterm.VT.ignore;
+hterm.VT.CSI["$p"] = hterm.VT.ignore;
+hterm.VT.CSI["?$p"] = hterm.VT.ignore;
 
 /**
  * Set conformance level (DECSCL).
@@ -3227,7 +3227,7 @@ hterm.VT.CSI['"p'] = hterm.VT.ignore;
  * Not currently implemented.  Could be implemented as virtual LEDs overlaying
  * the terminal if anyone cares.
  */
-hterm.VT.CSI['q'] = hterm.VT.ignore;
+hterm.VT.CSI["q"] = hterm.VT.ignore;
 
 /**
  * Set cursor style (DECSCUSR, VT520).
@@ -3235,7 +3235,7 @@ hterm.VT.CSI['q'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState
  */
-hterm.VT.CSI[' q'] = function(parseState) {
+hterm.VT.CSI[" q"] = function(parseState) {
   const arg = parseState.args[0];
 
   if (arg == 0 || arg == 1) {
@@ -3257,7 +3257,7 @@ hterm.VT.CSI[' q'] = function(parseState) {
     this.terminal.setCursorShape(hterm.Terminal.cursorShape.BEAM);
     this.terminal.setCursorBlink(false);
   } else {
-    console.warn('Unknown cursor style: ' + arg);
+    console.warn("Unknown cursor style: " + arg);
   }
 };
 
@@ -3274,7 +3274,7 @@ hterm.VT.CSI['"q'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState
  */
-hterm.VT.CSI['r'] = function(parseState) {
+hterm.VT.CSI["r"] = function(parseState) {
   const args = parseState.args;
   const top = args[0] ? parseInt(args[0], 10) : 0;
   const bottom =
@@ -3293,21 +3293,21 @@ hterm.VT.CSI['r'] = function(parseState) {
  *
  * Will not implement.
  */
-hterm.VT.CSI['?r'] = hterm.VT.ignore;
+hterm.VT.CSI["?r"] = hterm.VT.ignore;
 
 /**
  * Change Attributes in Rectangular Area (DECCARA)
  *
  * Will not implement.
  */
-hterm.VT.CSI['$r'] = hterm.VT.ignore;
+hterm.VT.CSI["$r"] = hterm.VT.ignore;
 
 /**
  * Save cursor (ANSI.SYS)
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CSI['s'] = function() {
+hterm.VT.CSI["s"] = function() {
   this.terminal.saveCursorAndState();
 };
 
@@ -3316,7 +3316,7 @@ hterm.VT.CSI['s'] = function() {
  *
  * Will not implement.
  */
-hterm.VT.CSI['?s'] = hterm.VT.ignore;
+hterm.VT.CSI["?s"] = hterm.VT.ignore;
 
 /**
  * Window manipulation (from dtterm, as well as extensions).
@@ -3324,7 +3324,7 @@ hterm.VT.CSI['?s'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState
  */
-hterm.VT.CSI['t'] = function(parseState) {
+hterm.VT.CSI["t"] = function(parseState) {
   const args = parseState.args;
   const op = args[0] ? parseInt(args[0], 10) : 0;
 
@@ -3344,28 +3344,28 @@ hterm.VT.CSI['t'] = function(parseState) {
  *
  * Will not implement.
  */
-hterm.VT.CSI['$t'] = hterm.VT.ignore;
+hterm.VT.CSI["$t"] = hterm.VT.ignore;
 
 /**
  * Set one or more features of the title modes.
  *
  * Will not implement.
  */
-hterm.VT.CSI['>t'] = hterm.VT.ignore;
+hterm.VT.CSI[">t"] = hterm.VT.ignore;
 
 /**
  * Set warning-bell volume (DECSWBV, VT520).
  *
  * Will not implement.
  */
-hterm.VT.CSI[' t'] = hterm.VT.ignore;
+hterm.VT.CSI[" t"] = hterm.VT.ignore;
 
 /**
  * Restore cursor (ANSI.SYS).
  *
  * @this {!hterm.VT}
  */
-hterm.VT.CSI['u'] = function() {
+hterm.VT.CSI["u"] = function() {
   this.terminal.restoreCursorAndState();
 };
 
@@ -3374,42 +3374,42 @@ hterm.VT.CSI['u'] = function() {
  *
  * Will not implement.
  */
-hterm.VT.CSI[' u'] = hterm.VT.ignore;
+hterm.VT.CSI[" u"] = hterm.VT.ignore;
 
 /**
  * Copy Rectangular Area (DECCRA, VT400 and up).
  *
  * Will not implement.
  */
-hterm.VT.CSI['$v'] = hterm.VT.ignore;
+hterm.VT.CSI["$v"] = hterm.VT.ignore;
 
 /**
  * Enable Filter Rectangle (DECEFR).
  *
  * Will not implement.
  */
-hterm.VT.CSI['\'w'] = hterm.VT.ignore;
+hterm.VT.CSI["'w"] = hterm.VT.ignore;
 
 /**
  * Request Terminal Parameters (DECREQTPARM).
  *
  * Not currently implemented.
  */
-hterm.VT.CSI['x'] = hterm.VT.ignore;
+hterm.VT.CSI["x"] = hterm.VT.ignore;
 
 /**
  * Select Attribute Change Extent (DECSACE).
  *
  * Will not implement.
  */
-hterm.VT.CSI['*x'] = hterm.VT.ignore;
+hterm.VT.CSI["*x"] = hterm.VT.ignore;
 
 /**
  * Fill Rectangular Area (DECFRA), VT420 and up.
  *
  * Will not implement.
  */
-hterm.VT.CSI['$x'] = hterm.VT.ignore;
+hterm.VT.CSI["$x"] = hterm.VT.ignore;
 
 /**
  * vt_tiledata (as used by NAOhack and UnNetHack)
@@ -3420,7 +3420,7 @@ hterm.VT.CSI['$x'] = hterm.VT.ignore;
  * @this {!hterm.VT}
  * @param {!hterm.VT.ParseState} parseState
  */
-hterm.VT.CSI['z'] = function(parseState) {
+hterm.VT.CSI["z"] = function(parseState) {
   if (parseState.args.length < 1) {
     return;
   }
@@ -3442,39 +3442,39 @@ hterm.VT.CSI['z'] = function(parseState) {
  *
  * Not currently implemented.
  */
-hterm.VT.CSI['\'z'] = hterm.VT.ignore;
+hterm.VT.CSI["'z"] = hterm.VT.ignore;
 
 /**
  * Erase Rectangular Area (DECERA), VT400 and up.
  *
  * Will not implement.
  */
-hterm.VT.CSI['$z'] = hterm.VT.ignore;
+hterm.VT.CSI["$z"] = hterm.VT.ignore;
 
 /**
  * Select Locator Events (DECSLE).
  *
  * Not currently implemented.
  */
-hterm.VT.CSI['\'{'] = hterm.VT.ignore;
+hterm.VT.CSI["'{"] = hterm.VT.ignore;
 
 /**
  * Request Locator Position (DECRQLP).
  *
  * Not currently implemented.
  */
-hterm.VT.CSI['\'|'] = hterm.VT.ignore;
+hterm.VT.CSI["'|"] = hterm.VT.ignore;
 
 /**
  * Insert Columns (DECIC), VT420 and up.
  *
  * Will not implement.
  */
-hterm.VT.CSI['\'}'] = hterm.VT.ignore;
+hterm.VT.CSI["'}"] = hterm.VT.ignore;
 
 /**
  * Delete P s Columns (DECDC), VT420 and up.
  *
  * Will not implement.
  */
-hterm.VT.CSI['\'~'] = hterm.VT.ignore;
+hterm.VT.CSI["'~"] = hterm.VT.ignore;

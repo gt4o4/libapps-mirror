@@ -6,12 +6,12 @@
  * @fileoverview Stream for connecting to a ssh server via a Corp v4 relay.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {localize} from './nassh.js';
-import {newBuffer} from './nassh_buffer.js';
-import {GoogMetricsReporter} from './nassh_goog_metrics_reporter.js';
-import {Stream} from './nassh_stream.js';
+import {localize} from "./nassh.js";
+import {newBuffer} from "./nassh_buffer.js";
+import {GoogMetricsReporter} from "./nassh_goog_metrics_reporter.js";
+import {Stream} from "./nassh_stream.js";
 
 /**
  * Some constants for packets.
@@ -257,7 +257,7 @@ export class RelayCorpv4WsStream extends Stream {
         }
         await this.googMetricsReporter_.initClientMetadata();
       } catch (e) {
-        console.error('Error configuring GoogMetricsReporter', e);
+        console.error("Error configuring GoogMetricsReporter", e);
       }
     }
 
@@ -271,7 +271,7 @@ export class RelayCorpv4WsStream extends Stream {
    */
   connect_() {
     if (this.socket_) {
-      throw new Error('stream already connected');
+      throw new Error("stream already connected");
     }
 
     let uri = lib.f.replaceVars(this.connectTemplate_, {
@@ -286,8 +286,8 @@ export class RelayCorpv4WsStream extends Stream {
           `&egressDomain=${encodeURIComponent(this.egressDomain_)}`);
     }
 
-    this.socket_ = new WebSocket(uri, ['ssh']);
-    this.socket_.binaryType = 'arraybuffer';
+    this.socket_ = new WebSocket(uri, ["ssh"]);
+    this.socket_.binaryType = "arraybuffer";
     this.socket_.onopen = this.onSocketOpen_.bind(this);
     this.socket_.onmessage = this.onSocketData_.bind(this);
     this.socket_.onclose = this.onSocketClose_.bind(this);
@@ -309,7 +309,7 @@ export class RelayCorpv4WsStream extends Stream {
     }
 
     if (this.io_) {
-      this.io_.showOverlay(localize('RELAY_RETRY'), null);
+      this.io_.showOverlay(localize("RELAY_RETRY"), null);
     }
 
     const uri = lib.f.replaceVars(this.reconnectTemplate_, {
@@ -329,8 +329,8 @@ export class RelayCorpv4WsStream extends Stream {
     // Delay creating new socket to ensure it only happens after any suspend is
     // resumed (lid close/open).
     setTimeout(() => {
-      this.socket_ = new WebSocket(uri, ['ssh']);
-      this.socket_.binaryType = 'arraybuffer';
+      this.socket_ = new WebSocket(uri, ["ssh"]);
+      this.socket_.binaryType = "arraybuffer";
       this.socket_.onopen = this.onSocketOpen_.bind(this);
       this.socket_.onmessage = this.onSocketData_.bind(this);
       this.socket_.onclose = this.onSocketClose_.bind(this);
@@ -409,7 +409,7 @@ export class RelayCorpv4WsStream extends Stream {
    */
   onSocketError_(e) {
     if (!this.reconnect_()) {
-      this.close_('server sent an error');
+      this.close_("server sent an error");
     }
   }
 
@@ -568,15 +568,15 @@ RelayCorpv4WsStream.prototype.maxDataWriteLength = 16 * 1024;
  * URI to establish a new connection to the ssh server via the relay.
  */
 RelayCorpv4WsStream.prototype.connectTemplate_ =
-    `%(relay)v4/connect` +
-    `?host=%encodeURIComponent(host)` +
-    `&port=%encodeURIComponent(port)` +
-    `&dstUsername=%encodeURIComponent(user)`;
+    "%(relay)v4/connect" +
+    "?host=%encodeURIComponent(host)" +
+    "&port=%encodeURIComponent(port)" +
+    "&dstUsername=%encodeURIComponent(user)";
 
 /**
  * URI to reconnect to an existing session.
  */
 RelayCorpv4WsStream.prototype.reconnectTemplate_ =
-    `%(relay)v4/reconnect` +
-    `?sid=%encodeURIComponent(sid)` +
-    `&ack=%(ack)`;
+    "%(relay)v4/reconnect" +
+    "?sid=%encodeURIComponent(sid)" +
+    "&ack=%(ack)";

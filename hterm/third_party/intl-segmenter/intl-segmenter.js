@@ -11,13 +11,13 @@
 //    * granularity: 'sentence' does not understand decimals
 
 (function(global) {
-  if ('Intl' in global && 'Segmenter' in global.Intl) {
+  if ("Intl" in global && "Segmenter" in global.Intl) {
     return;
   }
 
   global.Intl = global.Intl || {};
 
-  const GRANULARITIES = ['grapheme', 'word', 'sentence', 'line'];
+  const GRANULARITIES = ["grapheme", "word", "sentence", "line"];
 
   // TODO: Implement https://www.unicode.org/reports/tr29/
   const RULES = {
@@ -55,21 +55,21 @@
 
 
     switch (granularity) {
-    case 'character':
+    case "character":
       return undefined;
-    case 'word':
+    case "word":
       return value;
-    case 'sentence':
+    case "sentence":
       // Map ULineBreakTag rule status to string.
       return {
-        0: 'terminator',
-        100: 'separator',
+        0: "terminator",
+        100: "separator",
       }[ruleStatus] || value;
-    case 'line':
+    case "line":
       // Map ULineBreakTag rule status to string.
       return {
-        0: 'soft',
-        100: 'hard',
+        0: "soft",
+        100: "hard",
       }[ruleStatus] || value;
     default:
       return value;
@@ -78,9 +78,9 @@
 
   function segment(locale, granularity, string) {
     const breaks = [];
-    if ('v8BreakIterator' in global.Intl) {
-      if (granularity === 'grapheme') {
-        granularity = 'character';
+    if ("v8BreakIterator" in global.Intl) {
+      if (granularity === "grapheme") {
+        granularity = "character";
       }
       const vbi = new global.Intl.v8BreakIterator(locale, {type: granularity});
       vbi.adoptText(string);
@@ -108,7 +108,7 @@
             breaks.push({
               pos: pos,
               segment: m[0],
-              breakType: granularity === 'grapheme' ? undefined : rule,
+              breakType: granularity === "grapheme" ? undefined : rule,
             });
             found = true;
             break;
@@ -118,7 +118,7 @@
           breaks.push({
             pos: pos + 1,
             segment: string.slice(pos, ++pos),
-            breakType: 'none',
+            breakType: "none",
           });
         }
       }
@@ -219,11 +219,11 @@
   }
 
   global.Intl.Segmenter = class Segmenter {
-    constructor(locale, {localeMatcher, granularity = 'grapheme'} = {}) {
+    constructor(locale, {localeMatcher, granularity = "grapheme"} = {}) {
       this._locale = Array.isArray(locale)
         ? locale.map((s) => String(s)) : String(locale || navigator.language);
       this._granularity = GRANULARITIES.includes(granularity)
-        ? granularity : 'grapheme';
+        ? granularity : "grapheme";
     }
 
     segment(string) {
@@ -231,7 +231,7 @@
         string, segment(this._locale, this._granularity, string));
     }
   };
-}(typeof globalThis !== 'undefined' ? globalThis :
-  typeof window !== 'undefined' ? window :
-  typeof global !== 'undefined' ? global :
+}(typeof globalThis !== "undefined" ? globalThis :
+  typeof window !== "undefined" ? window :
+  typeof global !== "undefined" ? global :
   {}));

@@ -6,14 +6,14 @@
  * @fileoverview Initializes global state used in terminal settings.
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
-import {definePrefs, init, normalizePrefsInPlace} from './terminal_common.js';
+import {definePrefs, init, normalizePrefsInPlace} from "./terminal_common.js";
 
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener("DOMContentLoaded", async () => {
   await init();
-  document.title = hterm.messageManager.get('TERMINAL_TITLE_SETTINGS');
+  document.title = hterm.messageManager.get("TERMINAL_TITLE_SETTINGS");
 
   window.PreferenceManager = hterm.PreferenceManager;
   window.storage = chrome.terminalPrivate
@@ -25,6 +25,6 @@ window.addEventListener('DOMContentLoaded', async () => {
     normalizePrefsInPlace(window.preferenceManager);
     window.preferenceManager.notifyAll();
     document.body.appendChild(
-        document.createElement('terminal-settings-app'));
+        document.createElement("terminal-settings-app"));
   });
 });

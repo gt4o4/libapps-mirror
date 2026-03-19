@@ -7,7 +7,7 @@
  * @suppress {moduleLoad,undefinedVars} closure compiler can't handle this.
  */
 
-import {gitDate, version} from '../package.json';
+import {gitDate, version} from "../package.json";
 
 export {
   gitDate as gitDate,

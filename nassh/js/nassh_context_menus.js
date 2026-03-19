@@ -7,9 +7,9 @@
  *   in the application (terminal) itself.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {localize, sendFeedback} from './nassh.js';
+import {localize, sendFeedback} from "./nassh.js";
 
 /**
  * Handler for custom context menus integration.
@@ -36,16 +36,16 @@ export class ContextMenusHandler {
     /** @type {!Array<!chrome.contextMenus.CreateProperties>} */
     const entries = [
       {
-        'type': 'normal',
-        'id': 'connect-dialog',
-        'title': localize('CONNECTION_DIALOG_NAME'),
-        'contexts': ['action'],
+        "type": "normal",
+        "id": "connect-dialog",
+        "title": localize("CONNECTION_DIALOG_NAME"),
+        "contexts": ["action"],
       },
       {
-        'type': 'normal',
-        'id': 'feedback',
-        'title': localize('SEND_FEEDBACK_LABEL'),
-        'contexts': ['action'],
+        "type": "normal",
+        "id": "feedback",
+        "title": localize("SEND_FEEDBACK_LABEL"),
+        "contexts": ["action"],
       },
     ];
     entries.forEach((entry) => this.contextMenus_.create(entry));
@@ -59,16 +59,16 @@ export class ContextMenusHandler {
    */
   onContextMenu_(info, tab = undefined) {
     switch (info.menuItemId) {
-      case 'connect-dialog':
-        lib.f.openWindow(lib.f.getURL('/html/nassh_connect_dialog.html'), '',
-                         'chrome=no,close=yes,resize=yes,minimizable=yes,' +
-                         'scrollbars=yes,width=900,height=600');
+      case "connect-dialog":
+        lib.f.openWindow(lib.f.getURL("/html/nassh_connect_dialog.html"), "",
+                         "chrome=no,close=yes,resize=yes,minimizable=yes," +
+                         "scrollbars=yes,width=900,height=600");
         break;
-      case 'feedback':
+      case "feedback":
         sendFeedback();
         break;
       default:
-        console.error('Unknown menu item', info);
+        console.error("Unknown menu item", info);
         break;
     }
   }

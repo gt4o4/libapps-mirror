@@ -9,6 +9,6 @@
 /**
  * punycode is used to connect to internationalized (UTF-8) domain names.
  */
-import {toASCII} from 'punycode';
+import {toASCII} from "punycode";
 const punycode = {toASCII};
 export {punycode};

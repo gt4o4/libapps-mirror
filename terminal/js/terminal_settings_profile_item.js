@@ -8,13 +8,13 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, createRef, css, html, ref, when} from './lit.js';
-import './terminal_dialog.js';
-import {ICON_CLOSE, ICON_ERROR} from './terminal_icons.js';
+import {LitElement, createRef, css, html, ref, when} from "./lit.js";
+import "./terminal_dialog.js";
+import {ICON_CLOSE, ICON_ERROR} from "./terminal_icons.js";
 import {ProfileType, deleteProfile, resetTerminalProfileToDefault}
-  from './terminal_profiles.js';
+  from "./terminal_profiles.js";
 
 export class TerminalSettingsProfileItem extends LitElement {
   /**
@@ -70,10 +70,10 @@ export class TerminalSettingsProfileItem extends LitElement {
 
   constructor() {
     super();
-    this.profile = '';
-    this.confirmDeleteMsg_ = '';
-    this.addEventListener('click', (e) => {
-      this.dispatchEvent(new CustomEvent('settings-profile-click', {
+    this.profile = "";
+    this.confirmDeleteMsg_ = "";
+    this.addEventListener("click", (e) => {
+      this.dispatchEvent(new CustomEvent("settings-profile-click", {
         detail: {profile: this.profile},
       }));
     });
@@ -88,11 +88,11 @@ export class TerminalSettingsProfileItem extends LitElement {
   render() {
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
     const title = msg(
-        'TERMINAL_SETTINGS_PROFILE_DELETE_DIALOG_TITLE', [this.profile]);
+        "TERMINAL_SETTINGS_PROFILE_DELETE_DIALOG_TITLE", [this.profile]);
     return html`
       ${this.profile}
       <terminal-dialog ${ref(this.deleteProfileDialogRef_)}
-          acceptText="${msg('DELETE_BUTTON_LABEL')}"
+          acceptText="${msg("DELETE_BUTTON_LABEL")}"
           @click=${(e) => e.stopPropagation()}
           @close=${this.onDeleteDialogClose_}>
         <div slot="title">
@@ -117,7 +117,7 @@ export class TerminalSettingsProfileItem extends LitElement {
   openDeleteDialog_(e) {
     e.stopPropagation();
     this.confirmDeleteMsg_ = hterm.messageManager.get(
-        'TERMINAL_SETTINGS_PROFILE_DELETE_DIALOG_MESSAGE', [this.profile]);
+        "TERMINAL_SETTINGS_PROFILE_DELETE_DIALOG_MESSAGE", [this.profile]);
     this.deleteProfileDialogRef_.value.show();
   }
 
@@ -131,11 +131,11 @@ export class TerminalSettingsProfileItem extends LitElement {
     }
     await deleteProfile(ProfileType.HTERM, this.profile);
     await resetTerminalProfileToDefault(this.profile);
-    this.dispatchEvent(new CustomEvent('settings-profile-delete', {
+    this.dispatchEvent(new CustomEvent("settings-profile-delete", {
       detail: {profile: this.profile},
     }));
   }
 }
 
-customElements.define('terminal-settings-profile-item',
+customElements.define("terminal-settings-profile-item",
     TerminalSettingsProfileItem);

@@ -6,9 +6,9 @@
  * @fileoverview Terminal find bar unit tests.
  */
 
-import {sleep} from './terminal_common.js';
-import './terminal_find_bar.js';
-import {MockFunction} from './terminal_test_mocks.js';
+import {sleep} from "./terminal_common.js";
+import "./terminal_find_bar.js";
+import {MockFunction} from "./terminal_test_mocks.js";
 
 /**
  * This is mocha.Context with extra stuff attached.
@@ -23,7 +23,7 @@ import {MockFunction} from './terminal_test_mocks.js';
 let TestContext;
 
 beforeEach(async function() {
-  this.findBar = document.createElement('terminal-find-bar');
+  this.findBar = document.createElement("terminal-find-bar");
   document.body.appendChild(this.findBar);
   await this.findBar.updateComplete;
   this.findBar.show();
@@ -37,17 +37,17 @@ beforeEach(async function() {
 
   this.eventDetails = [];
   this.findBar.addEventListener(
-      'find-bar', (e) => this.eventDetails.push(e.detail));
+      "find-bar", (e) => this.eventDetails.push(e.detail));
 
   this.setInputValue = function(value) {
     this.input.value = value;
-    this.input.dispatchEvent(new Event('input'), {
+    this.input.dispatchEvent(new Event("input"), {
       bubbles: true,
     });
   };
 
   this.keyDownOnInput = function(options) {
-    this.input.dispatchEvent(new KeyboardEvent('keydown', options));
+    this.input.dispatchEvent(new KeyboardEvent("keydown", options));
   };
 });
 
@@ -60,27 +60,27 @@ afterEach(function() {
  * @return {boolean}
  */
 function buttonIsEnabled(button) {
-  switch (button['ariaDisabled']) {
-    case 'true':
+  switch (button["ariaDisabled"]) {
+    case "true":
       return false;
     case null:
       return true;
     default:
       throw new Error(
-          `button ariaDisabled (${button['ariaDisabled']}) is invalid`);
+          `button ariaDisabled (${button["ariaDisabled"]}) is invalid`);
   }
 }
 
-it('enables-up-down-button-iff-input-has-content', async function() {
+it("enables-up-down-button-iff-input-has-content", async function() {
   assert.isFalse(buttonIsEnabled(this.previousButton));
   assert.isFalse(buttonIsEnabled(this.nextButton));
 
-  this.setInputValue('x');
+  this.setInputValue("x");
   await this.findBar.updateComplete;
   assert.isTrue(buttonIsEnabled(this.previousButton));
   assert.isTrue(buttonIsEnabled(this.nextButton));
 
-  this.setInputValue('');
+  this.setInputValue("");
   await this.findBar.updateComplete;
   assert.isFalse(buttonIsEnabled(this.previousButton));
   assert.isFalse(buttonIsEnabled(this.nextButton));
@@ -98,13 +98,13 @@ it('enables-up-down-button-iff-input-has-content', async function() {
 }, {
   /** @this {!TestContext} */
   action: function() {
-    this.keyDownOnInput({key: 'Enter', shiftKey: false});
+    this.keyDownOnInput({key: "Enter", shiftKey: false});
   },
   backward: false,
 }, {
   /** @this {!TestContext} */
   action: function() {
-    this.keyDownOnInput({key: 'Enter', shiftKey: true});
+    this.keyDownOnInput({key: "Enter", shiftKey: true});
   },
   backward: true,
 }].forEach(({action, backward}, i) => (
@@ -113,7 +113,7 @@ it('enables-up-down-button-iff-input-has-content', async function() {
       action.call(this);
       await sleep(0);
       assert.deepEqual(this.eventDetails, [{
-        type: 'find',
+        type: "find",
         backward,
       }]);
 })));
@@ -121,20 +121,20 @@ it('enables-up-down-button-iff-input-has-content', async function() {
 // Parameterized tests for actions that trigger "close" events.
 [
   function() { this.closeButton.click(); },
-  function() { this.keyDownOnInput({key: 'Escape'}); },
+  function() { this.keyDownOnInput({key: "Escape"}); },
 ].forEach((action, i) => it(`close-${i}`, async function() {
-  assert.notEqual(this.findBar.style.display, 'none');
+  assert.notEqual(this.findBar.style.display, "none");
   assert.lengthOf(this.eventDetails, 0);
   action.call(this);
   await sleep(0);
-  assert.equal(this.findBar.style.display, 'none');
-  assert.deepEqual(this.eventDetails, [{type: 'close'}]);
+  assert.equal(this.findBar.style.display, "none");
+  assert.deepEqual(this.eventDetails, [{type: "close"}]);
 }));
 
-it('fire-find-on-input', async function() {
+it("fire-find-on-input", async function() {
   const scheduleFindNextEventMock = new MockFunction();
   this.findBar.scheduleFindNextEvent_ = scheduleFindNextEventMock.proxy;
-  this.setInputValue('hello');
+  this.setInputValue("hello");
   await sleep(0);
   assert.deepEqual(scheduleFindNextEventMock.getHistory(), [[]]);
 });

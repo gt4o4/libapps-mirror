@@ -6,9 +6,9 @@
  * @fileoverview Tests for the WasiView API.
  */
 
-import {WasiView} from '../index.js';
+import {WasiView} from "../index.js";
 
-describe('dataview.js', () => {
+describe("dataview.js", () => {
 
 /**
  * Run tests against the specified structure.
@@ -51,7 +51,7 @@ function checkStruct(name, expectedValue, expectedMemory) {
 }
 
 checkStruct(
-    'Dirent', {
+    "Dirent", {
       d_next: 0x0706050403020100n,
       d_ino: 0x0f0e0d0c0b0a0908n,
       d_namlen: 0x13121110,
@@ -65,7 +65,7 @@ checkStruct(
     ]);
 
 checkStruct(
-    'Event', {
+    "Event", {
       userdata: 0x0706050403020100n,
       error: 0x0908,
       type: 0x0a,
@@ -85,7 +85,7 @@ checkStruct(
     ]);
 
 checkStruct(
-    'EventFdReadWrite', {
+    "EventFdReadWrite", {
       nbytes: 0x0706050403020100n,
       flags: 0x0908,
     }, [
@@ -95,7 +95,7 @@ checkStruct(
     ]);
 
 checkStruct(
-    'Fdstat', {
+    "Fdstat", {
       fs_filetype: 0x00,
       fs_flags: 0x0302,
       fs_rights_base: 0x0f0e0d0c0b0a0908n,
@@ -110,7 +110,7 @@ checkStruct(
     ]);
 
 checkStruct(
-    'Filestat', {
+    "Filestat", {
       dev: 0x0706050403020100n,
       ino: 0x0f0e0d0c0b0a0908n,
       filetype: 0x10,
@@ -132,7 +132,7 @@ checkStruct(
     ]);
 
 checkStruct(
-    'Iovec', {
+    "Iovec", {
       buf: 0x03020100,
       buf_len: 0x07060504,
     }, [
@@ -141,7 +141,7 @@ checkStruct(
     ]);
 
 checkStruct(
-    'SubscriptionClock', {
+    "SubscriptionClock", {
       id: 0x03020100,
       timeout: 0x0f0e0d0c0b0a0908n,
       precision: 0x1716151413121110n,
@@ -156,7 +156,7 @@ checkStruct(
     ]);
 
 checkStruct(
-    'SubscriptionFdReadWrite', {
+    "SubscriptionFdReadWrite", {
       file_descriptor: 0x03020100,
     }, [
       0x00, 0x01, 0x02, 0x03,
@@ -165,7 +165,7 @@ checkStruct(
 /**
  * Verify getSubscription API works.
  */
-describe('getSubscription', () => {
+describe("getSubscription", () => {
   const struct_size = 48;
   const u8 = new Uint8Array(struct_size);
   u8.set(Array.from(u8.keys()));
@@ -174,17 +174,17 @@ describe('getSubscription', () => {
   /**
    * Unknown tags should throw an error.
    */
-  it('bad tag', () => {
+  it("bad tag", () => {
     u8[8] = 3;
     assert.throws(
         () => view.getSubscription(0, true),
-        'Unknown tag');
+        "Unknown tag");
   });
 
   /**
    * Check CLOCK subscriptions.
    */
-  it('clock', () => {
+  it("clock", () => {
     u8[8] = 0;
     const value = view.getSubscription(0, true);
     assert.deepStrictEqual(value, {
@@ -204,7 +204,7 @@ describe('getSubscription', () => {
   /**
    * Check FD_READ subscriptions.
    */
-  it('fd_read', () => {
+  it("fd_read", () => {
     u8[8] = 1;
     const value = view.getSubscription(0, true);
     assert.deepStrictEqual(value, {
@@ -221,7 +221,7 @@ describe('getSubscription', () => {
   /**
    * Check FD_WRITE subscriptions.
    */
-  it('fd_write', () => {
+  it("fd_write", () => {
     u8[8] = 2;
     const value = view.getSubscription(0, true);
     assert.deepStrictEqual(value, {
@@ -273,52 +273,52 @@ function checkPrimitive(name, expectedValue, expectedMemory) {
   });
 }
 
-describe('uint8', () => {
+describe("uint8", () => {
   const args = [0x00, [0x00]];
-  checkPrimitive('Advice', ...args);
-  checkPrimitive('Eventtype', ...args);
-  checkPrimitive('Filetype', ...args);
-  checkPrimitive('Preopentype', ...args);
-  checkPrimitive('Sdflags', ...args);
-  checkPrimitive('Signal', ...args);
-  checkPrimitive('Whence', ...args);
+  checkPrimitive("Advice", ...args);
+  checkPrimitive("Eventtype", ...args);
+  checkPrimitive("Filetype", ...args);
+  checkPrimitive("Preopentype", ...args);
+  checkPrimitive("Sdflags", ...args);
+  checkPrimitive("Signal", ...args);
+  checkPrimitive("Whence", ...args);
 });
 
-describe('uint16', () => {
+describe("uint16", () => {
   const args = [0x0100, [0x00, 0x01]];
-  checkPrimitive('Errno', ...args);
-  checkPrimitive('Eventrwflags', ...args);
-  checkPrimitive('Fdflags', ...args);
-  checkPrimitive('Fstflags', ...args);
-  checkPrimitive('Oflags', ...args);
-  checkPrimitive('Riflags', ...args);
-  checkPrimitive('Roflags', ...args);
-  checkPrimitive('Siflags', ...args);
-  checkPrimitive('Subclockflags', ...args);
+  checkPrimitive("Errno", ...args);
+  checkPrimitive("Eventrwflags", ...args);
+  checkPrimitive("Fdflags", ...args);
+  checkPrimitive("Fstflags", ...args);
+  checkPrimitive("Oflags", ...args);
+  checkPrimitive("Riflags", ...args);
+  checkPrimitive("Roflags", ...args);
+  checkPrimitive("Siflags", ...args);
+  checkPrimitive("Subclockflags", ...args);
 });
 
-describe('uint32', () => {
+describe("uint32", () => {
   const args = [0x03020100, [0x00, 0x01, 0x02, 0x03]];
-  checkPrimitive('Clockid', ...args);
-  checkPrimitive('Dirnamlen', ...args);
-  checkPrimitive('Exitcode', ...args);
-  checkPrimitive('Fd', ...args);
-  checkPrimitive('Lookupflags', ...args);
-  checkPrimitive('Pointer', ...args);
-  checkPrimitive('Size', ...args);
+  checkPrimitive("Clockid", ...args);
+  checkPrimitive("Dirnamlen", ...args);
+  checkPrimitive("Exitcode", ...args);
+  checkPrimitive("Fd", ...args);
+  checkPrimitive("Lookupflags", ...args);
+  checkPrimitive("Pointer", ...args);
+  checkPrimitive("Size", ...args);
 });
 
-describe('uint64', () => {
+describe("uint64", () => {
   const args = [
     0x0706050403020100n, [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07]];
-  checkPrimitive('Device', ...args);
-  checkPrimitive('Dircookie', ...args);
-  checkPrimitive('Filesize', ...args);
-  checkPrimitive('Inode', ...args);
-  checkPrimitive('Linkcount', ...args);
-  checkPrimitive('Rights', ...args);
-  checkPrimitive('Timestamp', ...args);
-  checkPrimitive('Userdata', ...args);
+  checkPrimitive("Device", ...args);
+  checkPrimitive("Dircookie", ...args);
+  checkPrimitive("Filesize", ...args);
+  checkPrimitive("Inode", ...args);
+  checkPrimitive("Linkcount", ...args);
+  checkPrimitive("Rights", ...args);
+  checkPrimitive("Timestamp", ...args);
+  checkPrimitive("Userdata", ...args);
 });
 
 });

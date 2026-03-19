@@ -6,16 +6,16 @@
  * @fileoverview Implementation for the corp-relay@google.com proxy.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {localize} from './nassh.js';
-import {LocalPreferenceManager} from './nassh_preference_manager.js';
-import {Relay} from './nassh_relay.js';
-import {Stream} from './nassh_stream.js';
+import {localize} from "./nassh.js";
+import {LocalPreferenceManager} from "./nassh_preference_manager.js";
+import {Relay} from "./nassh_relay.js";
+import {Stream} from "./nassh_stream.js";
 import {RelayCorpWsStream,
-        RelayCorpXhrStream} from './nassh_stream_relay_corp.js';
+        RelayCorpXhrStream} from "./nassh_stream_relay_corp.js";
 
 /**
  * Corp Relay implementation.
@@ -31,16 +31,16 @@ export class Corp extends Relay {
    */
   constructor(io, options, location, storage, localPrefs) {
     super(io, options, location, storage, localPrefs);
-    this.proxyHostFallback = options['--proxy-host-fallback'];
-    this.useSecure = options['--use-ssl'];
-    this.useWebsocket = !options['--use-xhr'];
-    this.reportAckLatency = options['--report-ack-latency'];
-    this.reportConnectAttempts = options['--report-connect-attempts'];
-    this.relayProtocol = options['--relay-protocol'];
-    this.relayMethod = options['--relay-method'];
+    this.proxyHostFallback = options["--proxy-host-fallback"];
+    this.useSecure = options["--use-ssl"];
+    this.useWebsocket = !options["--use-xhr"];
+    this.reportAckLatency = options["--report-ack-latency"];
+    this.reportConnectAttempts = options["--report-connect-attempts"];
+    this.relayProtocol = options["--relay-protocol"];
+    this.relayMethod = options["--relay-method"];
     this.relayServer = null;
     this.relayServerSocket = null;
-    this.egressDomain = options['--egress-domain'];
+    this.egressDomain = options["--egress-domain"];
   }
 
   /**
@@ -49,14 +49,14 @@ export class Corp extends Relay {
    * @return {string} The fully URI pattern.
    */
   cookieServerPattern() {
-    let template = '%(protocol)://%(host):%(port)/cookie' +
-        '?ext=%encodeURIComponent(return_to)' +
-        '&path=html/nassh_google_relay.html';
-    if (this.relayProtocol === 'v2') {
-      template += '&version=2&method=js-redirect';
+    let template = "%(protocol)://%(host):%(port)/cookie" +
+        "?ext=%encodeURIComponent(return_to)" +
+        "&path=html/nassh_google_relay.html";
+    if (this.relayProtocol === "v2") {
+      template += "&version=2&method=js-redirect";
     }
     if (this.remoteHost) {
-      template += '&host=%(remote_host)';
+      template += "&host=%(remote_host)";
     }
     return template;
   }
@@ -70,13 +70,13 @@ export class Corp extends Relay {
 
     // Save off our destination in session storage before we leave for the
     // proxy page.
-    this.storage.setItem('googleRelay.resumePath', resumePath);
+    this.storage.setItem("googleRelay.resumePath", resumePath);
 
     const uri = lib.f.replaceVars(
       this.cookieServerPattern(), {
         host: this.proxyHost,
         port: this.proxyPort,
-        protocol: this.useSecure ? 'https' : 'http',
+        protocol: this.useSecure ? "https" : "http",
         remote_host: this.remoteHost,
         // This returns us to nassh_google_relay.html so we can pick the relay
         // host out of the reply.  From there we continue on to the resumePath.
@@ -86,7 +86,7 @@ export class Corp extends Relay {
     // Since the proxy settings are coming from the user, make sure we catch bad
     // values (hostnames/etc...) directly.
     try {
-      // eslint-disable-next-line no-new
+       
       new URL(uri);
     } catch (e) {
       this.io_.println(e);
@@ -103,7 +103,7 @@ export class Corp extends Relay {
    * @override
    */
   async init() {
-    if (this.relayMethod === 'direct') {
+    if (this.relayMethod === "direct") {
       return this.authenticateDirect();
     }
 
@@ -111,29 +111,29 @@ export class Corp extends Relay {
 
     // This session storage item is created by /html/nassh_google_relay.html
     // if we succeed at finding a relay host.
-    const relayHost = await this.storage.getItem('googleRelay.relayHost');
-    const relayPort = await this.storage.getItem('googleRelay.relayPort') ||
+    const relayHost = await this.storage.getItem("googleRelay.relayHost");
+    const relayPort = await this.storage.getItem("googleRelay.relayPort") ||
         this.proxyPort;
 
     if (relayHost) {
       const expectedResumePath = await this.storage.getItem(
-          'googleRelay.resumePath');
+          "googleRelay.resumePath");
       if (expectedResumePath === resumePath) {
         const pattern = this.relayServerPattern;
         this.relayServer = lib.f.replaceVars(pattern, {
           host: relayHost,
           port: relayPort,
-          protocol: this.useSecure ? 'https' : 'http',
+          protocol: this.useSecure ? "https" : "http",
         });
         this.relayServerSocket = lib.f.replaceVars(pattern, {
           host: relayHost,
           port: relayPort,
-          protocol: this.useSecure ? 'wss' : 'ws',
+          protocol: this.useSecure ? "wss" : "ws",
         });
 
         // If we made it this far, we're probably not stuck in a redirect loop.
         // Clear the counter used by the relay redirect page.
-        this.storage.removeItem('googleRelay.redirectCount');
+        this.storage.removeItem("googleRelay.redirectCount");
       } else {
         // If everything is ok, this should be the second time we've been asked
         // to do the same init.  (The first time would have redirected.)  If
@@ -145,12 +145,12 @@ export class Corp extends Relay {
       }
     }
 
-    this.storage.removeItem('googleRelay.relayHost');
-    this.storage.removeItem('googleRelay.relayPort');
-    this.storage.removeItem('googleRelay.resumePath');
+    this.storage.removeItem("googleRelay.relayHost");
+    this.storage.removeItem("googleRelay.relayPort");
+    this.storage.removeItem("googleRelay.resumePath");
 
     if (this.relayServer) {
-      this.io_.println(localize('FOUND_RELAY', [this.relayServer]));
+      this.io_.println(localize("FOUND_RELAY", [this.relayServer]));
       return true;
     }
 
@@ -220,15 +220,15 @@ export class Corp extends Relay {
    *     error.
    */
   async authenticateDirect() {
-    const protocol = this.useSecure ? 'https' : 'http';
+    const protocol = this.useSecure ? "https" : "http";
     let endpoint = `${this.proxyHost}:${this.proxyPort}`;
-    const params = this.remoteHost ? `?host=${this.remoteHost}` : '';
+    const params = this.remoteHost ? `?host=${this.remoteHost}` : "";
     let proxyUrl = `${protocol}://${endpoint}/endpoint${params}`;
 
     // Since the proxy settings are coming from the user, make sure we catch bad
     // values (hostnames/etc...) directly.
     try {
-      // eslint-disable-next-line no-new
+       
       new URL(proxyUrl);
     } catch (e) {
       this.io_.println(e);
@@ -242,14 +242,14 @@ export class Corp extends Relay {
     try {
       endpoint = await this.fetchEndpoint(proxyUrl);
     } catch (e) {
-      console.warn('Query endpoint failed', e);
+      console.warn("Query endpoint failed", e);
       if (this.proxyHostFallback) {
         try {
           endpoint = `${this.proxyHostFallback}:${this.proxyPort}`;
           proxyUrl = `${protocol}://${endpoint}/endpoint${params}`;
           endpoint = await this.fetchEndpoint(proxyUrl);
         } catch (e) {
-          console.warn('Fallback query endpoint failed', e);
+          console.warn("Fallback query endpoint failed", e);
         }
       }
     }
@@ -279,7 +279,7 @@ export class Corp extends Relay {
       await this.validateCookie(proxyUrl);
       return true;
     } catch (e) {
-      console.warn('Error in login and query endpoint', e);
+      console.warn("Error in login and query endpoint", e);
       return false;
     }
   }
@@ -300,9 +300,9 @@ export class Corp extends Relay {
     const params = JSON.parse(text.slice(5));
     // Expecting format: {endpoint: <host[:port]>}.  Port is optional.
     // E.g. {"endpoint": "sup-ssh-relay.corp.google.com:8046"}.
-    const endpoint = params['endpoint'];
+    const endpoint = params["endpoint"];
     if (!endpoint) {
-      throw new Error(params['error'] || `No endpoint from ${proxy}`);
+      throw new Error(params["error"] || `No endpoint from ${proxy}`);
     }
     return endpoint;
   }
@@ -319,7 +319,7 @@ export class Corp extends Relay {
    */
   async validateCookie(proxy) {
     const url = `${proxy}&method=direct`;
-    const res = await fetch(url, {credentials: 'include'});
+    const res = await fetch(url, {credentials: "include"});
     const text = await res.text();
     // Skip the XSSI countermeasure.
     if (!text.startsWith(")]}'\n")) {
@@ -328,16 +328,16 @@ export class Corp extends Relay {
     const params = JSON.parse(text.slice(5));
     // Expecting format: {endpoint: <host[:port]>}.  Port is optional.
     // E.g. {"endpoint": "sup-ssh-relay.corp.google.com:8046"}.
-    const endpoint = params['endpoint'];
+    const endpoint = params["endpoint"];
     if (endpoint) {
-      this.io_.println(localize('FOUND_RELAY', [endpoint]));
-      const serverProtocol = this.useSecure ? 'https' : 'http';
-      const socketProtocol = this.useSecure ? 'wss' : 'ws';
+      this.io_.println(localize("FOUND_RELAY", [endpoint]));
+      const serverProtocol = this.useSecure ? "https" : "http";
+      const socketProtocol = this.useSecure ? "wss" : "ws";
       this.relayServer = `${serverProtocol}://${endpoint}/`;
       this.relayServerSocket = `${socketProtocol}://${endpoint}/`;
       return;
     }
-    throw new Error(params['error'] || `No endpoint from ${proxy}`);
+    throw new Error(params["error"] || `No endpoint from ${proxy}`);
   }
 
   /**
@@ -349,7 +349,7 @@ export class Corp extends Relay {
    */
   async refreshTicket(proxy) {
     const url = `${proxy}&method=direct`;
-    await fetch(url, {credentials: 'include', mode: 'no-cors'});
+    await fetch(url, {credentials: "include", mode: "no-cors"});
   }
 
   /**
@@ -370,9 +370,9 @@ export class Corp extends Relay {
     const top = (screen.height - height) / 2;
     const features =
         `titlebar=no,width=${width},height=${height},top=${top},left=${left}`;
-    const popup = lib.f.openWindow(url, '_blank', features);
+    const popup = lib.f.openWindow(url, "_blank", features);
     if (!popup) {
-      throw new Error('Could not create login popup');
+      throw new Error("Could not create login popup");
     }
     await new Promise((resolve) => {
       const listener = () => {
@@ -399,4 +399,4 @@ Corp.prototype.defaultProxyPort = 8022;
  *
  * @const {string}
  */
-Corp.prototype.relayServerPattern = '%(protocol)://%(host):%(port)/';
+Corp.prototype.relayServerPattern = "%(protocol)://%(host):%(port)/";

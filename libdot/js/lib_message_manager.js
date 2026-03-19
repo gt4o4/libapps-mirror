@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /**
  * MessageManager class handles internationalized strings.
@@ -34,7 +34,7 @@ lib.MessageManager = class {
       for (const lang of lib.i18n.resolveLanguage(languages[i])) {
         // There is no point having any language with lower priorty than 'en'
         // since 'en' always contains all messages.
-        if (lang == 'en') {
+        if (lang == "en") {
           stop = true;
           break;
         }
@@ -44,7 +44,7 @@ lib.MessageManager = class {
       }
     }
     // Always have 'en' as last fallback.
-    this.languages_.push('en');
+    this.languages_.push("en");
 
     this.useCrlf = useCrlf;
 
@@ -102,7 +102,7 @@ lib.MessageManager = class {
       } catch (e) {
         console.warn(
             `Error fetching ${lang} messages at ${url}`, e,
-            'Trying all languages in reverse order:', this.languages_);
+            "Trying all languages in reverse order:", this.languages_);
       }
     }
   }
@@ -139,7 +139,7 @@ lib.MessageManager = class {
       // Look it up in the registered cache next.
       message = this.messages_[msgname];
       if (!message) {
-        console.warn('Unknown message: ' + msgname);
+        console.warn("Unknown message: " + msgname);
         message = fallback === undefined ? msgname : fallback;
         // Register the message with the default to avoid multiple warnings.
         this.messages_[msgname] = message;
@@ -147,7 +147,7 @@ lib.MessageManager = class {
       message = lib.i18n.replaceReferences(message, args);
     }
     if (this.useCrlf) {
-      message = message.replace(/\n/g, '\r\n');
+      message = message.replace(/\n/g, "\r\n");
     }
     return message;
   }
@@ -161,7 +161,7 @@ lib.MessageManager = class {
    *     translated.
    */
   processI18nAttributes(node) {
-    const nodes = node.querySelectorAll('[i18n]');
+    const nodes = node.querySelectorAll("[i18n]");
 
     for (let i = 0; i < nodes.length; i++) {
       this.processI18nAttribute(nodes[i]);
@@ -193,9 +193,9 @@ lib.MessageManager = class {
   processI18nAttribute(node) {
     // Convert the "lower-and-dashes" attribute names into
     // "UPPER_AND_UNDER" style.
-    const thunk = (str) => str.replace(/-/g, '_').toUpperCase();
+    const thunk = (str) => str.replace(/-/g, "_").toUpperCase();
 
-    let i18n = node.getAttribute('i18n');
+    let i18n = node.getAttribute("i18n");
     if (!i18n) {
       return;
     }
@@ -214,19 +214,19 @@ lib.MessageManager = class {
 
       let msgname = i18n[key];
       // For "=foo", re-use the referenced message name.
-      if (msgname.startsWith('=')) {
+      if (msgname.startsWith("=")) {
         key = msgname.substr(1);
         msgname = i18n[key];
       }
 
       // For "$foo", calculate the message name.
-      if (msgname.startsWith('$')) {
-        msgname = thunk(node.getAttribute(msgname.substr(1)) + '_' + key);
+      if (msgname.startsWith("$")) {
+        msgname = thunk(node.getAttribute(msgname.substr(1)) + "_" + key);
       }
 
       // Finally load the message.
       const msg = this.get(msgname);
-      if (attr == '_') {
+      if (attr == "_") {
         node.textContent = msg;
       } else {
         node.setAttribute(attr, msg);

@@ -8,19 +8,19 @@
 
 // TODO(b/236205389): support option smoothScrollDuration?
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, css, html} from './lit.js';
+import {LitElement, css, html} from "./lit.js";
 import {FontManager, ORIGINAL_URL, backgroundImageLocalStorageKey, definePrefs,
-  delayedScheduler, fontManager, sleep} from './terminal_common.js';
-import {TerminalContextMenu} from './terminal_context_menu.js';
-import {TerminalFindBar} from './terminal_find_bar.js';
-import {ICON_COPY} from './terminal_icons.js';
-import {TerminalTooltip} from './terminal_tooltip.js';
+  delayedScheduler, fontManager, sleep} from "./terminal_common.js";
+import {TerminalContextMenu} from "./terminal_context_menu.js";
+import {TerminalFindBar} from "./terminal_find_bar.js";
+import {ICON_COPY} from "./terminal_icons.js";
+import {TerminalTooltip} from "./terminal_tooltip.js";
 import {Terminal, CanvasAddon, ImageAddon, SearchAddon, Unicode11Addon,
-  WebLinksAddon, WebglAddon} from './xterm.js';
-import {XtermInternal} from './terminal_xterm_internal.js';
+  WebLinksAddon, WebglAddon} from "./xterm.js";
+import {XtermInternal} from "./terminal_xterm_internal.js";
 
 
 /** @enum {number} */
@@ -65,22 +65,22 @@ const OS_DEFAULT_BINDINGS = [
 
 
 const ANSI_COLOR_NAMES = [
-    'black',
-    'red',
-    'green',
-    'yellow',
-    'blue',
-    'magenta',
-    'cyan',
-    'white',
-    'brightBlack',
-    'brightRed',
-    'brightGreen',
-    'brightYellow',
-    'brightBlue',
-    'brightMagenta',
-    'brightCyan',
-    'brightWhite',
+    "black",
+    "red",
+    "green",
+    "yellow",
+    "blue",
+    "magenta",
+    "cyan",
+    "white",
+    "brightBlack",
+    "brightRed",
+    "brightGreen",
+    "brightYellow",
+    "brightBlue",
+    "brightMagenta",
+    "brightCyan",
+    "brightWhite",
 ];
 
 /**
@@ -89,17 +89,17 @@ const ANSI_COLOR_NAMES = [
  * @type {!Map<number, string>}
  */
 const ARROW_AND_SIX_PACK_KEYS = new Map([
-    [keyCodes.UP, '\x1b[A'],
-    [keyCodes.DOWN, '\x1b[B'],
-    [keyCodes.RIGHT, '\x1b[C'],
-    [keyCodes.LEFT, '\x1b[D'],
+    [keyCodes.UP, "\x1b[A"],
+    [keyCodes.DOWN, "\x1b[B"],
+    [keyCodes.RIGHT, "\x1b[C"],
+    [keyCodes.LEFT, "\x1b[D"],
     // 6-pack keys.
-    [keyCodes.INSERT, '\x1b[2~'],
-    [keyCodes.DEL, '\x1b[3~'],
-    [keyCodes.HOME, '\x1b[H'],
-    [keyCodes.END, '\x1b[F'],
-    [keyCodes.PAGE_UP, '\x1b[5~'],
-    [keyCodes.PAGE_DOWN, '\x1b[6~'],
+    [keyCodes.INSERT, "\x1b[2~"],
+    [keyCodes.DEL, "\x1b[3~"],
+    [keyCodes.HOME, "\x1b[H"],
+    [keyCodes.END, "\x1b[F"],
+    [keyCodes.PAGE_UP, "\x1b[5~"],
+    [keyCodes.PAGE_DOWN, "\x1b[6~"],
 ]);
 
 // A z-index large enough to be on the very top.
@@ -114,7 +114,7 @@ const SEARCH_OPTIONS = {
     // current selection by themselves.
     //
     // This is similar to what Chrome's find bar use.
-    matchBackground: '#f0e13a',
+    matchBackground: "#f0e13a",
   },
 };
 
@@ -217,8 +217,8 @@ class LinkHandler {
   getTooltip_() {
     if (!this.tooltip_) {
       this.tooltip_ = /** @type {!TerminalTooltip} */(
-          document.createElement('terminal-tooltip'));
-      this.tooltip_.classList.add('xterm-hover');
+          document.createElement("terminal-tooltip"));
+      this.tooltip_.classList.add("xterm-hover");
       lib.notNull(this.term_.element).appendChild(this.tooltip_);
     }
     return this.tooltip_;
@@ -230,7 +230,7 @@ class LinkHandler {
    * @param {!Object} range
    */
   activate(ev, url, range) {
-    lib.f.openWindow(url, '_blank');
+    lib.f.openWindow(url, "_blank");
   }
 
   /**
@@ -310,18 +310,18 @@ export class A11yButtons {
   constructor(term, htermA11yReader) {
     this.term_ = term;
     this.htermA11yReader_ = htermA11yReader;
-    this.pageUpButton = document.createElement('button');
+    this.pageUpButton = document.createElement("button");
     this.pageUpButton.style.cssText = A11Y_BUTTON_STYLE;
     this.pageUpButton.textContent =
-        hterm.messageManager.get('HTERM_BUTTON_PAGE_UP');
-    this.pageUpButton.addEventListener('click',
+        hterm.messageManager.get("HTERM_BUTTON_PAGE_UP");
+    this.pageUpButton.addEventListener("click",
         () => this.scrollPages_(-1));
 
-    this.pageDownButton = document.createElement('button');
+    this.pageDownButton = document.createElement("button");
     this.pageDownButton.style.cssText = A11Y_BUTTON_STYLE;
     this.pageDownButton.textContent =
-        hterm.messageManager.get('HTERM_BUTTON_PAGE_DOWN');
-    this.pageDownButton.addEventListener('click',
+        hterm.messageManager.get("HTERM_BUTTON_PAGE_DOWN");
+    this.pageDownButton.addEventListener("click",
         () => this.scrollPages_(1));
 
     this.resetPos_();
@@ -347,17 +347,17 @@ export class A11yButtons {
     }
 
     let currentScreenContent = hterm.messageManager.get(
-        'HTERM_ANNOUNCE_CURRENT_SCREEN_HEADER',
+        "HTERM_ANNOUNCE_CURRENT_SCREEN_HEADER",
         [percentScrolled],
-        '$1% scrolled,');
+        "$1% scrolled,");
 
-    currentScreenContent += '\n';
+    currentScreenContent += "\n";
 
     const rowEnd = Math.min(activeBuffer.viewportY + this.term_.rows,
         activeBuffer.length);
     for (let i = activeBuffer.viewportY; i < rowEnd; ++i) {
       currentScreenContent +=
-          activeBuffer.getLine(i).translateToString(true) + '\n';
+          activeBuffer.getLine(i).translateToString(true) + "\n";
     }
     currentScreenContent = currentScreenContent.trim();
 
@@ -369,16 +369,16 @@ export class A11yButtons {
    */
   setEnabled(enabled) {
     if (enabled) {
-      document.addEventListener('selectionchange', this.onSelectionChange_);
+      document.addEventListener("selectionchange", this.onSelectionChange_);
     } else {
       this.resetPos_();
-      document.removeEventListener('selectionchange', this.onSelectionChange_);
+      document.removeEventListener("selectionchange", this.onSelectionChange_);
     }
   }
 
   resetPos_() {
-    this.pageUpButton.style.top = '-200px';
-    this.pageDownButton.style.bottom = '-200px';
+    this.pageUpButton.style.top = "-200px";
+    this.pageDownButton.style.bottom = "-200px";
   }
 
   onSelectionChange_() {
@@ -386,14 +386,14 @@ export class A11yButtons {
 
     const selectedElement = document.getSelection().anchorNode?.parentElement;
     if (selectedElement === this.pageUpButton) {
-      this.pageUpButton.style.top = '16px';
+      this.pageUpButton.style.top = "16px";
     } else if (selectedElement === this.pageDownButton) {
-      this.pageDownButton.style.bottom = '16px';
+      this.pageDownButton.style.bottom = "16px";
     }
   }
 }
 
-const BACKGROUND_IMAGE_KEY = 'background-image';
+const BACKGROUND_IMAGE_KEY = "background-image";
 
 class BackgroundImageWatcher {
   /**
@@ -411,7 +411,7 @@ class BackgroundImageWatcher {
    * Call once to start watching for background image changes.
    */
   watch() {
-    window.addEventListener('storage', (e) => {
+    window.addEventListener("storage", (e) => {
       if (e.key === this.localStorageKey_) {
         this.onChange_(this.getBackgroundImage());
       }
@@ -466,8 +466,8 @@ export class XtermTerminal {
     this.fontManager_ = testParams?.fontManager || fontManager;
 
     this.renderAddonType_ = WebglAddon;
-    if (!document.createElement('canvas').getContext('webgl2')) {
-      console.warn('Webgl2 is not supported. Fall back to canvas renderer');
+    if (!document.createElement("canvas").getContext("webgl2")) {
+      console.warn("Webgl2 is not supported. Fall back to canvas renderer");
       this.renderAddonType_ = CanvasAddon;
     }
 
@@ -479,9 +479,9 @@ export class XtermTerminal {
 
     if (!testParams) {
       this.term.loadAddon(
-          new WebLinksAddon((e, uri) => lib.f.openWindow(uri, '_blank')));
+          new WebLinksAddon((e, uri) => lib.f.openWindow(uri, "_blank")));
       this.term.loadAddon(new Unicode11Addon());
-      this.term.unicode.activeVersion = '11';
+      this.term.unicode.activeVersion = "11";
       this.term.loadAddon(new ImageAddon());
     }
 
@@ -501,7 +501,7 @@ export class XtermTerminal {
     this.pendingFont_ = null;
     this.scheduleRefreshFont_ = delayedScheduler(
         () => this.refreshFont_(), 100);
-    document.fonts.addEventListener('loadingdone',
+    document.fonts.addEventListener("loadingdone",
         () => this.onFontLoadingDone_());
 
     this.installUnimplementedStubs_();
@@ -509,7 +509,7 @@ export class XtermTerminal {
 
     this.term.onResize(({cols, rows}) => {
       this.io.onTerminalResize(cols, rows);
-      if (this.prefs_.get('enable-resize-status')) {
+      if (this.prefs_.get("enable-resize-status")) {
         this.showOverlay(`${cols} × ${rows}`);
       }
     });
@@ -522,7 +522,7 @@ export class XtermTerminal {
       // The search addon might change the current selection to a match. This is
       // a best effort attempt (because `searchInProgress` can have false
       // nagative) to avoid copying when this happens.
-      if (!this.searchInProgress_ && this.prefs_.get('copy-on-select')) {
+      if (!this.searchInProgress_ && this.prefs_.get("copy-on-select")) {
         this.copySelection_();
       }
     });
@@ -567,18 +567,18 @@ export class XtermTerminal {
     this.userCSSTextElement_ = null;
 
     this.contextMenu_ = /** @type {!TerminalContextMenu} */(
-        document.createElement('terminal-context-menu'));
+        document.createElement("terminal-context-menu"));
     this.contextMenu_.style.zIndex = TOP_MOST_Z_INDEX;
     this.contextMenu = {
       setItems: (items) => this.contextMenu_.items = items,
     };
 
     this.findBar_ = /** @type {!TerminalFindBar} */(
-        document.createElement('terminal-find-bar'));
+        document.createElement("terminal-find-bar"));
     Object.assign(this.findBar_.style, {
-      position: 'absolute',
-      right: '16px',
-      top: '0',
+      position: "absolute",
+      right: "16px",
+      top: "0",
       zIndex: TOP_MOST_Z_INDEX,
     });
 
@@ -587,19 +587,19 @@ export class XtermTerminal {
       // The webgl cursor layer also paints the character under the cursor with
       // this `cursorAccent` color. We use a completely transparent color here
       // to effectively disable that.
-      cursorAccent: 'rgba(0, 0, 0, 0)',
+      cursorAccent: "rgba(0, 0, 0, 0)",
       customGlyphs: true,
-      selectionBackground: 'rgba(174, 203, 250, .6)',
-      selectionInactiveBackground: 'rgba(218, 220, 224, .6)',
-      selectionForeground: 'black',
+      selectionBackground: "rgba(174, 203, 250, .6)",
+      selectionInactiveBackground: "rgba(218, 220, 224, .6)",
+      selectionForeground: "black",
     };
     this.observePrefs_();
     if (!xtermTerminalStringsLoaded) {
       xtermTerminalStringsLoaded = true;
       Terminal.strings.promptLabel =
-          hterm.messageManager.get('TERMINAL_INPUT_LABEL');
+          hterm.messageManager.get("TERMINAL_INPUT_LABEL");
       Terminal.strings.tooMuchOutput =
-          hterm.messageManager.get('TERMINAL_TOO_MUCH_OUTPUT_MESSAGE');
+          hterm.messageManager.get("TERMINAL_TOO_MUCH_OUTPUT_MESSAGE");
     }
   }
 
@@ -710,8 +710,8 @@ export class XtermTerminal {
    * @override
    */
   setBackgroundImage(image) {
-    this.container_.style.backgroundImage = image || '';
-    this.updateBackgroundColor_(this.prefs_.getString('background-color'));
+    this.container_.style.backgroundImage = image || "";
+    this.updateBackgroundColor_(this.prefs_.getString("background-color"));
   }
 
   /**
@@ -720,8 +720,8 @@ export class XtermTerminal {
    */
   installUnimplementedStubs_() {
     const methodNames = [
-        'setCursorVisible',
-        'uninstallKeyboard',
+        "setCursorVisible",
+        "uninstallKeyboard",
     ];
 
     for (const name of methodNames) {
@@ -730,7 +730,7 @@ export class XtermTerminal {
 
     this.vt = {
       resetParseState: () => {
-        console.warn('.vt.resetParseState() is not implemented');
+        console.warn(".vt.resetParseState() is not implemented");
       },
     };
   }
@@ -780,7 +780,7 @@ export class XtermTerminal {
     // Handle keypress when the user focuses the a11y tree with ChromeVox.
     // Note that we check the target against <body> instead of the a11y tree
     // because of bug https://issuetracker.google.com/298164476.
-    document.body.addEventListener('keydown', (e) => {
+    document.body.addEventListener("keydown", (e) => {
       if (e.target === document.body) {
         switch (e.keyCode) {
           case keyCodes.C:
@@ -841,7 +841,7 @@ export class XtermTerminal {
    */
   decorate(elem) {
     this.container_ = elem;
-    elem.style.backgroundSize = '100% 100%';
+    elem.style.backgroundSize = "100% 100%";
 
     (async () => {
       await this.prefs_.readStorage();
@@ -850,7 +850,7 @@ export class XtermTerminal {
       this.prefs_.notifyAll();
 
       const screenPaddingSize = /** @type {number} */(
-          this.prefs_.get('screen-padding-size'));
+          this.prefs_.get("screen-padding-size"));
       elem.style.paddingTop = elem.style.paddingLeft = `${screenPaddingSize}px`;
 
       this.setBackgroundImage(
@@ -871,23 +871,23 @@ export class XtermTerminal {
       elem.appendChild(this.contextMenu_);
       elem.appendChild(this.findBar_);
 
-      this.findBar_.addEventListener('find-bar',
+      this.findBar_.addEventListener("find-bar",
           (e) => this.onFindBarEvent_(e));
 
-      elem.addEventListener('dragover', (e) => e.preventDefault());
-      elem.addEventListener('drop',
+      elem.addEventListener("dragover", (e) => e.preventDefault());
+      elem.addEventListener("drop",
           (e) => this.onDrop_(/** @type {!DragEvent} */(e)));
 
       // Block the default context menu from popping up.
-      elem.addEventListener('contextmenu', (e) => e.preventDefault());
+      elem.addEventListener("contextmenu", (e) => e.preventDefault());
 
       // Add a handler for pasting with the mouse.
-      elem.addEventListener('mousedown',
+      elem.addEventListener("mousedown",
           (e) => this.onMouseDown_(/** @type {!MouseEvent} */(e)));
 
       await this.scheduleFit_();
       this.a11yButtons_ = new A11yButtons(this.term, this.htermA11yReader_);
-      if (!this.prefs_.get('scrollbar-visible')) {
+      if (!this.prefs_.get("scrollbar-visible")) {
         this.xtermInternal_.setScrollbarVisible(false);
       }
 
@@ -968,30 +968,30 @@ export class XtermTerminal {
 
     const setHtermColorCSSVariable = (name, color) => {
       const css = lib.notNull(lib.colors.normalizeCSS(color));
-      const rgb = lib.colors.crackRGB(css).slice(0, 3).join(',');
+      const rgb = lib.colors.crackRGB(css).slice(0, 3).join(",");
       setHtermCSSVariable(name, rgb);
     };
 
-    this.prefs_.addObserver('font-size', (v) => {
+    this.prefs_.addObserver("font-size", (v) => {
       this.term.options.fontSize = v;
-      setHtermCSSVariable('font-size', `${v}px`);
+      setHtermCSSVariable("font-size", `${v}px`);
     });
 
     this.prefs_.addObservers(null, {
-      'audible-bell-sound': (v) => {
+      "audible-bell-sound": (v) => {
         this.bell_.playAudio = !!v;
       },
-      'desktop-notification-bell': (v) => {
+      "desktop-notification-bell": (v) => {
         this.bell_.showNotification = v;
       },
-      'background-color': (v) => {
+      "background-color": (v) => {
         this.updateBackgroundColor_(v);
-        setHtermColorCSSVariable('background-color', v);
+        setHtermColorCSSVariable("background-color", v);
       },
-      'color-palette-overrides': (v) => {
+      "color-palette-overrides": (v) => {
         if (!(v instanceof Array)) {
           // For terminal, we always expect this to be an array.
-          console.warn('unexpected color palette: ', v);
+          console.warn("unexpected color palette: ", v);
           return;
         }
         const colors = {};
@@ -1000,39 +1000,39 @@ export class XtermTerminal {
         }
         this.updateTheme_(colors);
       },
-      'cursor-blink': (v) => {
+      "cursor-blink": (v) => {
         this.term.options.cursorBlink = v;
       },
-      'cursor-color': (v) => this.updateTheme_({cursor: v}),
-      'cursor-shape': (v) => {
+      "cursor-color": (v) => this.updateTheme_({cursor: v}),
+      "cursor-shape": (v) => {
         let shape;
-        if (v === 'BEAM') {
-          shape = 'bar';
+        if (v === "BEAM") {
+          shape = "bar";
         } else {
           shape = v.toLowerCase();
         }
         this.term.options.cursorStyle = shape;
       },
-      'font-family': (v) => this.updateFont_(v),
-      'foreground-color': (v) => {
+      "font-family": (v) => this.updateFont_(v),
+      "foreground-color": (v) => {
         this.updateTheme_({foreground: v});
-        setHtermColorCSSVariable('foreground-color', v);
+        setHtermColorCSSVariable("foreground-color", v);
       },
-      'line-height': (v) => {
+      "line-height": (v) => {
         this.term.options.lineHeight = v;
       },
-      'scrollback-limit': (v) => {
-        if (typeof v !== 'number' || v < 0) {
+      "scrollback-limit": (v) => {
+        if (typeof v !== "number" || v < 0) {
           // xterm.js does not have an "unlimited" option, so we just use a
           // large number here.
           v = 10000000;
         }
         this.term.options.scrollback = v;
       },
-      'scroll-on-keystroke': (v) => {
+      "scroll-on-keystroke": (v) => {
         this.term.options.scrollOnUserInput = v;
       },
-      'scroll-on-output': (v) => {
+      "scroll-on-output": (v) => {
         if (!v) {
           this.scrollOnOutputListener_?.dispose();
           this.scrollOnOutputListener_ = null;
@@ -1043,32 +1043,32 @@ export class XtermTerminal {
               () => this.term.scrollToBottom());
         }
       },
-      'scrollbar-visible': (v) => {
+      "scrollbar-visible": (v) => {
         this.xtermInternal_.setScrollbarVisible(v);
       },
-      'user-css': (v) => {
+      "user-css": (v) => {
         if (this.userCSSElement_) {
           this.userCSSElement_.remove();
         }
         if (v) {
-          this.userCSSElement_ = document.createElement('link');
-          this.userCSSElement_.setAttribute('rel', 'stylesheet');
-          this.userCSSElement_.setAttribute('href', v);
+          this.userCSSElement_ = document.createElement("link");
+          this.userCSSElement_.setAttribute("rel", "stylesheet");
+          this.userCSSElement_.setAttribute("href", v);
           document.head.appendChild(this.userCSSElement_);
         }
       },
-      'user-css-text': (v) => {
+      "user-css-text": (v) => {
         if (!this.userCSSTextElement_) {
-          this.userCSSTextElement_ = document.createElement('style');
+          this.userCSSTextElement_ = document.createElement("style");
           document.head.appendChild(this.userCSSTextElement_);
         }
         this.userCSSTextElement_.textContent = v;
       },
     });
 
-    for (const name of ['keybindings-os-defaults', 'pass-ctrl-n', 'pass-ctrl-t',
-        'pass-ctrl-w', 'pass-ctrl-tab', 'pass-ctrl-number', 'pass-alt-number',
-        'ctrl-plus-minus-zero-zoom', 'ctrl-c-copy', 'ctrl-v-paste']) {
+    for (const name of ["keybindings-os-defaults", "pass-ctrl-n", "pass-ctrl-t",
+        "pass-ctrl-w", "pass-ctrl-tab", "pass-ctrl-number", "pass-alt-number",
+        "ctrl-plus-minus-zero-zoom", "ctrl-c-copy", "ctrl-v-paste"]) {
       this.prefs_.addObserver(name, this.scheduleResetKeyDownHandlers_);
     }
   }
@@ -1082,7 +1082,7 @@ export class XtermTerminal {
     }
 
     const screenPaddingSize = /** @type {number} */(
-        this.prefs_.get('screen-padding-size'));
+        this.prefs_.get("screen-padding-size"));
 
     const calc = (size, cellSize) => {
       return Math.floor((size - 2 * screenPaddingSize) / cellSize);
@@ -1128,7 +1128,7 @@ export class XtermTerminal {
 
     if (this.hasBackgroundImage()) {
       const css = lib.notNull(lib.colors.normalizeCSS(color));
-      const rgb = lib.colors.crackRGB(css).slice(0, 3).join(',');
+      const rgb = lib.colors.crackRGB(css).slice(0, 3).join(",");
       // Note that we still want to set the RGB part correctly even though it is
       // completely transparent. This is because the background color without
       // the alpha channel is used in reverse video mode.
@@ -1181,21 +1181,21 @@ export class XtermTerminal {
     // text).  e.g. text/html is OK. This is the same behavior as hterm.
     if (e.shiftKey) {
       for (const type of e.dataTransfer.types) {
-        if (type !== 'text/plain' && type.startsWith('text/')) {
+        if (type !== "text/plain" && type.startsWith("text/")) {
           this.term.paste(e.dataTransfer.getData(type));
           return;
         }
       }
     }
 
-    this.term.paste(e.dataTransfer.getData('text/plain'));
+    this.term.paste(e.dataTransfer.getData("text/plain"));
   }
 
   /**
    * @param {!MouseEvent} e
    */
   onMouseDown_(e) {
-    if (this.term.modes.mouseTrackingMode !== 'none') {
+    if (this.term.modes.mouseTrackingMode !== "none") {
       // xterm.js is in mouse mode and will handle the event.
       return;
     }
@@ -1208,14 +1208,14 @@ export class XtermTerminal {
     }
 
     if (e.button === MIDDLE || (e.button === RIGHT &&
-          this.prefs_.getBoolean('mouse-right-click-paste'))) {
+          this.prefs_.getBoolean("mouse-right-click-paste"))) {
       this.pasteFromClipboard_();
     }
   }
 
   onFindBarEvent_(e) {
     switch (e.detail.type) {
-      case 'find':
+      case "find":
         {
           const value = e.target.value;
           if (!value) {
@@ -1236,7 +1236,7 @@ export class XtermTerminal {
           }
         }
         break;
-      case 'close':
+      case "close":
         this.term.clearSelection();
         this.searchAddon_.clearDecorations();
         this.term.focus();
@@ -1289,9 +1289,9 @@ export class XtermTerminal {
     }
     navigator.clipboard?.writeText(data);
 
-    if (this.prefs_.get('enable-clipboard-notice')) {
+    if (this.prefs_.get("enable-clipboard-notice")) {
       if (!this.copyNotice_) {
-        this.copyNotice_ = document.createElement('terminal-copy-notice');
+        this.copyNotice_ = document.createElement("terminal-copy-notice");
       }
       setTimeout(() => this.showOverlay(lib.notNull(this.copyNotice_), 500),
           200);
@@ -1309,7 +1309,7 @@ export class XtermTerminal {
     //
     // TODO: Report a bug to xterm.js and ask for exposing a public function for
     // the refresh so that we don't need to do this hack.
-    this.term.options.fontFamily += ' ';
+    this.term.options.fontFamily += " ";
   }
 
   /**
@@ -1370,7 +1370,7 @@ export class XtermTerminal {
     const handler = this.keyDownHandlers_.get(
         encodeKeyCombo(modifiers, ev.keyCode));
     if (handler) {
-      if (ev.type === 'keydown') {
+      if (ev.type === "keydown") {
         handler(ev);
       }
       return true;
@@ -1401,14 +1401,14 @@ export class XtermTerminal {
 
     // If there is a handler but the event is not keydown (e.g. keypress,
     // keyup), we just do nothing.
-    if (ev.type !== 'keydown') {
+    if (ev.type !== "keydown") {
       ev.preventDefault();
       ev.stopPropagation();
       return true;
     }
 
     let action;
-    if (typeof htermBinding.action === 'function') {
+    if (typeof htermBinding.action === "function") {
       action = htermBinding.action.call(this.keyboard, this, htermKeyDown);
     } else {
       action = htermBinding.action;
@@ -1458,7 +1458,7 @@ export class XtermTerminal {
       return false;
     }
 
-    if (ev.type !== 'keydown') {
+    if (ev.type !== "keydown") {
       // Do nothing for non-keydown event, and also don't let xterm.js handle
       // it.
       return true;
@@ -1488,10 +1488,10 @@ export class XtermTerminal {
     const mod = `;${modifiers + 1}`;
     if (code.length === 3) {
       // Convert code from "CSI x" to "CSI 1 mod x";
-      code = '\x1b[1' + mod + code[2];
+      code = "\x1b[1" + mod + code[2];
     } else {
       // Convert code from "CSI ... ~" to "CSI ... mod ~";
-      code = code.slice(0, -1) + mod + '~';
+      code = code.slice(0, -1) + mod + "~";
     }
     this.io.onVTKeystroke(code);
     return true;
@@ -1505,10 +1505,10 @@ export class XtermTerminal {
   zoomKeyDownHandler_(ev) {
     ev.preventDefault();
 
-    if (this.prefs_.get('ctrl-plus-minus-zero-zoom') === ev.shiftKey) {
+    if (this.prefs_.get("ctrl-plus-minus-zero-zoom") === ev.shiftKey) {
       // The only one with a control code.
       if (ev.keyCode === keyCodes.MINUS) {
-        this.io.onVTKeystroke('\x1f');
+        this.io.onVTKeystroke("\x1f");
       }
       return;
     }
@@ -1516,7 +1516,7 @@ export class XtermTerminal {
     let newFontSize;
     switch (ev.keyCode) {
       case keyCodes.ZERO:
-        newFontSize = this.prefs_.get('font-size');
+        newFontSize = this.prefs_.get("font-size");
         break;
       case keyCodes.MINUS:
         newFontSize = this.term.options.fontSize - 1;
@@ -1532,24 +1532,24 @@ export class XtermTerminal {
   /** @param {!KeyboardEvent} ev */
   ctrlCKeyDownHandler_(ev) {
     ev.preventDefault();
-    if (this.prefs_.get('ctrl-c-copy') !== ev.shiftKey &&
+    if (this.prefs_.get("ctrl-c-copy") !== ev.shiftKey &&
         this.term.hasSelection()) {
       this.copySelection_();
       return;
     }
 
-    this.io.onVTKeystroke('\x03');
+    this.io.onVTKeystroke("\x03");
   }
 
   /** @param {!KeyboardEvent} ev */
   ctrlVKeyDownHandler_(ev) {
-    if (this.prefs_.get('ctrl-v-paste') !== ev.shiftKey) {
+    if (this.prefs_.get("ctrl-v-paste") !== ev.shiftKey) {
       // Don't do anything and let the browser handles the key.
       return;
     }
 
     ev.preventDefault();
-    this.io.onVTKeystroke('\x16');
+    this.io.onVTKeystroke("\x16");
   }
 
   resetKeyDownHandlers_() {
@@ -1585,7 +1585,7 @@ export class XtermTerminal {
     // Ctrl+/
     set(Modifier.Ctrl, 191, (ev) => {
       ev.preventDefault();
-      this.io.onVTKeystroke(ctl('_'));
+      this.io.onVTKeystroke(ctl("_"));
     });
 
     // Settings page.
@@ -1594,7 +1594,7 @@ export class XtermTerminal {
       chrome.terminalPrivate.openOptionsPage(() => {});
     });
 
-    if (this.prefs_.get('keybindings-os-defaults')) {
+    if (this.prefs_.get("keybindings-os-defaults")) {
       for (const binding of OS_DEFAULT_BINDINGS) {
         this.keyDownHandlers_.set(binding, noop);
       }
@@ -1606,7 +1606,7 @@ export class XtermTerminal {
       chrome.terminalPrivate.openWindow();
     };
     set(Modifier.Ctrl | Modifier.Shift, keyCodes.N, newWindow);
-    if (this.prefs_.get('pass-ctrl-n')) {
+    if (this.prefs_.get("pass-ctrl-n")) {
       set(Modifier.Ctrl, keyCodes.N, newWindow);
     }
 
@@ -1614,22 +1614,22 @@ export class XtermTerminal {
     const newTab = (ev) => {
       ev.preventDefault();
       chrome.terminalPrivate.openWindow(
-          {asTab: true, url: '/html/terminal.html'});
+          {asTab: true, url: "/html/terminal.html"});
     };
     set(Modifier.Ctrl | Modifier.Shift, keyCodes.T, newTab);
-    if (this.prefs_.get('pass-ctrl-t')) {
+    if (this.prefs_.get("pass-ctrl-t")) {
       set(Modifier.Ctrl, keyCodes.T, newTab);
     }
 
-    if (this.prefs_.get('pass-ctrl-w')) {
+    if (this.prefs_.get("pass-ctrl-w")) {
       setWithShiftVersion(Modifier.Ctrl, keyCodes.W, noop);
     }
 
-    if (this.prefs_.get('pass-ctrl-tab')) {
+    if (this.prefs_.get("pass-ctrl-tab")) {
       setWithShiftVersion(Modifier.Ctrl, keyCodes.TAB, noop);
     }
 
-    const passCtrlNumber = this.prefs_.get('pass-ctrl-number');
+    const passCtrlNumber = this.prefs_.get("pass-ctrl-number");
 
     /**
      * Set a handler for the key combo ctrl+<number>.
@@ -1649,17 +1649,17 @@ export class XtermTerminal {
       set(Modifier.Ctrl, keyCodes.ZERO + number, func);
     };
 
-    setCtrlNumberHandler(1, '1');
-    setCtrlNumberHandler(2, ctl('@'));
-    setCtrlNumberHandler(3, ctl('['));
-    setCtrlNumberHandler(4, ctl('\\'));
-    setCtrlNumberHandler(5, ctl(']'));
-    setCtrlNumberHandler(6, ctl('^'));
-    setCtrlNumberHandler(7, ctl('_'));
-    setCtrlNumberHandler(8, '\x7f');
-    setCtrlNumberHandler(9, '9');
+    setCtrlNumberHandler(1, "1");
+    setCtrlNumberHandler(2, ctl("@"));
+    setCtrlNumberHandler(3, ctl("["));
+    setCtrlNumberHandler(4, ctl("\\"));
+    setCtrlNumberHandler(5, ctl("]"));
+    setCtrlNumberHandler(6, ctl("^"));
+    setCtrlNumberHandler(7, ctl("_"));
+    setCtrlNumberHandler(8, "\x7f");
+    setCtrlNumberHandler(9, "9");
 
-    if (this.prefs_.get('pass-alt-number')) {
+    if (this.prefs_.get("pass-alt-number")) {
       for (let keyCode = keyCodes.ZERO; keyCode <= keyCodes.NINE; ++keyCode) {
         set(Modifier.Alt, keyCode, noop);
       }
@@ -1702,9 +1702,9 @@ class HtermTerminal extends hterm.Terminal {
 
     const fontManager = new FontManager(this.getDocument());
     const prefs = this.getPrefs();
-    fontManager.loadFont(/** @type {string} */(prefs.get('font-family')));
+    fontManager.loadFont(/** @type {string} */(prefs.get("font-family")));
     prefs.addObserver(
-        'font-family',
+        "font-family",
         (v) => fontManager.loadFont(/** @type {string} */(v)));
 
     const backgroundImageWatcher = new BackgroundImageWatcher(this.getPrefs(),
@@ -1722,7 +1722,7 @@ class HtermTerminal extends hterm.Terminal {
    *     was processed by the parser.
    */
   write(data, callback) {
-    if (typeof data === 'string') {
+    if (typeof data === "string") {
       this.io.print(data);
     } else {
       this.io.writeUTF8(data);
@@ -1743,22 +1743,22 @@ class HtermTerminal extends hterm.Terminal {
     this.keyboard.keyMap.keyDefs[78].control = HtermTerminal.onCtrlN_;
     this.keyboard.keyMap.keyDefs[84].control = HtermTerminal.onCtrlT_;
 
-    Object.assign(hterm.Keyboard.Bindings.OsDefaults['cros'], {
+    Object.assign(hterm.Keyboard.Bindings.OsDefaults["cros"], {
       // Dock window left/right.
-      'Alt+BRACKET_LEFT': 'PASS',
-      'Alt+BRACKET_RIGHT': 'PASS',
+      "Alt+BRACKET_LEFT": "PASS",
+      "Alt+BRACKET_RIGHT": "PASS",
       // Maximize/minimize window.
-      'Alt+EQUAL': 'PASS',
-      'Alt+MINUS': 'PASS',
+      "Alt+EQUAL": "PASS",
+      "Alt+MINUS": "PASS",
     });
-    if (this.getPrefs().get('keybindings-os-defaults')) {
+    if (this.getPrefs().get("keybindings-os-defaults")) {
       this.keyboard.bindings.clear();
       this.keyboard.bindings.addBindings(
-          /** @type {!Object} */ (this.getPrefs().get('keybindings') || {}),
+          /** @type {!Object} */ (this.getPrefs().get("keybindings") || {}),
           true);
     }
 
-    this.keyboard.bindings.addBinding('Ctrl+Shift+P', () => {
+    this.keyboard.bindings.addBinding("Ctrl+Shift+P", () => {
       this.onOpenOptionsPage();
       return hterm.Keyboard.KeyActions.CANCEL;
     });
@@ -1780,7 +1780,7 @@ class HtermTerminal extends hterm.Terminal {
       };
     }
 
-    return '\x0e';
+    return "\x0e";
   }
 
   /**
@@ -1795,12 +1795,12 @@ class HtermTerminal extends hterm.Terminal {
     if (this.keyboard.terminal.passCtrlT) {
       return function(e, k) {
         chrome.terminalPrivate.openWindow(
-            {asTab: true, url: '/html/terminal.html'});
+            {asTab: true, url: "/html/terminal.html"});
         return hterm.Keyboard.KeyActions.CANCEL;
       };
     }
 
-    return '\x14';
+    return "\x14";
   }
 }
 
@@ -1815,16 +1815,16 @@ class HtermTerminal extends hterm.Terminal {
  * @return {!Promise<!hterm.Terminal>}
  */
 export async function createEmulator({storage, profileId}) {
-  let emulator_type = 'hterm';
+  let emulator_type = "hterm";
 
   // TODO: remove the url param logic. This is temporary to make manual
   // testing a bit easier.
-  if (ORIGINAL_URL.searchParams.get('emulator') !== 'hterm') {
-    emulator_type = 'xterm.js';
+  if (ORIGINAL_URL.searchParams.get("emulator") !== "hterm") {
+    emulator_type = "xterm.js";
   }
-  console.log('Terminal emulator type: ', emulator_type);
+  console.log("Terminal emulator type: ", emulator_type);
 
-  if (emulator_type === 'hterm') {
+  if (emulator_type === "hterm") {
     return new HtermTerminal({profileId, storage});
   }
 
@@ -1858,7 +1858,7 @@ class TerminalCopyNotice extends LitElement {
     if (!this.childNodes.length) {
       // This is not visible since we use shadow dom. But this will allow the
       // hterm.NotificationCenter to announce the the copy text.
-      this.append(hterm.messageManager.get('HTERM_NOTIFY_COPY'));
+      this.append(hterm.messageManager.get("HTERM_NOTIFY_COPY"));
     }
   }
 
@@ -1869,9 +1869,9 @@ class TerminalCopyNotice extends LitElement {
   render() {
     return html`
        ${ICON_COPY}
-       <div>${hterm.messageManager.get('HTERM_NOTIFY_COPY')}</div>
+       <div>${hterm.messageManager.get("HTERM_NOTIFY_COPY")}</div>
     `;
   }
 }
 
-customElements.define('terminal-copy-notice', TerminalCopyNotice);
+customElements.define("terminal-copy-notice", TerminalCopyNotice);

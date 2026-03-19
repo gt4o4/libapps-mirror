@@ -7,10 +7,10 @@
  * @suppress {moduleLoad}
  */
 
-import {WASI} from '../../wasi-js-bindings/index.js';
-import * as NetErrorList from './chrome_net_error_list.js';
-import * as Constants from './constants.js';
-import * as VFS from './vfs.js';
+import {WASI} from "../../wasi-js-bindings/index.js";
+import * as NetErrorList from "./chrome_net_error_list.js";
+import * as Constants from "./constants.js";
+import * as VFS from "./vfs.js";
 
 const SOL_SOCKET = 0x7fffffff;
 // const SO_RCVBUF sets bufferSize.
@@ -70,10 +70,10 @@ function clearLastError() {
 }
 
 // The IPv4 wildcard address.
-const inAddrAny = '0.0.0.0';
+const inAddrAny = "0.0.0.0";
 
 // The IPv6 wildcard address.
-const in6AddrAny = '::';
+const in6AddrAny = "::";
 
 /**
  * Find matching wildcard address.
@@ -96,15 +96,15 @@ function getInAddrAny(domain) {
 export function strAddrToArray(strAddress) {
   let address;
 
-  if (strAddress.includes('.')) {
-    address = strAddress.split('.').map((x) => parseInt(x, 10));
+  if (strAddress.includes(".")) {
+    address = strAddress.split(".").map((x) => parseInt(x, 10));
   } else {
     // Need to handle compressed :: ourselves.
-    let parts = strAddress.split(':');
-    const firstEmpty = parts.indexOf('');
+    let parts = strAddress.split(":");
+    const firstEmpty = parts.indexOf("");
     if (firstEmpty !== -1) {
-      const zeros = ['0', '0', '0', '0', '0', '0', '0', '0'];
-      const lastEmpty = parts.lastIndexOf('');
+      const zeros = ["0", "0", "0", "0", "0", "0", "0", "0"];
+      const lastEmpty = parts.lastIndexOf("");
       parts = parts.slice(0, firstEmpty).concat(
           zeros.slice(parts.length - (lastEmpty - firstEmpty + 1))).concat(
           parts.slice(lastEmpty + 1));
@@ -135,7 +135,7 @@ export class Socket extends VFS.PathHandle {
    * @param {number} protocol
    */
   constructor(domain, type, protocol) {
-    super('socket', type);
+    super("socket", type);
     /** @const {number} */
     this.domain = domain;
     /** @const {number} */
@@ -161,7 +161,7 @@ export class Socket extends VFS.PathHandle {
   }
 
   debug(...args) {
-    console.debug('socket', ...args);
+    console.debug("socket", ...args);
   }
 
   /**
@@ -170,14 +170,14 @@ export class Socket extends VFS.PathHandle {
    * @return {!Promise<!WASI_t.errno>}
    */
   async connect(address, port) {
-    throw new Error('connect(): unimplemented');
+    throw new Error("connect(): unimplemented");
   }
 
   /**
    * @param {!ArrayBuffer} data
    */
   onRecv(data) {
-    throw new Error('onData(): unimplemented');
+    throw new Error("onData(): unimplemented");
   }
 
   /**
@@ -204,7 +204,7 @@ export class Socket extends VFS.PathHandle {
    * @return {!Promise<!WASI_t.errno|{nwritten: number}>}
    */
   async sendto(buf, address, port) {
-    throw new Error('sendto(): unimplemented');
+    throw new Error("sendto(): unimplemented");
   }
 
   /**
@@ -442,9 +442,9 @@ export async function cleanupChromeSockets() {
     return new Promise((resolve) => {
       api.getSockets((sockets) => {
         sockets.forEach((socket) => {
-          const name = socket.name || '';
-          const ele = name.split(':');
-          if (ele[0] !== 'tabid' || ele[1] === `${id}`) {
+          const name = socket.name || "";
+          const ele = name.split(":");
+          if (ele[0] !== "tabid" || ele[1] === `${id}`) {
             // Close unknown sockets and sockets that belonged to this tab in a
             // previous run.
             promises.push(closeSocket(socket.socketId));
@@ -538,10 +538,10 @@ export class ChromeTcpSocket extends StreamSocket {
       let addrType;
       switch (this.domain) {
         case Constants.AF_INET:
-          addrType = 'ipv4';
+          addrType = "ipv4";
           break;
         case Constants.AF_INET6:
-          addrType = 'ipv6';
+          addrType = "ipv6";
           break;
       }
       chrome.sockets.tcp.connect(
@@ -1003,7 +1003,7 @@ export class ChromeUdpSocket extends DatagramSocket {
     // Chrome APIs require us to bind the socket locally first.
     if (this.address === null) {
       const bindRet = await this.bind();
-      if (typeof bindRet === 'number' && bindRet !== WASI.errno.ESUCCESS) {
+      if (typeof bindRet === "number" && bindRet !== WASI.errno.ESUCCESS) {
         return bindRet;
       }
     }
@@ -1038,7 +1038,7 @@ export class ChromeUdpSocket extends DatagramSocket {
     const result = await new Promise((resolve) => {
       // The ?? is to workaround closure-compiler checks.
       chrome.sockets.udp.bind(
-          this.socketId_, address ?? '', port ?? 0, resolve);
+          this.socketId_, address ?? "", port ?? 0, resolve);
     });
 
     const ret = netErrorToErrno(result);
@@ -1139,7 +1139,7 @@ export class RelaySocket extends StreamSocket {
     this.callback_ = await this.open_(address, port);
 
     if (!this.callback_) {
-      console.error('Unable to connect to relay server.');
+      console.error("Unable to connect to relay server.");
       return WASI.errno.EIO;
     }
 
@@ -1190,9 +1190,9 @@ export class RelaySocket extends StreamSocket {
       connected: (this.address !== null),
       paused: false,
       persistent: false,
-      localAddress: '0.0.0.0',
+      localAddress: "0.0.0.0",
       localPort: 0,
-      peerAddress: '0.0.0.0',
+      peerAddress: "0.0.0.0",
       peerPort: this.port,
       socketId: -1,
     });
@@ -1329,7 +1329,7 @@ export class WebTcpSocket extends StreamSocket {
       this.port = remotePort;
     } catch (e) {
       this.socket_ = null;
-      console.warn('setTcpSocket_ failed.', e);
+      console.warn("setTcpSocket_ failed.", e);
       return WASI.errno.ENETUNREACH;
     }
     return WASI.errno.ESUCCESS;
@@ -1399,13 +1399,13 @@ export class WebTcpSocket extends StreamSocket {
     }
 
     if (this.directSocketsReader_) {
-      await this.directSocketsReader_.cancel('closing');
+      await this.directSocketsReader_.cancel("closing");
       this.directSocketsReader_.releaseLock();
       this.directSocketsReader_ = null;
     }
 
     if (this.directSocketsWriter_) {
-      await this.directSocketsWriter_.abort('closing');
+      await this.directSocketsWriter_.abort("closing");
       this.directSocketsWriter_.releaseLock();
       this.directSocketsWriter_ = null;
     }
@@ -1413,7 +1413,7 @@ export class WebTcpSocket extends StreamSocket {
     try {
       await this.socket_.close();
     } catch (e) {
-      console.warn('Error with closing socket.', e);
+      console.warn("Error with closing socket.", e);
     }
 
     this.socket_ = null;
@@ -1432,7 +1432,7 @@ export class WebTcpSocket extends StreamSocket {
       await this.directSocketsWriter_.write(buf.buffer);
       return {nwritten: buf.buffer.byteLength};
     } catch (e) {
-      console.warn('Chunk error:', e);
+      console.warn("Chunk error:", e);
       return WASI.errno.EIO;
     }
   }
@@ -1445,7 +1445,7 @@ export class WebTcpSocket extends StreamSocket {
     if (this.socket_ === null) {
       return /** @type {!chrome.socket.SocketInfo} */ ({
         connected: false,
-        socketType: 'tcp',
+        socketType: "tcp",
       });
     }
 
@@ -1457,7 +1457,7 @@ export class WebTcpSocket extends StreamSocket {
       localPort: info.localPort,
       peerAddress: info.remoteAddress,
       peerPort: info.remotePort,
-      socketType: 'tcp',
+      socketType: "tcp",
     });
   }
 
@@ -1634,7 +1634,7 @@ export class WebTcpServerSocket extends StreamSocket {
       return WASI.errno.ESUCCESS;
     } catch (e) {
       this.socket_ = null;
-      console.warn('listen failed. ', e);
+      console.warn("listen failed. ", e);
       return WASI.errno.EADDRINUSE;
     }
   }
@@ -1692,7 +1692,7 @@ export class WebTcpServerSocket extends StreamSocket {
     if (this.socket_ === null) {
       return /** @type {!chrome.socket.SocketInfo} */ ({
         connected: false,
-        socketType: 'tcp',
+        socketType: "tcp",
       });
     }
 
@@ -1701,7 +1701,7 @@ export class WebTcpServerSocket extends StreamSocket {
       connected: true,
       localAddress: info.localAddress,
       localPort: info.localPort,
-      socketType: 'tcp',
+      socketType: "tcp",
     });
   }
 
@@ -1712,7 +1712,7 @@ export class WebTcpServerSocket extends StreamSocket {
     }
 
     if (this.incomingConnectionReader_) {
-      await this.incomingConnectionReader_.cancel('closing');
+      await this.incomingConnectionReader_.cancel("closing");
       this.incomingConnectionReader_.releaseLock();
       this.incomingConnectionReader_ = null;
     }
@@ -1720,7 +1720,7 @@ export class WebTcpServerSocket extends StreamSocket {
     try {
       await this.socket_.close();
     } catch (e) {
-      console.warn('Error with closing socket.', e);
+      console.warn("Error with closing socket.", e);
     }
 
     this.socket_ = null;
@@ -1818,7 +1818,7 @@ export class WebUdpSocket extends DatagramSocket {
       this.port = localPort;
     } catch (e) {
       this.socket_ = null;
-      console.warn('setSocket_ failed.', e);
+      console.warn("setSocket_ failed.", e);
       return WASI.errno.ENETUNREACH;
     }
     return WASI.errno.ESUCCESS;
@@ -1834,13 +1834,13 @@ export class WebUdpSocket extends DatagramSocket {
     }
 
     if (this.directSocketsReader_) {
-      await this.directSocketsReader_.cancel('closing');
+      await this.directSocketsReader_.cancel("closing");
       this.directSocketsReader_.releaseLock();
       this.directSocketsReader_ = null;
     }
 
     if (this.directSocketsWriter_) {
-      await this.directSocketsWriter_.abort('closing');
+      await this.directSocketsWriter_.abort("closing");
       this.directSocketsWriter_.releaseLock();
       this.directSocketsWriter_ = null;
     }
@@ -1848,7 +1848,7 @@ export class WebUdpSocket extends DatagramSocket {
     try {
       await this.socket_.close();
     } catch (e) {
-      console.warn('Error with closing socket.', e);
+      console.warn("Error with closing socket.", e);
     }
 
     this.socket_ = null;
@@ -1867,7 +1867,7 @@ export class WebUdpSocket extends DatagramSocket {
     // Web APIs require us to bind the socket locally first.
     if (this.address === null) {
       const bindRet = await this.bind();
-      if (typeof bindRet === 'number' && bindRet !== WASI.errno.ESUCCESS) {
+      if (typeof bindRet === "number" && bindRet !== WASI.errno.ESUCCESS) {
         return bindRet;
       }
     }
@@ -1893,7 +1893,7 @@ export class WebUdpSocket extends DatagramSocket {
       });
       return {nwritten: buf.byteLength};
     } catch (e) {
-      console.warn('Chunk error:', e);
+      console.warn("Chunk error:", e);
       return WASI.errno.EIO;
     }
   }
@@ -1942,7 +1942,7 @@ export class WebUdpSocket extends DatagramSocket {
     if (this.socket_ === null) {
       return /** @type {!chrome.socket.SocketInfo} */ ({
         connected: false,
-        socketType: 'udp',
+        socketType: "udp",
       });
     }
 
@@ -1954,7 +1954,7 @@ export class WebUdpSocket extends DatagramSocket {
       localPort: info.localPort,
       peerAddress: info.remoteAddress,
       peerPort: info.remotePort,
-      socketType: 'udp',
+      socketType: "udp",
     });
   }
 

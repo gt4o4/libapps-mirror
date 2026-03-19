@@ -6,9 +6,9 @@
  * @fileoverview Tests for initial argument passing.
  */
 
-import {Process, SyscallEntry, SyscallHandler, util, WASI} from '../index.js';
+import {Process, SyscallEntry, SyscallHandler, util, WASI} from "../index.js";
 
-describe('argv.js', () => {
+describe("argv.js", () => {
 
 /**
  * A handler just to capture output.
@@ -16,8 +16,8 @@ describe('argv.js', () => {
 class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
   constructor(...args) {
     super(...args);
-    this.stdout = '';
-    this.stderr = '';
+    this.stdout = "";
+    this.stderr = "";
     this.td = new TextDecoder();
   }
 
@@ -72,7 +72,7 @@ async function run(prog, argv) {
     ],
   });
   const ret = await proc.run();
-  assert.equal(handler.stderr, '');
+  assert.equal(handler.stderr, "");
   return {
     returncode: ret,
     stdout: handler.stdout,
@@ -90,24 +90,24 @@ before(async function() {
    *
    * @type {!ArrayBuffer}
    */
-  this.prog = await fetch('argv.wasm')
+  this.prog = await fetch("argv.wasm")
     .then((response) => response.arrayBuffer());
 });
 
 /**
  * Check default Program argv behavior.
  */
-it('no args', async function() {
+it("no args", async function() {
   const result = await run(this.prog);
   const data = result.data;
   assert.equal(data.argc, 1);
-  assert.deepEqual(data.argv, ['wasi-program']);
+  assert.deepEqual(data.argv, ["wasi-program"]);
 });
 
 /**
  * Check argv=[] behavior.
  */
-it('empty args', async function() {
+it("empty args", async function() {
   const result = await run(this.prog, []);
   const data = result.data;
   assert.equal(data.argc, 0);
@@ -117,47 +117,47 @@ it('empty args', async function() {
 /**
  * Check argv=[prog] behavior.
  */
-it('argv0 only', async function() {
-  const result = await run(this.prog, ['my-prog']);
+it("argv0 only", async function() {
+  const result = await run(this.prog, ["my-prog"]);
   const data = result.data;
   assert.equal(data.argc, 1);
-  assert.deepEqual(data.argv, ['my-prog']);
+  assert.deepEqual(data.argv, ["my-prog"]);
 });
 
 /**
  * Check multiple arguments behavior.
  */
-it('couple args', async function() {
-  const result = await run(this.prog, ['my-prog', 'foo', 'bar']);
+it("couple args", async function() {
+  const result = await run(this.prog, ["my-prog", "foo", "bar"]);
   const data = result.data;
   assert.equal(data.argc, 3);
-  assert.deepEqual(data.argv, ['my-prog', 'foo', 'bar']);
+  assert.deepEqual(data.argv, ["my-prog", "foo", "bar"]);
 });
 
 /**
  * Check arguments with whitespace behavior.
  */
-it('whitespace args', async function() {
-  const result = await run(this.prog, ['p', 'spa ce', 'ta\tb', 'new\nline']);
+it("whitespace args", async function() {
+  const result = await run(this.prog, ["p", "spa ce", "ta\tb", "new\nline"]);
   const data = result.data;
   assert.equal(data.argc, 4);
-  assert.deepEqual(data.argv, ['p', 'spa ce', 'ta\tb', 'new\nline']);
+  assert.deepEqual(data.argv, ["p", "spa ce", "ta\tb", "new\nline"]);
 });
 
 /**
  * Check UTF-8 encoded arguments behavior.
  */
-it('utf8 args', async function() {
-  const result = await run(this.prog, ['my-prog', 'das', 'ist', 'heiß']);
+it("utf8 args", async function() {
+  const result = await run(this.prog, ["my-prog", "das", "ist", "heiß"]);
   const data = result.data;
   assert.equal(data.argc, 4);
-  assert.deepEqual(data.argv, ['my-prog', 'das', 'ist', 'heiß']);
+  assert.deepEqual(data.argv, ["my-prog", "das", "ist", "heiß"]);
 });
 
 /**
  * Verify we abort early with non-array argv's.
  */
-it('not array', async function() {
+it("not array", async function() {
   try {
     /** @suppress {checkTypes} We call run() incorrectly on purpose. */
     const run_ = async () => { await run(this.prog, {}); };
@@ -171,9 +171,9 @@ it('not array', async function() {
 /**
  * Verify we abort early with non-string args.
  */
-it('not string', async function() {
+it("not string", async function() {
   try {
-    await run(this.prog, ['ok', 123]);
+    await run(this.prog, ["ok", 123]);
   } catch (e) {
     // assert.throws doesn't work with promises.
     assert.instanceOf(e, util.ApiViolation);

@@ -8,39 +8,39 @@
  * @suppress {checkTypes} module$wassh$js$sockets
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
-import {punycode} from './deps_punycode.rollup.js';
+import {hterm} from "../../hterm/index.js";
+import {punycode} from "./deps_punycode.rollup.js";
 import {
   GIT_COMMIT, GIT_DATE, IMG_VISIBILITY_URI, IMG_VISIBILITY_OFF_URI,
   RELEASE_LAST_VERSION, RELEASE_NOTES,
-} from './deps_resources.rollup.js';
+} from "./deps_resources.rollup.js";
 
-import * as WasshSockets from '../wassh/js/sockets.js';
+import * as WasshSockets from "../wassh/js/sockets.js";
 
 import {
   getManifest, isCrOSSystemApp, localize, osc8Link, sgrText,
-} from './nassh.js';
-import {Agent} from './nassh_agent.js';
-import {setDefaultBackend} from './nassh_buffer.js';
+} from "./nassh.js";
+import {Agent} from "./nassh_agent.js";
+import {setDefaultBackend} from "./nassh_buffer.js";
 import {
   fetchSshPolicy, getGoogleSshAgentExtension, probeExtensions,
   refreshGoogleSshCert,
-} from './nassh_google.js';
-import {SshSubproc} from './nassh_subproc_ssh.js';
-import {WasmSubproc} from './nassh_subproc_wasm.js';
+} from "./nassh_google.js";
+import {SshSubproc} from "./nassh_subproc_ssh.js";
+import {WasmSubproc} from "./nassh_subproc_wasm.js";
 import {
   LocalPreferenceManager, PreferenceManager, ProfilePreferenceManager,
-} from './nassh_preference_manager.js';
-import {Corp as RelayCorp} from './nassh_relay_corp.js';
-import {Corpv4 as RelayCorpv4} from './nassh_relay_corpv4.js';
-import {Sshfe as RelaySshfe} from './nassh_relay_sshfe.js';
-import {Websockify as RelayWebsockify} from './nassh_relay_websockify.js';
-import {Client as sftpClient} from './nassh_sftp_client.js';
-import {SftpFsp} from './nassh_sftp_fsp.js';
-import {Cli as nasftpCli} from './nasftp_cli.js';
-import {SshPolicy} from './ssh_policy.js';
+} from "./nassh_preference_manager.js";
+import {Corp as RelayCorp} from "./nassh_relay_corp.js";
+import {Corpv4 as RelayCorpv4} from "./nassh_relay_corpv4.js";
+import {Sshfe as RelaySshfe} from "./nassh_relay_sshfe.js";
+import {Websockify as RelayWebsockify} from "./nassh_relay_websockify.js";
+import {Client as sftpClient} from "./nassh_sftp_client.js";
+import {SftpFsp} from "./nassh_sftp_fsp.js";
+import {Cli as nasftpCli} from "./nasftp_cli.js";
+import {SshPolicy} from "./ssh_policy.js";
 
 /**
  * @typedef {{
@@ -91,7 +91,7 @@ export function CommandInstance(argv) {
   this.manifest_ = getManifest();
 
   // The version of the ssh client to load.
-  this.sshClientVersion_ = 'wasm';
+  this.sshClientVersion_ = "wasm";
 
   // Application ID of auth agent.
   this.authAgentAppID_ = null;
@@ -131,7 +131,7 @@ export function CommandInstance(argv) {
   this.terminalWindow = argv.terminalWindow || globalThis;
 
   // URL path of connect page to show after exit dialog.
-  this.connectPage = argv.connectPage || '/html/nassh_connect_dialog.html';
+  this.connectPage = argv.connectPage || "/html/nassh_connect_dialog.html";
 
   /**
    * @type {(?WasmSubproc)} The current program.
@@ -176,8 +176,8 @@ CommandInstance.prototype.run = async function() {
 
   // In case something goes horribly wrong, display an error to the user so it's
   // easier for them to copy & paste when reporting issues.
-  globalThis.addEventListener('error', (e) => {
-    this.io.println(localize('UNEXPECTED_ERROR'));
+  globalThis.addEventListener("error", (e) => {
+    this.io.println(localize("UNEXPECTED_ERROR"));
     if (e.error?.stack) {
       const lines = e.error.stack.split(/[\r\n]/);
       lines.forEach((line) => this.io.println(line));
@@ -189,8 +189,8 @@ CommandInstance.prototype.run = async function() {
 
   this.prefs_.readStorage().then(async () => {
     // Set default window title.
-    this.io.print('\x1b]0;' + this.manifest_.name + ' ' +
-                    this.manifest_.version + '\x07');
+    this.io.print("\x1b]0;" + this.manifest_.name + " " +
+                    this.manifest_.version + "\x07");
 
     showWelcome();
 
@@ -207,10 +207,10 @@ CommandInstance.prototype.run = async function() {
       }
 
       const updater = this.updateWindowDimensions_.bind(this);
-      globalThis.addEventListener('resize', updater);
+      globalThis.addEventListener("resize", updater);
       // Window doesn't offer a 'move' event, and blur/resize don't seem to
       // work.  Listening for mouseout should be low enough overhead.
-      globalThis.addEventListener('mouseout', updater);
+      globalThis.addEventListener("mouseout", updater);
     });
   });
 
@@ -218,51 +218,51 @@ CommandInstance.prototype.run = async function() {
     const style = {bold: true};
 
     this.io.println(localize(
-        'WELCOME_VERSION',
+        "WELCOME_VERSION",
         [sgrText(this.manifest_.name, style),
          sgrText(this.manifest_.version, style)]));
 
     this.io.println(localize(
-        'WELCOME_FAQ',
-        [sgrText(osc8Link('https://hterm.org/x/ssh/faq'), style)]));
+        "WELCOME_FAQ",
+        [sgrText(osc8Link("https://hterm.org/x/ssh/faq"), style)]));
 
-    if (hterm.windowType !== 'app' &&
-        hterm.windowType !== 'popup' &&
-        hterm.os !== 'mac') {
-      this.io.println('');
+    if (hterm.windowType !== "app" &&
+        hterm.windowType !== "popup" &&
+        hterm.os !== "mac") {
+      this.io.println("");
       this.io.println(localize(
-          'OPEN_AS_WINDOW_TIP',
-          [sgrText(osc8Link('https://hterm.org/x/ssh/faq'), style)]));
+          "OPEN_AS_WINDOW_TIP",
+          [sgrText(osc8Link("https://hterm.org/x/ssh/faq"), style)]));
     }
 
     // Show some release highlights the first couple of runs with a new version.
     // We'll reset the counter when the release notes change.
     const notes = RELEASE_NOTES.map((n) => ` \u00A4 ${n}`);
-    if (this.prefs_.getNumber('welcome/notes-version') != notes.length) {
+    if (this.prefs_.getNumber("welcome/notes-version") != notes.length) {
       // They upgraded, so reset the counters.
-      this.prefs_.set('welcome/show-count', 0);
-      this.prefs_.set('welcome/notes-version', notes.length);
+      this.prefs_.set("welcome/show-count", 0);
+      this.prefs_.set("welcome/notes-version", notes.length);
     }
     // Figure out how many times we've shown this.
-    const notesShowCount = this.prefs_.getNumber('welcome/show-count');
+    const notesShowCount = this.prefs_.getNumber("welcome/show-count");
     if (notesShowCount < 10) {
       // For new runs, show the highlights directly.
-      this.io.println('');
+      this.io.println("");
 
-      this.io.println(localize('WELCOME_RELEASE_HIGHLIGHTS',
+      this.io.println(localize("WELCOME_RELEASE_HIGHLIGHTS",
                                [RELEASE_LAST_VERSION]));
       notes.map((x) => this.io.println(x));
-      this.prefs_.set('welcome/show-count', notesShowCount + 1);
+      this.prefs_.set("welcome/show-count", notesShowCount + 1);
 
       this.io.println(localize(
-          'WELCOME_CHANGELOG',
-          [sgrText(osc8Link('/html/changelog.html'), style)]));
+          "WELCOME_CHANGELOG",
+          [sgrText(osc8Link("/html/changelog.html"), style)]));
     }
 
     // Display a random tip every time they launch to advertise features.
     const num = lib.f.randomInt(1, 14);
-    this.io.println('');
-    this.io.println(localize('WELCOME_TIP_OF_DAY',
+    this.io.println("");
+    this.io.println(localize("WELCOME_TIP_OF_DAY",
                               [num, localize(`TIP_${num}`)]));
 
     if (this.isDevVersion()) {
@@ -271,17 +271,17 @@ CommandInstance.prototype.run = async function() {
           Math.round((new Date().getTime() - new Date(GIT_DATE).getTime()) /
                      1000 / 60);
 
-      this.io.println('');
+      this.io.println("");
       this.io.println(`[dev] hterm v${hterm.VERSION} (git ${GIT_COMMIT})`);
       this.io.println(`[dev] built on ${GIT_DATE} ` +
                       `(${vcsAgeMinutes} minutes ago)`);
     }
 
-    this.io.println('');
+    this.io.println("");
   };
 
   const onFileSystemFound = () => {
-    const argstr = this.argv_.args.join(' ');
+    const argstr = this.argv_.args.join(" ");
     if (!argstr) {
       this.promptForDestination_();
     } else {
@@ -311,7 +311,7 @@ CommandInstance.prototype.isDevVersion = function() {
  */
 CommandInstance.prototype.reconnect = function(argstr) {
   // Terminal reset.
-  this.io.print('\x1b[!p');
+  this.io.print("\x1b[!p");
 
   this.terminateProgram_();
 
@@ -336,21 +336,21 @@ CommandInstance.prototype.updateWindowDimensions_ = function() {
   // Chrome APIs directly for that.
   chrome.windows.getCurrent((win) => {
     // Ignore minimized state completely.
-    if (win.state === 'minimized') {
+    if (win.state === "minimized") {
       return;
     }
 
     const profile = this.localPrefs_.getProfile(lib.notNull(this.profileId_));
-    profile.set('win/state', win.state);
+    profile.set("win/state", win.state);
 
     // Only record dimensions when we're not fullscreen/maximized.  This allows
     // the position/size to be remembered independent of temporarily going to
     // the max screen dimensions.
-    if (win.state === 'normal') {
-      profile.set('win/top', globalThis.screenTop);
-      profile.set('win/left', globalThis.screenLeft);
-      profile.set('win/height', globalThis.outerHeight);
-      profile.set('win/width', globalThis.outerWidth);
+    if (win.state === "normal") {
+      profile.set("win/top", globalThis.screenTop);
+      profile.set("win/left", globalThis.screenLeft);
+      profile.set("win/height", globalThis.outerHeight);
+      profile.set("win/width", globalThis.outerWidth);
     }
   });
 };
@@ -358,7 +358,7 @@ CommandInstance.prototype.updateWindowDimensions_ = function() {
 /** Prompt for destination */
 CommandInstance.prototype.promptForDestination_ = function() {
   // Clear retry count whenever we show the dialog.
-  globalThis.sessionStorage.removeItem('googleRelay.redirectCount');
+  globalThis.sessionStorage.removeItem("googleRelay.redirectCount");
 
   const url = lib.f.getURL(this.connectPage);
   this.terminalLocation.replace(url);
@@ -387,16 +387,16 @@ CommandInstance.prototype.connectToArgString = async function(argstr) {
   if (ary) {
     const profileId = ary[1];
     const prefs = await this.commonProfileSetup_(profileId);
-    switch (prefs.get('app')) {
-      case 'mount':
+    switch (prefs.get("app")) {
+      case "mount":
         this.mountForegroundProfile(prefs);
         break;
-      case 'nasftp':
-      case 'sftp':
+      case "nasftp":
+      case "sftp":
         this.sftpConnectToProfile(prefs);
         break;
-      case 'mosh':
-      case 'ssh':
+      case "mosh":
+      case "ssh":
       default:
         this.connectToProfile(prefs);
         break;
@@ -421,17 +421,17 @@ CommandInstance.prototype.commonProfileSetup_ = async function(profileID) {
   try {
     prefs = this.prefs_.getProfile(profileID);
   } catch (e) {
-    this.io.println(localize('GET_PROFILE_ERROR', [profileID, e]));
+    this.io.println(localize("GET_PROFILE_ERROR", [profileID, e]));
     this.exit(EXIT_INTERNAL_ERROR, true);
     throw e;
   }
 
   this.profileId_ = profileID;
-  document.querySelector('#terminal').focus();
+  document.querySelector("#terminal").focus();
 
   this.navigate_(`profile-id:${profileID}`);
-  document.title = prefs.get('description') + ' - ' +
-    this.manifest_.name + ' ' + this.manifest_.version;
+  document.title = prefs.get("description") + " - " +
+    this.manifest_.name + " " + this.manifest_.version;
 
   return prefs;
 };
@@ -444,14 +444,14 @@ CommandInstance.prototype.commonProfileSetup_ = async function(profileID) {
  */
 CommandInstance.prototype.prefsToConnectParams_ = function(prefs) {
   return {
-    command: prefs.get('app'),  // TODO: "app"
-    username: prefs.get('username'),
-    hostname: prefs.get('hostname'),
-    port: prefs.get('port'),
-    nasshOptions: prefs.get('nassh-options'),
-    identity: prefs.get('identity'),
-    argstr: prefs.get('argstr'),
-    terminalProfile: prefs.get('terminal-profile'),
+    command: prefs.get("app"),  // TODO: "app"
+    username: prefs.get("username"),
+    hostname: prefs.get("hostname"),
+    port: prefs.get("port"),
+    nasshOptions: prefs.get("nassh-options"),
+    identity: prefs.get("identity"),
+    argstr: prefs.get("argstr"),
+    terminalProfile: prefs.get("terminal-profile"),
   };
 };
 
@@ -462,7 +462,7 @@ CommandInstance.prototype.prefsToConnectParams_ = function(prefs) {
  * @param {!ProfilePreferenceManager} prefs Connection preferences.
  */
 CommandInstance.prototype.mountBackgroundProfile = async function(prefs) {
-  const port = chrome.runtime.connect({name: 'mount'});
+  const port = chrome.runtime.connect({name: "mount"});
 
   // The main event loop -- process messages from the bg page.
   port.onMessage.addListener((msg) => {
@@ -478,47 +478,47 @@ CommandInstance.prototype.mountBackgroundProfile = async function(prefs) {
     }
 
     switch (command) {
-      case 'write':
+      case "write":
         // Display content to the user.
         io.print(message);
         break;
 
-      case 'overlay':
+      case "overlay":
         // Display the UI popup.
         io.showOverlay(message, msg.timeout);
         break;
 
-      case 'input':
+      case "input":
         // Get secure user input.
         this.secureInput(message, msg.buf_len, msg.echo).then((data) => {
-          port.postMessage({command: 'input', data});
+          port.postMessage({command: "input", data});
         });
         break;
 
-      case 'exit':
-      case 'done':
+      case "exit":
+      case "done":
         // The client has exited (bad), or the mount setup is done (good).
         port.disconnect();
-        if (command === 'done') {
-          io.showOverlay(localize('MOUNTED_MESSAGE') + ' ' +
-                         localize('CONNECT_OR_EXIT_MESSAGE'), null);
+        if (command === "done") {
+          io.showOverlay(localize("MOUNTED_MESSAGE") + " " +
+                         localize("CONNECT_OR_EXIT_MESSAGE"), null);
         } else {
-          io.showOverlay(localize('DISCONNECT_MESSAGE', [msg.status]), null);
+          io.showOverlay(localize("DISCONNECT_MESSAGE", [msg.status]), null);
         }
 
         // Disable most I/O other than reconnect shortcuts.
         io.onVTKeystroke = (string) => {
           const ch = string.toLowerCase();
           switch (ch) {
-            case 'c':
-            case '\x12': // ctrl-r
+            case "c":
+            case "\x12": // ctrl-r
               this.terminalLocation.replace(lib.f.getURL(this.connectPage));
               break;
 
-            case 'e':
-            case 'x':
-            case '\x1b': // ESC
-            case '\x17': // ctrl-w
+            case "e":
+            case "x":
+            case "\x1b": // ESC
+            case "\x17": // ctrl-w
               this.terminalWindow.close();
           }
         };
@@ -535,13 +535,13 @@ CommandInstance.prototype.mountBackgroundProfile = async function(prefs) {
 
   // Not sure there's much else to do here.
   port.onDisconnect.addListener(() => {
-    console.log('disconnect');
+    console.log("disconnect");
   });
 
   // Send all user input to the background page.
   const io = this.io.push();
   io.onVTKeystroke = io.sendString = (string) => {
-    port.postMessage({command: 'write', data: string});
+    port.postMessage({command: "write", data: string});
   };
 
   this.isMount = true;
@@ -552,16 +552,16 @@ CommandInstance.prototype.mountBackgroundProfile = async function(prefs) {
       params.relayState = this.relay_.saveState();
     }
     port.postMessage({
-      command: 'connect',
+      command: "connect",
       argv: {
         isSftp: true,
-        basePath: prefs.get('mount-path'),
+        basePath: prefs.get("mount-path"),
         isMount: true,
         // Mount options are passed directly to Chrome's FSP mount(),
         // so don't add fields here that would otherwise collide.
         mountOptions: {
           fileSystemId: prefs.id,
-          displayName: prefs.get('description'),
+          displayName: prefs.get("description"),
           writable: true,
         },
         sshClientVersion: this.sshClientVersion_,
@@ -583,12 +583,12 @@ CommandInstance.prototype.mountForegroundProfile = async function(prefs) {
   this.sftpClient = new sftpClient();
   this.fsp = new SftpFsp();
   this.fsp.addListeners();
-  this.basePath = prefs.get('mount-path');
+  this.basePath = prefs.get("mount-path");
   // Mount options are passed directly to Chrome's FSP mount(),
   // so don't add fields here that would otherwise collide.
   this.mountOptions = {
     fileSystemId: prefs.id,
-    displayName: prefs.get('description'),
+    displayName: prefs.get("description"),
     writable: true,
   };
 
@@ -600,14 +600,14 @@ CommandInstance.prototype.mountForegroundProfile = async function(prefs) {
       this.io.println(message);
       this.terminateProgram_();
     } else {
-      const mountedMsg = document.createElement('div');
+      const mountedMsg = document.createElement("div");
       mountedMsg.innerHTML = `
-        <h3>${localize('MOUNTED_MESSAGE')}</h3>
-        ${localize('TERMINAL_HOME_MOUNTED_TAB_CLOSE_MESSAGE')}
+        <h3>${localize("MOUNTED_MESSAGE")}</h3>
+        ${localize("TERMINAL_HOME_MOUNTED_TAB_CLOSE_MESSAGE")}
         <p>`;
       document.body.appendChild(mountedMsg);
       this.io.showOverlay(mountedMsg, null);
-      window.addEventListener('beforeunload', () => {
+      window.addEventListener("beforeunload", () => {
         this.fsp.unmount(prefs.id);
       });
     }
@@ -659,35 +659,35 @@ CommandInstance.prototype.connectToProfile = async function(prefs) {
 export function parseURI(uri, stripSchema = true, decodeComponents = false) {
   let schema;
   if (stripSchema) {
-    schema = uri.split(':', 1)[0];
-    if (schema === 'ssh' || schema === 'web+ssh' || schema === 'sftp' ||
-        schema === 'web+sftp') {
+    schema = uri.split(":", 1)[0];
+    if (schema === "ssh" || schema === "web+ssh" || schema === "sftp" ||
+        schema === "web+sftp") {
       // Strip off the schema prefix.
       uri = uri.substr(schema.length + 1);
 
-      if (schema.startsWith('web+')) {
+      if (schema.startsWith("web+")) {
         schema = schema.substr(4);
       }
     } else {
       schema = undefined;
     }
     // Strip off the "//" if it exists.
-    if (uri.startsWith('//')) {
+    if (uri.startsWith("//")) {
       uri = uri.substr(2);
     }
   }
 
   // For empty URIs, show the connection dialog.
-  if (uri === '') {
-    return {hostname: '>connections'};
+  if (uri === "") {
+    return {hostname: ">connections"};
   }
 
-  /* eslint-disable max-len,spaced-comment */
+   
   // Parse the connection string.
   const ary = uri.match(
       //|user    |@|   [  ipv6       %zoneid   ]|  host  |   :port     |@| [  ipv6       %zoneid   ]| relay |   :relay port |
       /^(?:([^@]*)@)?(\[[:0-9a-f]+(?:%[^\]]+)?\]|[^\s:@]+)(?::(\d+))?(?:@(\[[:0-9a-f]+(?:%[^\]]+)?\]|[^\s:]+)(?::(\d+))?)?$/);
-  /* eslint-enable max-len,spaced-comment */
+   
 
   if (!ary) {
     return null;
@@ -699,14 +699,14 @@ export function parseURI(uri, stripSchema = true, decodeComponents = false) {
   const port = ary[3];
 
   // If it's IPv6, remove the brackets.
-  if (hostname.startsWith('[') && hostname.endsWith(']')) {
+  if (hostname.startsWith("[") && hostname.endsWith("]")) {
     hostname = hostname.substr(1, hostname.length - 2);
   }
 
   // If the hostname starts with bad chars, reject it.  We use these internally,
   // so don't want external links to access them too.  We probably should filter
   // out more of the ASCII space.
-  if (hostname.startsWith('>') || hostname.startsWith('-')) {
+  if (hostname.startsWith(">") || hostname.startsWith("-")) {
     return null;
   }
 
@@ -714,10 +714,10 @@ export function parseURI(uri, stripSchema = true, decodeComponents = false) {
   if (ary[4]) {
     relayHostname = ary[4];
     // If it's IPv6, remove the brackets.
-    if (relayHostname.startsWith('[') && relayHostname.endsWith(']')) {
+    if (relayHostname.startsWith("[") && relayHostname.endsWith("]")) {
       relayHostname = relayHostname.substr(1, relayHostname.length - 2);
     }
-    if (relayHostname.startsWith('-')) {
+    if (relayHostname.startsWith("-")) {
       return null;
     }
     if (ary[5]) {
@@ -730,7 +730,7 @@ export function parseURI(uri, stripSchema = true, decodeComponents = false) {
   if (username) {
     // See if there are semi-colon delimited options following the username.
     // Arguments should be URI encoding their values.
-    const splitParams = username.split(';');
+    const splitParams = username.split(";");
     username = splitParams[0];
     splitParams.slice(1, splitParams.length).forEach((param) => {
       // This will take the first '=' appearing from left to right and take
@@ -738,14 +738,14 @@ export function parseURI(uri, stripSchema = true, decodeComponents = false) {
       // value. For example, if we have '-nassh-args=--proxy-mode=foo' then
       // '-nassh-args' will be the name of the param and
       // '--proxy-mode=foo' will be its value.
-      const key = param.split('=', 1)[0];
+      const key = param.split("=", 1)[0];
       const validKeys = new Set([
-          'fingerprint', '-nassh-args', '-nassh-ssh-args',
+          "fingerprint", "-nassh-args", "-nassh-ssh-args",
       ]);
       if (validKeys.has(key)) {
         const value = param.substr(key.length + 1);
         if (value) {
-          params[key.replace(/^-/, '')] = decode(value);
+          params[key.replace(/^-/, "")] = decode(value);
         }
       } else {
         console.error(`${key} is not a valid parameter so it will be skipped`);
@@ -783,17 +783,17 @@ export function parseDestination(destination) {
 
   // Deal with ssh:// links.  They are encoded with % hexadecimal sequences.
   // Note: These might be ssh: or ssh://, so have to deal with that.
-  if (destination.startsWith('uri:')) {
+  if (destination.startsWith("uri:")) {
     // Strip off the "uri:" before decoding it.
     destination = unescape(destination.substr(4));
-    let schema = destination.split(':', 1)[0];
-    if (schema.startsWith('web+')) {
+    let schema = destination.split(":", 1)[0];
+    if (schema.startsWith("web+")) {
       schema = schema.slice(4);
     }
     switch (schema) {
-      case 'mosh':
-      case 'sftp':
-      case 'ssh':
+      case "mosh":
+      case "sftp":
+      case "ssh":
         break;
       default:
         return null;
@@ -811,15 +811,15 @@ export function parseDestination(destination) {
   // Turn the relay URI settings into nassh command line options.
   let nasshOptions;
   if (rv.relayHostname !== undefined) {
-    nasshOptions = '--proxy-host=' + rv.relayHostname;
+    nasshOptions = "--proxy-host=" + rv.relayHostname;
     if (rv.relayPort !== undefined) {
-      nasshOptions += ' --proxy-port=' + rv.relayPort;
+      nasshOptions += " --proxy-port=" + rv.relayPort;
     }
   }
   rv.nasshOptions = nasshOptions;
 
-  rv.nasshUserOptions = rv['nassh-args'];
-  rv.nasshUserSshOptions = rv['nassh-ssh-args'];
+  rv.nasshUserOptions = rv["nassh-args"];
+  rv.nasshUserSshOptions = rv["nassh-ssh-args"];
 
   // If the fingerprint is set, maybe add it to the known keys list.
 
@@ -832,18 +832,18 @@ export function parseDestination(destination) {
  * @param {string} destination A string of the form username@host[:port].
  */
 CommandInstance.prototype.connectToDestination = function(destination) {
-  if (destination == 'crosh') {
-    this.terminalLocation.href = 'crosh.html';
+  if (destination == "crosh") {
+    this.terminalLocation.href = "crosh.html";
     return;
   }
 
   const rv = parseDestination(destination);
   if (rv === null) {
-    this.io.println(localize('BAD_DESTINATION', [destination]));
+    this.io.println(localize("BAD_DESTINATION", [destination]));
     this.exit(EXIT_INTERNAL_ERROR, true);
     return;
   }
-  if (rv.schema === 'sftp') {
+  if (rv.schema === "sftp") {
     this.sftpConnectToDestination(destination);
     return;
   }
@@ -866,8 +866,8 @@ CommandInstance.prototype.connectToDestination = function(destination) {
  * @return {!Object} The various components.
  */
 export function splitCommandLine(argstr) {
-  let args = argstr || '';
-  let command = '';
+  let args = argstr || "";
+  let command = "";
 
   // Tokenize the string first.
   let i;
@@ -876,9 +876,9 @@ export function splitCommandLine(argstr) {
     // If there is a -- separator in here, we split that off and leave the
     // command line untouched (other than normalizing of whitespace between
     // any arguments, and unused leading/trailing whitespace).
-    i = ary.indexOf('--');
+    i = ary.indexOf("--");
     if (i != -1) {
-      command = ary.splice(i + 1).join(' ').trim();
+      command = ary.splice(i + 1).join(" ").trim();
       // Remove the -- delimiter.
       ary.pop();
     }
@@ -886,7 +886,7 @@ export function splitCommandLine(argstr) {
     // Now we have to dequote the remaining arguments.  The regex above did:
     // '-o "foo bar"' -> ['-o', '"foo bar"']
     // Based on our (simple) rules, there shouldn't be any other quotes.
-    ary = ary.map((x) => x.replace(/(^"|"$)/g, ''));
+    ary = ary.map((x) => x.replace(/(^"|"$)/g, ""));
   } else {
     // Strip out any whitespace.  There shouldn't be anything left that the
     // regex wouldn't have matched, but let's be paranoid.
@@ -912,7 +912,7 @@ export function splitCommandLine(argstr) {
 CommandInstance.prototype.sftpConnectToDestination = function(destination) {
   const rv = parseDestination(destination);
   if (rv === null) {
-    this.io.println(localize('BAD_DESTINATION', [destination]));
+    this.io.println(localize("BAD_DESTINATION", [destination]));
     this.exit(EXIT_INTERNAL_ERROR, true);
     return;
   }
@@ -937,12 +937,12 @@ CommandInstance.prototype.sftpConnectToDestination = function(destination) {
  * @return {!Promise<void>}
  */
 CommandInstance.prototype.connectTo = async function(params, finalize) {
-  if (params.hostname == '>crosh') {
+  if (params.hostname == ">crosh") {
     // TODO: This should be done better.
-    const template = 'crosh.html?profile=%encodeURIComponent(terminalProfile)';
+    const template = "crosh.html?profile=%encodeURIComponent(terminalProfile)";
     this.terminalLocation.href = lib.f.replaceVars(template, params);
     return;
-  } else if (params.hostname === '>connections') {
+  } else if (params.hostname === ">connections") {
     this.promptForDestination_();
     return;
   }
@@ -951,11 +951,11 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
   if (params.username === undefined) {
     const io = this.io.push();
 
-    const container = document.createElement('div');
-    const prompt = document.createElement('p');
-    prompt.textContent = 'Please enter username:';
+    const container = document.createElement("div");
+    const prompt = document.createElement("p");
+    prompt.textContent = "Please enter username:";
     container.appendChild(prompt);
-    const input = document.createElement('input');
+    const input = document.createElement("input");
     container.appendChild(input);
     io.showOverlay(container, null);
 
@@ -963,9 +963,9 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
     setTimeout(() => input.focus());
 
     // Keep accepting input until they press Enter.
-    input.addEventListener('keydown', (e) => {
+    input.addEventListener("keydown", (e) => {
       e.stopPropagation();
-      if (e.key === 'Enter') {
+      if (e.key === "Enter") {
         params.username = input.value;
         io.hideOverlay();
         io.pop();
@@ -973,8 +973,8 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
       }
     }, true);
     // The terminal will eat all key events, so make sure we stop that.
-    input.addEventListener('keyup', (e) => e.stopPropagation(), true);
-    input.addEventListener('keypress', (e) => e.stopPropagation(), true);
+    input.addEventListener("keyup", (e) => e.stopPropagation(), true);
+    input.addEventListener("keypress", (e) => e.stopPropagation(), true);
 
     // If the terminal becomes active for some reason, force back to the input.
     io.onVTKeystroke = io.sendString = (string) => {
@@ -988,7 +988,7 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
   try {
     options = tokenizeOptions(params.nasshOptions);
   } catch (e) {
-    this.io.println(localize('NASSH_OPTIONS_ERROR', [e]));
+    this.io.println(localize("NASSH_OPTIONS_ERROR", [e]));
     this.exit(EXIT_INTERNAL_ERROR, true);
     return;
   }
@@ -997,7 +997,7 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
   try {
     userOptions = tokenizeOptions(params.nasshUserOptions);
   } catch (e) {
-    this.io.println(localize('NASSH_OPTIONS_ERROR', [e]));
+    this.io.println(localize("NASSH_OPTIONS_ERROR", [e]));
     this.exit(EXIT_INTERNAL_ERROR, true);
     return;
   }
@@ -1019,7 +1019,7 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
   // Enable some trials in the dev version for early testing.
   if (this.isDevVersion()) {
     options = Object.assign({
-      '--field-trial-direct-sockets': true,
+      "--field-trial-direct-sockets": true,
     }, options);
   }
 
@@ -1035,23 +1035,23 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
   });
   if (userSshOptionsList.command) {
     console.warn(`Remote command '${userSshOptionsList.command}' not ` +
-                 `currently supported`);
+                 "currently supported");
   }
 
-  if (options['--welcome'] === false) {
+  if (options["--welcome"] === false) {
     // Clear terminal display area.
     this.io.terminal_.clearHome();
   }
 
-  if (options['--field-trial-buffer']) {
-    setDefaultBackend(/** @type {string} */ (options['--field-trial-buffer']));
+  if (options["--field-trial-buffer"]) {
+    setDefaultBackend(/** @type {string} */ (options["--field-trial-buffer"]));
   }
 
-  if (options['--field-trial-direct-sockets']) {
+  if (options["--field-trial-direct-sockets"]) {
     // Force disable Chrome Sockets usage so we fallback to Direct Sockets.
     this.io.println(
-        'Using Direct Sockets.  If you encounter problems, try ' +
-        '--no-field-trial-direct-sockets and file a bug.\n');
+        "Using Direct Sockets.  If you encounter problems, try " +
+        "--no-field-trial-direct-sockets and file a bug.\n");
     if (WasshSockets.ChromeTcpSocket.isSupported() &&
         WasshSockets.WebTcpSocket.isSupported()) {
       delete chrome.sockets?.tcp;
@@ -1067,23 +1067,23 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
   }
 
   // If the user has requested a proxy relay, load it up.
-  if (options['--proxy-mode'] === 'websockify') {
+  if (options["--proxy-mode"] === "websockify") {
     this.relay_ = new RelayWebsockify(this.io, options, this.terminalLocation,
                                       this.sessionStorage, this.localPrefs_);
-  } else if (!options['--proxy-host']) {
+  } else if (!options["--proxy-host"]) {
     // Do nothing when disabled.  We check this first to avoid excessive
     // indentation or redundant checking of the proxy-host setting below.
-  } else if (options['--proxy-mode'] == 'ssh-fe@google.com') {
+  } else if (options["--proxy-mode"] == "ssh-fe@google.com") {
     this.relay_ = new RelaySshfe(
         this.io, options, this.terminalLocation, this.sessionStorage,
         this.localPrefs_);
     this.io.println(localize(
-        'FOUND_RELAY',
+        "FOUND_RELAY",
         [`${this.relay_.proxyHost}:${this.relay_.proxyPort}`]));
     await this.relay_.init();
-  } else if (options['--proxy-mode'] == 'corp-relay@google.com' ||
-             options['--proxy-mode'] == 'corp-relay-v4@google.com') {
-    if (options['--proxy-mode'] == 'corp-relay@google.com') {
+  } else if (options["--proxy-mode"] == "corp-relay@google.com" ||
+             options["--proxy-mode"] == "corp-relay-v4@google.com") {
+    if (options["--proxy-mode"] == "corp-relay@google.com") {
       this.relay_ = new RelayCorp(this.io, options, this.terminalLocation,
                                   this.sessionStorage, this.localPrefs_);
     } else {
@@ -1092,16 +1092,16 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
     }
 
     this.io.println(localize(
-        'INITIALIZING_RELAY',
+        "INITIALIZING_RELAY",
         [`${this.relay_.proxyHost}:${this.relay_.proxyPort}`]));
 
     if (params.relayState !== undefined) {
       this.relay_.loadState(params.relayState);
     } else if (!await this.relay_.init()) {
       // If --relay-method=direct, this is an error.
-      if (this.relay_.relayMethod === 'direct') {
+      if (this.relay_.relayMethod === "direct") {
         this.io.println(localize(
-            'RELAY_AUTH_ERROR',
+            "RELAY_AUTH_ERROR",
             [`${this.relay_.proxyHost}:${this.relay_.proxyPort}`]));
         this.exit(EXIT_INTERNAL_ERROR, true);
         return;
@@ -1116,16 +1116,16 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
       }
       return;
     }
-  } else if (options['--proxy-mode']) {
+  } else if (options["--proxy-mode"]) {
     // Unknown proxy mode.
-    this.io.println(localize('NASSH_OPTIONS_ERROR',
-                              [`--proxy-mode=${options['--proxy-mode']}`]));
+    this.io.println(localize("NASSH_OPTIONS_ERROR",
+                              [`--proxy-mode=${options["--proxy-mode"]}`]));
     this.exit(EXIT_INTERNAL_ERROR, true);
     return;
   }
 
   // Attempt to refresh certificates if need be.
-  const refresh = options['cert-refresh'] ?
+  const refresh = options["cert-refresh"] ?
       refreshGoogleSshCert(this.io) : Promise.resolve();
   // Even if refreshing went horribly, attempt the connection anyways.
   return refresh.finally(() => {
@@ -1148,18 +1148,18 @@ CommandInstance.prototype.connectTo = async function(params, finalize) {
  */
 CommandInstance.prototype.connectToFinalize_ = async function(params, options) {
   // Make sure the selected ssh-client version is somewhat valid.
-  if (options['--ssh-client-version']) {
-    this.sshClientVersion_ = options['--ssh-client-version'];
+  if (options["--ssh-client-version"]) {
+    this.sshClientVersion_ = options["--ssh-client-version"];
   }
   if (!this.sshClientVersion_.match(/^[a-zA-Z0-9.-]+$/)) {
-    this.io.println(localize('UNKNOWN_SSH_CLIENT_VERSION',
+    this.io.println(localize("UNKNOWN_SSH_CLIENT_VERSION",
                               [this.sshClientVersion_]));
     this.exit(127, true);
     return;
   }
 
-  if (options['--ssh-agent']) {
-    params.authAgentAppID = options['--ssh-agent'];
+  if (options["--ssh-agent"]) {
+    params.authAgentAppID = options["--ssh-agent"];
   }
 
   this.io.setTerminalProfile(
@@ -1171,11 +1171,11 @@ CommandInstance.prototype.connectToFinalize_ = async function(params, options) {
   const idn_hostname = punycode.toASCII(params.hostname);
   let disp_hostname = params.hostname;
   if (idn_hostname != params.hostname) {
-    disp_hostname += ' (' + idn_hostname + ')';
+    disp_hostname += " (" + idn_hostname + ")";
   }
 
   const argv = {
-    debugTrace: options['--debug-trace-syscalls'],
+    debugTrace: options["--debug-trace-syscalls"],
     command: params.command,
   };
   argv.terminalWidth = this.io.terminal_.screenSize.width;
@@ -1185,15 +1185,15 @@ CommandInstance.prototype.connectToFinalize_ = async function(params, options) {
   argv.writeWindow = 8 * 1024;
 
   if (this.isSftp) {
-    argv.subsystem = 'sftp';
+    argv.subsystem = "sftp";
   }
 
   argv.arguments = [];
 
   if (params.authAgentAppID) {
     argv.authAgentAppID = params.authAgentAppID;
-    if (options['auth-agent-forward']) {
-      argv.arguments.push('-A');
+    if (options["auth-agent-forward"]) {
+      argv.arguments.push("-A");
     }
   }
 
@@ -1205,19 +1205,19 @@ CommandInstance.prototype.connectToFinalize_ = async function(params, options) {
 
   // Disable IP address check for connection through proxy.
   if (argv.useJsSocket) {
-    argv.arguments.push('-o CheckHostIP=no');
+    argv.arguments.push("-o CheckHostIP=no");
   }
 
   if (params.identity) {
     argv.arguments.push(`-i/.ssh/identity/${params.identity}`);
   }
   if (params.port) {
-    argv.arguments.push('-p' + params.port);
+    argv.arguments.push("-p" + params.port);
   }
 
   // We split the username apart so people can use whatever random characters in
   // it they want w/out causing parsing troubles ("@" or leading "-" or " ").
-  argv.arguments.push('-l' + params.username);
+  argv.arguments.push("-l" + params.username);
   argv.arguments.push(idn_hostname);
 
   // Finally, we append the custom command line the user has constructed.
@@ -1228,26 +1228,26 @@ CommandInstance.prototype.connectToFinalize_ = async function(params, options) {
   }
   argv.arguments = argv.arguments.concat(params.userSshArgs);
   if (extraArgs.command) {
-    argv.arguments.push('--', extraArgs.command);
+    argv.arguments.push("--", extraArgs.command);
   }
 
   this.authAgentAppID_ = params.authAgentAppID;
   // If the agent app ID is not just an app ID, we parse it for the IDs of
   // built-in agent backends based on nassh.agent.Backend.
   if (this.authAgentAppID_ && !/^[a-z]{32}$/.test(this.authAgentAppID_)) {
-    const backendIDs = this.authAgentAppID_.split(',');
+    const backendIDs = this.authAgentAppID_.split(",");
     // Process the cmdline to see whether -a or -A comes last.
-    const enableForward = argv.arguments.lastIndexOf('-A');
-    const disableForward = argv.arguments.lastIndexOf('-a');
+    const enableForward = argv.arguments.lastIndexOf("-A");
+    const disableForward = argv.arguments.lastIndexOf("-a");
     const forwardAgent = enableForward > disableForward;
     this.authAgent_ = new Agent(backendIDs, this.io.terminal_, forwardAgent);
   }
 
   this.sshPolicy_ = await fetchSshPolicy();
   await this.initProgram_(argv);
-  this.terminalWindow.addEventListener('beforeunload', this.onBeforeUnload_);
+  this.terminalWindow.addEventListener("beforeunload", this.onBeforeUnload_);
 
-  this.io.println(localize('CONNECTING',
+  this.io.println(localize("CONNECTING",
                            [`${params.username}@${disp_hostname}`]));
 
   lib.notNull(this.program_);
@@ -1256,7 +1256,7 @@ CommandInstance.prototype.connectToFinalize_ = async function(params, options) {
       await this.sftpClient.initConnection(this.program_);
       this.onSftpInitialised();
     } catch (e) {
-      this.io.println(localize('NASFTP_ERROR_MESSAGE', [e]));
+      this.io.println(localize("NASFTP_ERROR_MESSAGE", [e]));
       this.exit(EXIT_INTERNAL_ERROR, true);
     }
   }
@@ -1268,7 +1268,7 @@ CommandInstance.prototype.connectToFinalize_ = async function(params, options) {
  * @param {string=} optionString The set of --long options to parse.
  * @return {!Object<string, string>} A map of --option to its value.
  */
-export function tokenizeOptions(optionString = '') {
+export function tokenizeOptions(optionString = "") {
   const rv = {};
 
   // If it's empty, return right away else the regex split below will create
@@ -1282,16 +1282,16 @@ export function tokenizeOptions(optionString = '') {
   for (let i = 0; i < optionList.length; ++i) {
     // Make sure it's a long option first.
     const option = optionList[i];
-    if (!option.startsWith('--')) {
+    if (!option.startsWith("--")) {
       throw Error(option);
     }
 
     // Split apart the option if there is an = in it.
     let flag, value;
-    const pos = option.indexOf('=');
+    const pos = option.indexOf("=");
     if (pos == -1) {
       // If there is no = then it's a boolean flag (which --no- disables).
-      value = !option.startsWith('--no-');
+      value = !option.startsWith("--no-");
       flag = option.slice(value ? 2 : 5);
     } else {
       flag = option.slice(2, pos);
@@ -1313,8 +1313,8 @@ export function tokenizeOptions(optionString = '') {
  * @type {!Set<string>}
  */
 const safeUriNasshOptions = new Set([
-  '--config', '--proxy-mode', '--proxy-host', '--proxy-port', '--proxy-user',
-  '--ssh-agent', '--welcome', '--egress-domain',
+  "--config", "--proxy-mode", "--proxy-host", "--proxy-port", "--proxy-user",
+  "--ssh-agent", "--welcome", "--egress-domain",
 ]);
 
 /**
@@ -1333,7 +1333,7 @@ export function isSafeUriNasshOption(option) {
   }
 
   // See if the negative variant is used.
-  if (option.startsWith('--no-')) {
+  if (option.startsWith("--no-")) {
     return isSafeUriNasshOption(`--${option.substr(5)}`);
   }
 
@@ -1347,9 +1347,9 @@ export function isSafeUriNasshOption(option) {
  * @type {!Set<string>}
  */
 const safeUriSshOptions = new Set([
-  '-4', '-6', '-a', '-A', '-C', '-q', '-Q', '-v', '-V',
+  "-4", "-6", "-a", "-A", "-C", "-q", "-Q", "-v", "-V",
   // TODO(vapier): Try to generalize -o more.
-  '-oEnableEscapeCommandline=yes',
+  "-oEnableEscapeCommandline=yes",
 ]);
 
 /**
@@ -1378,50 +1378,50 @@ export function postProcessOptions(options, hostname, username, isMount) {
   let rv = Object.assign(options);
 
   // Handle various named "configs" we have.
-  if (rv['--config'] == 'google') {
+  if (rv["--config"] == "google") {
     // This list of agent hosts matches the internal gLinux ssh_config.
     const forwardAgent = [
-      '.corp.google.com', '.corp', '.cloud.googlecorp.com', '.c.googlers.com',
-      '.mandiant-aws-prod.s.off.goog',
+      ".corp.google.com", ".corp", ".cloud.googlecorp.com", ".c.googlers.com",
+      ".mandiant-aws-prod.s.off.goog",
     ].reduce((ret, host) => ret || hostname.endsWith(host), false);
 
     // This list of proxy hosts matches the internal gLinux ssh_config.
     // Hosts in these spaces should go through a different relay.
     const useSupSshRelay = [
-      '.c.googlers.com', '.internal.gcpnode.com', '.proxy.gcpnode.com',
-      '.mandiant-aws-prod.s.off.goog',
+      ".c.googlers.com", ".internal.gcpnode.com", ".proxy.gcpnode.com",
+      ".mandiant-aws-prod.s.off.goog",
     ].reduce((ret, host) => ret || hostname.endsWith(host), false);
     const proxyHost = useSupSshRelay ?
-        'ssh-relay-router.corp.google.com' : 'ssh-relay.corp.google.com';
+        "ssh-relay-router.corp.google.com" : "ssh-relay.corp.google.com";
     const proxyMode = useSupSshRelay ?
-        'corp-relay-v4@google.com' : 'corp-relay@google.com';
+        "corp-relay-v4@google.com" : "corp-relay@google.com";
     const proxyHostFallback = useSupSshRelay ?
-        'sup-ssh-relay.corp.google.com' : 'ssh-relay-fallback.corp.google.com';
+        "sup-ssh-relay.corp.google.com" : "ssh-relay-fallback.corp.google.com";
 
     rv = Object.assign({
-      'auth-agent-forward': forwardAgent,
-      '--proxy-host': proxyHost,
-      '--proxy-host-fallback': proxyHostFallback,
-      '--proxy-port': '443',
-      '--proxy-mode': proxyMode,
-      '--proxy-remote-host': hostname,
-      '--use-ssl': true,
-      '--report-ack-latency': !isMount,
-      '--report-connect-attempts': true,
-      '--relay-protocol': 'v2',
-      '--ssh-agent': 'gnubby',
-      'cert-refresh': true,
+      "auth-agent-forward": forwardAgent,
+      "--proxy-host": proxyHost,
+      "--proxy-host-fallback": proxyHostFallback,
+      "--proxy-port": "443",
+      "--proxy-mode": proxyMode,
+      "--proxy-remote-host": hostname,
+      "--use-ssl": true,
+      "--report-ack-latency": !isMount,
+      "--report-connect-attempts": true,
+      "--relay-protocol": "v2",
+      "--ssh-agent": "gnubby",
+      "cert-refresh": true,
     }, rv);
 
     // Default enable connection resumption when using newer proxy mode.
     rv = Object.assign({
-      '--resume-connection': rv['--proxy-mode'] === 'corp-relay-v4@google.com',
+      "--resume-connection": rv["--proxy-mode"] === "corp-relay-v4@google.com",
     }, rv);
 
     // Terminal-SSH must use method=direct since it does not allow redirects.
     if (isCrOSSystemApp()) {
       rv = Object.assign({
-        '--relay-method': 'direct',
+        "--relay-method": "direct",
       }, rv);
     }
   }
@@ -1429,26 +1429,26 @@ export function postProcessOptions(options, hostname, username, isMount) {
   // If the user specified an IPv6 address w/out brackets, add them.  It's not
   // obvious that a command line parameter would need them like a URI does.  We
   // only use the proxy-host in URI contexts currently, so this is OK.
-  if (rv['--proxy-host'] && !rv['--proxy-host'].startsWith('[') &&
-      rv['--proxy-host'].indexOf(':') != -1) {
-    rv['--proxy-host'] = `[${rv['--proxy-host']}]`;
+  if (rv["--proxy-host"] && !rv["--proxy-host"].startsWith("[") &&
+      rv["--proxy-host"].indexOf(":") != -1) {
+    rv["--proxy-host"] = `[${rv["--proxy-host"]}]`;
   }
 
   // If a proxy server is requested but no mode selected, default to the one
   // we've had for years, and what the public uses currently.
-  if (rv['--proxy-host'] && !rv['--proxy-mode']) {
-    rv['--proxy-mode'] = 'corp-relay@google.com';
+  if (rv["--proxy-host"] && !rv["--proxy-mode"]) {
+    rv["--proxy-mode"] = "corp-relay@google.com";
   }
 
   // Turn 'gnubby' into the default id.  We do it here because we haven't yet
   // ported the gnubbyd logic to the new ssh-agent frameworks.
-  if (rv['--ssh-agent'] == 'gnubby') {
-    rv['--ssh-agent'] = getGoogleSshAgentExtension();
+  if (rv["--ssh-agent"] == "gnubby") {
+    rv["--ssh-agent"] = getGoogleSshAgentExtension();
   }
 
   // Default the relay username to the ssh username.
-  if (!rv['--proxy-user']) {
-    rv['--proxy-user'] = username;
+  if (!rv["--proxy-user"]) {
+    rv["--proxy-user"] = username;
   }
 
   return rv;
@@ -1513,8 +1513,8 @@ CommandInstance.prototype.initProgram_ = async function(argv) {
   let executable;
   let subproc;
 
-  if (argv.command === 'mosh') {
-    this.io.print(localize('PLUGIN_LOADING', [this.sshClientVersion_]));
+  if (argv.command === "mosh") {
+    this.io.print(localize("PLUGIN_LOADING", [this.sshClientVersion_]));
     // This logic is a bit hacky, but aligns with default `mosh` behavior.
     // The default remote shell might not be POSIX compatible, so invoke sh.
     // Assume the ssh connection includes the $SSH_CONNECTION variable so we
@@ -1524,17 +1524,17 @@ CommandInstance.prototype.initProgram_ = async function(argv) {
     // Specify -s to handle multi-home clients.  We assume $SSH_CONNECTION
     // is what we also will use for mosh.
     const remoteCommand =
-        `sh -c '` +
-        `printf "\nMOSH SSH_CONNECTION %s\n" "$SSH_CONNECTION"; ` +
-        `exec mosh-server new -s` +
-        `'`;
+        "sh -c '" +
+        "printf \"\nMOSH SSH_CONNECTION %s\n\" \"$SSH_CONNECTION\"; " +
+        "exec mosh-server new -s" +
+        "'";
     subproc = await this.initWasmSubproc_(
         [...argv.arguments, remoteCommand],
         argv.environment, {
           captureStdout: true,
           trace: argv.debugTrace,
         });
-    this.io.println(localize('PLUGIN_LOADING_COMPLETE'));
+    this.io.println(localize("PLUGIN_LOADING_COMPLETE"));
     // We don't check the exit status as we'll process the output below.
     await subproc.run();
     // This grubs around internal wassh VFS logic to get stdout log.
@@ -1556,19 +1556,19 @@ CommandInstance.prototype.initProgram_ = async function(argv) {
     subproc.terminate();
 
     argv.arguments = [mip[1], m[1]];
-    argv.environment['MOSH_KEY'] = m[2];
-    argv.environment['MOSH_NO_TERM_INIT'] = '1';
-    argv.environment['TERM'] = 'xterm-256color';
-    executable = `../../plugin/wasm/mosh-client.wasm`;
+    argv.environment["MOSH_KEY"] = m[2];
+    argv.environment["MOSH_NO_TERM_INIT"] = "1";
+    argv.environment["TERM"] = "xterm-256color";
+    executable = "../../plugin/wasm/mosh-client.wasm";
   }
 
-  this.io.print(localize('PLUGIN_LOADING', [this.sshClientVersion_]));
+  this.io.print(localize("PLUGIN_LOADING", [this.sshClientVersion_]));
   this.program_ = subproc = await this.initWasmSubproc_(
     argv.arguments, argv.environment, {
       executable: executable,
       trace: argv.debugTrace,
     });
-  this.io.println(localize('PLUGIN_LOADING_COMPLETE'));
+  this.io.println(localize("PLUGIN_LOADING_COMPLETE"));
   subproc.run().then(async (code) => {
     await this.onPluginExit(code);
     this.exit(code, /* noReconnect= */ false);
@@ -1598,7 +1598,7 @@ CommandInstance.prototype.exit = function(code, noReconnect) {
 
   this.exited_ = true;
 
-  this.terminalWindow.removeEventListener('beforeunload', this.onBeforeUnload_);
+  this.terminalWindow.removeEventListener("beforeunload", this.onBeforeUnload_);
 
   this.terminateProgram_();
 
@@ -1610,30 +1610,30 @@ CommandInstance.prototype.exit = function(code, noReconnect) {
       this.argv_.onExit(code);
     }
 
-    console.log(localize('DISCONNECT_MESSAGE', [code]));
+    console.log(localize("DISCONNECT_MESSAGE", [code]));
     return;
   }
 
   const io = this.io.push();
-  const container = document.createElement('div');
-  container.appendChild(new Text(localize('DISCONNECT_MESSAGE', [code])));
-  container.appendChild(document.createElement('br'));
+  const container = document.createElement("div");
+  container.appendChild(new Text(localize("DISCONNECT_MESSAGE", [code])));
+  container.appendChild(document.createElement("br"));
   container.appendChild(new Text(localize(
-      noReconnect ? 'CONNECT_OR_EXIT_MESSAGE' : 'RECONNECT_MESSAGE')));
+      noReconnect ? "CONNECT_OR_EXIT_MESSAGE" : "RECONNECT_MESSAGE")));
   io.showOverlay(container, null);
 
   io.onVTKeystroke = (string) => {
     const ch = string.toLowerCase();
     switch (ch) {
-      case 'c':
-      case '\x12': // ctrl-r
+      case "c":
+      case "\x12": // ctrl-r
         this.terminalLocation.replace(lib.f.getURL(this.connectPage));
         break;
 
-      case 'e':
-      case 'x':
-      case '\x1b': // ESC
-      case '\x17': // ctrl-w
+      case "e":
+      case "x":
+      case "\x1b": // ESC
+      case "\x17": // ctrl-w
         io.hideOverlay();
         io.pop();
         if (this.argv_.onExit) {
@@ -1641,9 +1641,9 @@ CommandInstance.prototype.exit = function(code, noReconnect) {
         }
         break;
 
-      case 'r':
-      case ' ':
-      case '\x0d': // enter
+      case "r":
+      case " ":
+      case "\x0d": // enter
         if (!noReconnect) {
           io.hideOverlay();
           io.pop();
@@ -1660,11 +1660,11 @@ CommandInstance.prototype.exit = function(code, noReconnect) {
  * @return {string|undefined} Message to display.
  */
 CommandInstance.prototype.onBeforeUnload_ = function(e) {
-  if (hterm.windowType == 'popup') {
+  if (hterm.windowType == "popup") {
     return;
   }
 
-  const msg = localize('BEFORE_UNLOAD');
+  const msg = localize("BEFORE_UNLOAD");
   e.returnValue = msg;
   return msg;
 };
@@ -1674,7 +1674,7 @@ CommandInstance.prototype.onBeforeUnload_ = function(e) {
  */
 CommandInstance.prototype.onSftpInitialised = function() {
   if (this.isMount) {
-    this.mountOptions['persistent'] = false;
+    this.mountOptions["persistent"] = false;
 
     // Mount file system.
     chrome.fileSystemProvider.mount(this.mountOptions, () => {
@@ -1734,38 +1734,38 @@ CommandInstance.prototype.secureInput_ = function(
   // it from existing output.  That doesn't apply here.
   prompt = prompt.trim();
 
-  const container = document.createElement('div');
+  const container = document.createElement("div");
 
-  const header = document.createElement('p');
-  header.style.fontWeight = 'bold';
-  header.style.whiteSpace = 'pre-wrap';
+  const header = document.createElement("p");
+  header.style.fontWeight = "bold";
+  header.style.whiteSpace = "pre-wrap";
   header.textContent = prompt;
   container.appendChild(header);
 
-  const span = document.createElement('span');
-  span.style.whiteSpace = 'nowrap';
+  const span = document.createElement("span");
+  span.style.whiteSpace = "nowrap";
 
   // If echo is disabled, assume it's a password field.  If it's enabled, allow
   // normal text editing & viewing.
-  const input = document.createElement('input');
-  input.type = echo ? 'text' : 'password';
+  const input = document.createElement("input");
+  input.type = echo ? "text" : "password";
   input.ariaLabel = prompt;
   input.maxLength = buf_len - 1;
-  input.style.width = echo ? '100%' : '90%';
+  input.style.width = echo ? "100%" : "90%";
   span.appendChild(input);
 
   // For password inputs, add a dynamic toggle.
   if (!echo) {
-    const toggle = document.createElement('img');
+    const toggle = document.createElement("img");
     toggle.src = IMG_VISIBILITY_URI;
-    toggle.style.cursor = 'pointer';
-    toggle.style.verticalAlign = 'middle';
-    toggle.addEventListener('click', (e) => {
-      if (input.type === 'text') {
-        input.type = 'password';
+    toggle.style.cursor = "pointer";
+    toggle.style.verticalAlign = "middle";
+    toggle.addEventListener("click", (e) => {
+      if (input.type === "text") {
+        input.type = "password";
         toggle.src = IMG_VISIBILITY_URI;
       } else {
-        input.type = 'text';
+        input.type = "text";
         toggle.src = IMG_VISIBILITY_OFF_URI;
       }
     });
@@ -1779,8 +1779,8 @@ CommandInstance.prototype.secureInput_ = function(
   setTimeout(() => input.focus());
 
   // The terminal will eat all key events, so make sure we stop that.
-  input.addEventListener('keyup', (e) => e.stopPropagation(), true);
-  input.addEventListener('keypress', (e) => e.stopPropagation(), true);
+  input.addEventListener("keyup", (e) => e.stopPropagation(), true);
+  input.addEventListener("keypress", (e) => e.stopPropagation(), true);
 
   // If the terminal becomes active for some reason, force back to the input.
   io.onVTKeystroke = io.sendString = (string) => {
@@ -1788,13 +1788,13 @@ CommandInstance.prototype.secureInput_ = function(
   };
 
   // Keep accepting input until they press Enter or Escape.
-  input.addEventListener('keydown', (e) => {
+  input.addEventListener("keydown", (e) => {
     e.stopPropagation();
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       cleanup(input.value);
       e.preventDefault();
-    } else if (e.key === 'Escape') {
-      cleanup('');
+    } else if (e.key === "Escape") {
+      cleanup("");
       e.preventDefault();
     }
   }, true);

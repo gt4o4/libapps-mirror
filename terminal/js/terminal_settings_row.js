@@ -6,8 +6,8 @@
  * @fileoverview Implement <terminal-settings-row>
  */
 
-import {LitElement, css, html, when} from './lit.js';
-import {ICON_EXPAND_LESS, ICON_EXPAND_MORE} from './terminal_icons.js';
+import {LitElement, css, html, when} from "./lit.js";
+import {ICON_EXPAND_LESS, ICON_EXPAND_MORE} from "./terminal_icons.js";
 
 /**
  * An expandable row element designed to work within <terminal-settings-app>.
@@ -68,8 +68,8 @@ class TerminalSettingsRow extends LitElement {
   constructor() {
     super();
 
-    this.title = '';
-    this.label = '';
+    this.title = "";
+    this.label = "";
     this.expandable = false;
     this.expanded_ = false;
   }
@@ -82,9 +82,9 @@ class TerminalSettingsRow extends LitElement {
     return html`
       <div title="${this.title}">
         <div id="main" @click=${this.onClick_}
-            tabindex=${this.expandable ? '0' : ''}
-            role=${this.expandable ? 'button' : ''}
-            aria-expanded=${this.expandable ? this.expanded_ : ''} >
+            tabindex=${this.expandable ? "0" : ""}
+            role=${this.expandable ? "button" : ""}
+            aria-expanded=${this.expandable ? this.expanded_ : ""} >
           <span id="label">${this.label}</span>
           ${when(this.expandable,
               () => this.expanded_ ? ICON_EXPAND_LESS : ICON_EXPAND_MORE,
@@ -98,9 +98,9 @@ class TerminalSettingsRow extends LitElement {
   onClick_() {
     if (this.expandable) {
       this.expanded_ = !this.expanded_;
-      this.dispatchEvent(new CustomEvent('expand', {detail: this.expanded_}));
+      this.dispatchEvent(new CustomEvent("expand", {detail: this.expanded_}));
     }
   }
 }
 
-customElements.define('terminal-settings-row', TerminalSettingsRow);
+customElements.define("terminal-settings-row", TerminalSettingsRow);

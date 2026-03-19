@@ -6,7 +6,7 @@
  * @fileoverview DataView supporting WASI structures.
  */
 
-import * as WASI from './wasi.js';
+import * as WASI from "./wasi.js";
 
 /**
  * DataView with methods for working with WASI structures.
@@ -253,7 +253,7 @@ export class WasiView extends DataView {
    * the methods in below via WasiView.typedefs.  We can clean this up if/when
    * JS supports class fields.
    */
-  /* eslint-disable lines-between-class-members */
+   
   /** @override */ getAdvice() {}
   /** @override */ setAdvice() {}
   /** @override */ getClockid() {}
@@ -316,7 +316,7 @@ export class WasiView extends DataView {
   /** @override */ setUserdata() {}
   /** @override */ getWhence() {}
   /** @override */ setWhence() {}
-  /* eslint-enable lines-between-class-members */
+   
 }
 
 /*
@@ -330,20 +330,20 @@ export class WasiView extends DataView {
  * @type {!Object<string, !Array<string>>}
  */
 WasiView.typedefs = {
-  'Uint8': [
-    'Advice', 'Eventtype', 'Filetype', 'Preopentype', 'Sdflags', 'Signal',
-    'Whence',
+  "Uint8": [
+    "Advice", "Eventtype", "Filetype", "Preopentype", "Sdflags", "Signal",
+    "Whence",
   ],
-  'Uint16': [
-    'Errno', 'Eventrwflags', 'Fdflags', 'Fstflags', 'Oflags', 'Riflags',
-    'Roflags', 'Siflags', 'Subclockflags',
+  "Uint16": [
+    "Errno", "Eventrwflags", "Fdflags", "Fstflags", "Oflags", "Riflags",
+    "Roflags", "Siflags", "Subclockflags",
   ],
-  'Uint32': [
-    'Clockid', 'Dirnamlen', 'Exitcode', 'Fd', 'Lookupflags', 'Pointer', 'Size',
+  "Uint32": [
+    "Clockid", "Dirnamlen", "Exitcode", "Fd", "Lookupflags", "Pointer", "Size",
   ],
-  'BigUint64': [
-    'Device', 'Dircookie', 'Filesize', 'Inode', 'Linkcount', 'Rights',
-    'Timestamp', 'Userdata',
+  "BigUint64": [
+    "Device", "Dircookie", "Filesize", "Inode", "Linkcount", "Rights",
+    "Timestamp", "Userdata",
   ],
 };
 Object.entries(WasiView.typedefs).forEach(([type, wasiTypes]) => {
@@ -363,10 +363,10 @@ Object.entries(WasiView.typedefs).forEach(([type, wasiTypes]) => {
  */
 WasiView.dirent_t = {
   fields: {
-    d_next: {offset: 0, type: 'Dircookie'},
-    d_ino: {offset: 8, type: 'Inode'},
-    d_namlen: {offset: 16, type: 'Dirnamlen'},
-    d_type: {offset: 20, type: 'Filetype'},
+    d_next: {offset: 0, type: "Dircookie"},
+    d_ino: {offset: 8, type: "Inode"},
+    d_namlen: {offset: 16, type: "Dirnamlen"},
+    d_type: {offset: 20, type: "Filetype"},
   },
   struct_size: 24,
 };
@@ -381,10 +381,10 @@ WasiView.dirent_t = {
  */
 WasiView.event_t = {
   fields: {
-    userdata: {offset: 0, type: 'Userdata'},
-    error: {offset: 8, type: 'Errno'},
-    type: {offset: 10, type: 'Eventtype'},
-    fd_readwrite: {offset: 16, type: 'EventFdReadWrite'},
+    userdata: {offset: 0, type: "Userdata"},
+    error: {offset: 8, type: "Errno"},
+    type: {offset: 10, type: "Eventtype"},
+    fd_readwrite: {offset: 16, type: "EventFdReadWrite"},
   },
   struct_size: 32,
 };
@@ -397,8 +397,8 @@ WasiView.event_t = {
  */
 WasiView.event_fd_readwrite_t = {
   fields: {
-    nbytes: {offset: 0, type: 'Filesize'},
-    flags: {offset: 8, type: 'Eventrwflags'},
+    nbytes: {offset: 0, type: "Filesize"},
+    flags: {offset: 8, type: "Eventrwflags"},
   },
   struct_size: 16,
 };
@@ -413,10 +413,10 @@ WasiView.event_fd_readwrite_t = {
  */
 WasiView.fdstat_t = {
   fields: {
-    fs_filetype: {offset: 0, type: 'Filetype'},
-    fs_flags: {offset: 2, type: 'Fdflags'},
-    fs_rights_base: {offset: 8, type: 'Rights'},
-    fs_rights_inheriting: {offset: 16, type: 'Rights'},
+    fs_filetype: {offset: 0, type: "Filetype"},
+    fs_flags: {offset: 2, type: "Fdflags"},
+    fs_rights_base: {offset: 8, type: "Rights"},
+    fs_rights_inheriting: {offset: 16, type: "Rights"},
   },
   struct_size: 24,
 };
@@ -435,14 +435,14 @@ WasiView.fdstat_t = {
  */
 WasiView.filestat_t = {
   fields: {
-    dev: {offset: 0, type: 'Device'},
-    ino: {offset: 8, type: 'Inode'},
-    filetype: {offset: 16, type: 'Filetype'},
-    nlink: {offset: 24, type: 'Linkcount'},
-    size: {offset: 32, type: 'Filesize'},
-    atim: {offset: 40, type: 'Timestamp'},
-    mtim: {offset: 48, type: 'Timestamp'},
-    ctim: {offset: 56, type: 'Timestamp'},
+    dev: {offset: 0, type: "Device"},
+    ino: {offset: 8, type: "Inode"},
+    filetype: {offset: 16, type: "Filetype"},
+    nlink: {offset: 24, type: "Linkcount"},
+    size: {offset: 32, type: "Filesize"},
+    atim: {offset: 40, type: "Timestamp"},
+    mtim: {offset: 48, type: "Timestamp"},
+    ctim: {offset: 56, type: "Timestamp"},
   },
   struct_size: 64,
 };
@@ -456,8 +456,8 @@ WasiView.filestat_t = {
 WasiView.ciovec_t =
 WasiView.iovec_t = {
   fields: {
-    buf: {offset: 0, type: 'Pointer'},
-    buf_len: {offset: 4, type: 'Size'},
+    buf: {offset: 0, type: "Pointer"},
+    buf_len: {offset: 4, type: "Size"},
   },
   struct_size: 8,
 };
@@ -472,10 +472,10 @@ WasiView.iovec_t = {
  */
 WasiView.subscription_clock_t = {
   fields: {
-    id: {offset: 0, type: 'Clockid'},
-    timeout: {offset: 8, type: 'Timestamp'},
-    precision: {offset: 16, type: 'Timestamp'},
-    flags: {offset: 24, type: 'Subclockflags'},
+    id: {offset: 0, type: "Clockid"},
+    timeout: {offset: 8, type: "Timestamp"},
+    precision: {offset: 16, type: "Timestamp"},
+    flags: {offset: 24, type: "Subclockflags"},
   },
   struct_size: 32,
 };
@@ -487,7 +487,7 @@ WasiView.subscription_clock_t = {
  */
 WasiView.subscription_fd_readwrite_t = {
   fields: {
-    file_descriptor: {offset: 0, type: 'Fd'},
+    file_descriptor: {offset: 0, type: "Fd"},
   },
   struct_size: 4,
 };

@@ -6,16 +6,16 @@
  * @fileoverview Tests for terminal_xterm_internal.js
  */
 
-import {Terminal, WebglAddon} from './xterm.js';
-import {XtermInternal} from './terminal_xterm_internal.js';
+import {Terminal, WebglAddon} from "./xterm.js";
+import {XtermInternal} from "./terminal_xterm_internal.js";
 
 const COLS = 80;
 const ROWS = 24;
 
 beforeEach(function() {
-  this.elem = document.createElement('div');
-  this.elem.style.height = '500px';
-  this.elem.style.width = '500px';
+  this.elem = document.createElement("div");
+  this.elem.style.height = "500px";
+  this.elem.style.width = "500px";
   document.body.appendChild(this.elem);
 
   this.terminal = new Terminal({cols: COLS, rows: ROWS,
@@ -37,7 +37,7 @@ afterEach(function() {
   document.body.removeChild(this.elem);
 });
 
-it('addDimensionsObserver() and getActualCellDimensions()', async function() {
+it("addDimensionsObserver() and getActualCellDimensions()", async function() {
   const {width, height} = this.xtermInternal.getActualCellDimensions();
   assert.isAbove(width, 0);
   assert.isAbove(height, 0);
@@ -59,14 +59,14 @@ it('addDimensionsObserver() and getActualCellDimensions()', async function() {
   assert.isAbove(height2, height);
 });
 
-it('print()', async function() {
-  this.xtermInternal.print('hello world');
+it("print()", async function() {
+  this.xtermInternal.print("hello world");
   assert.equal(this.terminal.buffer.active.getLine(0).translateToString(true),
-      'hello world');
+      "hello world");
 });
 
-it('newLine()', async function() {
-  await this.write('012');
+it("newLine()", async function() {
+  await this.write("012");
   const buffer = this.terminal.buffer.active;
   assert.equal(buffer.cursorX, 3);
   assert.equal(buffer.cursorY, 0);
@@ -75,8 +75,8 @@ it('newLine()', async function() {
   assert.equal(buffer.cursorY, 1);
 });
 
-it('moveCursor()', async function() {
-  await this.write('012\r\n345');
+it("moveCursor()", async function() {
+  await this.write("012\r\n345");
   const buffer = this.terminal.buffer.active;
   assert.equal(buffer.cursorX, 3);
   assert.equal(buffer.cursorY, 1);
@@ -91,7 +91,7 @@ it('moveCursor()', async function() {
   assert.equal(buffer.cursorY, 3);
 });
 
-it('setCursor()', async function() {
+it("setCursor()", async function() {
   const buffer = this.terminal.buffer.active;
   assert.equal(buffer.cursorX, 0);
   assert.equal(buffer.cursorY, 0);
@@ -100,33 +100,33 @@ it('setCursor()', async function() {
   assert.equal(buffer.cursorY, 20);
 });
 
-it('eraseInBufferLine()', async function() {
-  await this.write('012345');
+it("eraseInBufferLine()", async function() {
+  await this.write("012345");
   this.xtermInternal.eraseInBufferLine(0, 2, 4);
   assert.equal(this.terminal.buffer.active.getLine(0).translateToString(true),
-      '01  45');
+      "01  45");
 });
 
-it('installEscKHandler()', async function() {
-  await this.write('\x1bkhello world\x1b\\');
+it("installEscKHandler()", async function() {
+  await this.write("\x1bkhello world\x1b\\");
   assert.equal(this.terminal.buffer.active.getLine(0).translateToString(true),
-      'hello world',
-      'before installing the handler, the string will be printed');
+      "hello world",
+      "before installing the handler, the string will be printed");
 
   this.xtermInternal.installEscKHandler();
-  await this.write('abc\x1bk1234\x1b\\def');
+  await this.write("abc\x1bk1234\x1b\\def");
   assert.equal(this.terminal.buffer.active.getLine(0).translateToString(true),
-      'hello worldabcdef',
-      'after installing the handler, the string should be ignored');
+      "hello worldabcdef",
+      "after installing the handler, the string should be ignored");
 
   this.xtermInternal.installEscKHandler();
-  await this.write('ghi\x1bk1234\x1b\\jkl');
+  await this.write("ghi\x1bk1234\x1b\\jkl");
   assert.equal(this.terminal.buffer.active.getLine(0).translateToString(true),
-      'hello worldabcdefghijkl',
-      'installing the handler multiple times should be fine');
+      "hello worldabcdefghijkl",
+      "installing the handler multiple times should be fine");
 });
 
-it('installTmuxControlModeHandler()', async function() {
+it("installTmuxControlModeHandler()", async function() {
   const tmuxLines = [];
 
   this.xtermInternal.installTmuxControlModeHandler((line) => {
@@ -134,42 +134,42 @@ it('installTmuxControlModeHandler()', async function() {
   });
 
   for (const input of [
-    'hello world\x1bP',
-    '1000phello ',
-    'tmux\r',
-    '\nhello',
-    ' again\r\nbye',
+    "hello world\x1bP",
+    "1000phello ",
+    "tmux\r",
+    "\nhello",
+    " again\r\nbye",
   ]) {
     await this.write(input);
   }
 
   assert.equal(this.terminal.buffer.active.getLine(0).translateToString(true),
-      'hello world');
-  assert.deepEqual(tmuxLines, ['hello tmux', 'hello again']);
+      "hello world");
+  assert.deepEqual(tmuxLines, ["hello tmux", "hello again"]);
   tmuxLines.length = 0;
 
-  await this.write(' tmux\r\n\x1b\\abcd');
-  assert.deepEqual(tmuxLines, ['bye tmux', null]);
+  await this.write(" tmux\r\n\x1b\\abcd");
+  assert.deepEqual(tmuxLines, ["bye tmux", null]);
 
   assert.equal(this.terminal.buffer.active.getLine(0).translateToString(true),
-      'hello worldabcd');
+      "hello worldabcd");
 });
 
-it('enableA11y() and disableA11y()', async function() {
+it("enableA11y() and disableA11y()", async function() {
   const terminalElement = this.terminal.element;
-  const pageUpButton = document.createElement('button');
-  const pageDownButton = document.createElement('button');
+  const pageUpButton = document.createElement("button");
+  const pageDownButton = document.createElement("button");
   this.xtermInternal.enableA11y(pageUpButton, pageDownButton);
 
   // Check the order of a11y elements.
   const children = terminalElement.children;
   assert.equal(children[0], pageUpButton);
   const xtermAccessibility = children[1];
-  assert.isTrue(xtermAccessibility.classList.contains('xterm-accessibility'));
+  assert.isTrue(xtermAccessibility.classList.contains("xterm-accessibility"));
   assert.equal(children[2], pageDownButton);
   // The xterm a11y live region should be reallocated to the bottom.
   const liveRegionContainer = children[children.length - 1];
-  const liveRegion = liveRegionContainer.querySelector('[aria-live]');
+  const liveRegion = liveRegionContainer.querySelector("[aria-live]");
   assert.exists(liveRegion);
 
   // Test that the live region is still working after the re-positioning.
@@ -180,8 +180,8 @@ it('enableA11y() and disableA11y()', async function() {
     });
     observer.observe(liveRegion, {childList: true});
   });
-  this.write('hello world');
-  assert.equal(await liveRegionText, 'hello world');
+  this.write("hello world");
+  assert.equal(await liveRegionText, "hello world");
 
   this.xtermInternal.disableA11y();
   for (const element of [pageUpButton, xtermAccessibility, pageDownButton,
@@ -190,7 +190,7 @@ it('enableA11y() and disableA11y()', async function() {
   }
 });
 
-it('setScrollbarVisible()', async function() {
+it("setScrollbarVisible()", async function() {
   assert.isTrue(this.xtermInternal.setScrollbarVisible(true));
   assert.isTrue(this.xtermInternal.setScrollbarVisible(false));
 });

@@ -7,9 +7,9 @@
  *     backends.
  */
 
-import {concatTyped} from './lib_array.js';
-import {Agent} from './nassh_agent.js';
-import {Stream} from './nassh_stream.js';
+import {concatTyped} from "./lib_array.js";
+import {Agent} from "./nassh_agent.js";
+import {Stream} from "./nassh_stream.js";
 
 /**
  * Relay ssh-agent messages to an Agent instance.

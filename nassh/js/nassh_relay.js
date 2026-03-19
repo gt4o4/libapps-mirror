@@ -6,12 +6,12 @@
  * @fileoverview Common relay logic.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LocalPreferenceManager} from './nassh_preference_manager.js';
-import {Stream} from './nassh_stream.js';
+import {LocalPreferenceManager} from "./nassh_preference_manager.js";
+import {Stream} from "./nassh_stream.js";
 
 /**
  * Interface that all relays must implement.
@@ -33,9 +33,9 @@ export class Relay {
     /** @type {!hterm.Terminal.IO} */
     this.io_ = io;
     /** @type {string} */
-    this.proxyHost = options['--proxy-host'];
+    this.proxyHost = options["--proxy-host"];
     /** @type {number} */
-    this.proxyPort = options['--proxy-port'] || this.defaultProxyPort;
+    this.proxyPort = options["--proxy-port"] || this.defaultProxyPort;
     /**
      * If provided, this host value is used in init() by the proxy to redirect
      * to the best geolocated instance.  The `host` parameter in openSocket()
@@ -44,11 +44,11 @@ export class Relay {
      *
      * @type {string|undefined}
      */
-    this.remoteHost = options['--proxy-remote-host'];
+    this.remoteHost = options["--proxy-remote-host"];
     /** @type {string} */
-    this.username = options['--proxy-user'];
+    this.username = options["--proxy-user"];
     /** @type {boolean} */
-    this.resumeConnection = !!options['--resume-connection'];
+    this.resumeConnection = !!options["--resume-connection"];
     /** @type {!Location} */
     this.location = location;
     /** @type {!lib.Storage} */

@@ -6,7 +6,7 @@
  * @fileoverview Programs for encapsulating WASM programs.
  */
 
-import * as util from './util.js';
+import * as util from "./util.js";
 
 /**
  * A program API encapsulating a WASM program.
@@ -43,7 +43,7 @@ export class Program {
     }
 
     let source;
-    if (typeof this.source === 'string') {
+    if (typeof this.source === "string") {
       source = fetch(this.source);
     } else {
       source = this.source;
@@ -52,7 +52,7 @@ export class Program {
     if (stream) {
       if (source instanceof ArrayBuffer) {
         throw new util.ApiViolation(
-            'source cannot be an ArrayBuffer when streaming');
+            "source cannot be an ArrayBuffer when streaming");
       }
       /** @suppress {checkTypes} Closure externs are missing Response. */
       result = await WebAssembly.instantiateStreaming(source, imports);
@@ -87,7 +87,7 @@ export class Program {
     // the program calls exit() itself, then it too runs the exit syscall.  If
     // the program aborts, WASM will throw an exception which our Program class
     // will catch & process.  This seems more complicated than it should be.
-    let entry = this.instance.exports['_start'];
+    let entry = this.instance.exports["_start"];
     if (WebAssembly.promising !== undefined) {
       entry = WebAssembly.promising(entry);
     }

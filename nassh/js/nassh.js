@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
 hterm.initPromise.then(() => {
   // Since our translation process only preserves \n (and discards \r), we
@@ -19,7 +19,7 @@ hterm.initPromise.then(() => {
  * @return {boolean}
  */
 export function isCrOSSystemApp() {
-  return location.href.startsWith('chrome-untrusted://');
+  return location.href.startsWith("chrome-untrusted://");
 }
 
 /**
@@ -52,8 +52,8 @@ export function setupForWebApp() {
  * @param {!lib.PreferenceManager} prefs The preference manager.
  */
 export function watchBackgroundColor(prefs) {
-  document.body.style.backgroundColor = prefs.getString('background-color');
-  prefs.addObserver('background-color', (color) => {
+  document.body.style.backgroundColor = prefs.getString("background-color");
+  prefs.addObserver("background-color", (color) => {
     document.body.style.backgroundColor = /** @type {string} */ (color);
   });
 }
@@ -67,7 +67,7 @@ export async function loadMessages() {
   // Load hterm.messageManager from /_locales/<lang>/messages.json.
   await hterm.initPromise;
   hterm.messageManager.useCrlf = true;
-  const url = lib.f.getURL('/_locales/$1/messages.json');
+  const url = lib.f.getURL("/_locales/$1/messages.json");
   await hterm.messageManager.findAndLoadMessages(url);
 }
 
@@ -87,7 +87,7 @@ export function localize(name, args) {
  *
  * @param {string=} page The specific options page to navigate to.
  */
-export function openOptionsPage(page = '') {
+export function openOptionsPage(page = "") {
   const fallback = () => {
     lib.f.openWindow(`/html/nassh_preferences_editor.html#${page}`);
   };
@@ -129,7 +129,7 @@ export function registerProtocolHandler(proto) {
   try {
     navigator.registerProtocolHandler(
         proto,
-        lib.f.getURL('/html/nassh.html#uri:%s'),
+        lib.f.getURL("/html/nassh.html#uri:%s"),
         getManifest().name);
   } catch (e) {
     console.error(`Unable to register '${proto}' handler:`, e);
@@ -137,7 +137,7 @@ export function registerProtocolHandler(proto) {
 
   // Not all runtimes allow direct registration, so also register with the
   // 'web+' prefix just in case.
-  if (!proto.startsWith('web+')) {
+  if (!proto.startsWith("web+")) {
     registerProtocolHandler(`web+${proto}`);
   }
 }
@@ -180,7 +180,7 @@ export function disableTabDiscarding() {
  * @return {string} The data in base64 encoding.
  */
 export function base64UrlToBase64(data) {
-  const replacements = {'-': '+', '_': '/'};
+  const replacements = {"-": "+", "_": "/"};
   let ret = data.replace(/[-_]/g, (ch) => replacements[ch]);
 
   switch (ret.length % 4) {
@@ -188,11 +188,11 @@ export function base64UrlToBase64(data) {
       throw new Error(`Invalid base64url length: ${ret.length}`);
 
     case 2:
-      ret += '==';
+      ret += "==";
       break;
 
     case 3:
-      ret += '=';
+      ret += "=";
       break;
   }
 
@@ -210,7 +210,7 @@ export function base64UrlToBase64(data) {
  * @return {string} The data in base64url encoding.
  */
 export function base64ToBase64Url(data) {
-  const replacements = {'+': '-', '/': '_', '=': ''};
+  const replacements = {"+": "-", "/": "_", "=": ""};
   return data.replace(/[+/=]/g, (ch) => replacements[ch]);
 }
 
@@ -224,23 +224,23 @@ export function sgrSequence(
     {bold, faint, italic, underline, blink, fg, bg} = {}) {
   const parts = [];
   if (bold) {
-    parts.push('1');
+    parts.push("1");
   }
   if (faint) {
-    parts.push('2');
+    parts.push("2");
   }
   if (italic) {
-    parts.push('3');
+    parts.push("3");
   }
   if (underline) {
     if (underline === true) {
-      parts.push('4');
+      parts.push("4");
     } else {
       parts.push(`4:${underline}`);
     }
   }
   if (blink) {
-    parts.push('5');
+    parts.push("5");
   }
   if (fg) {
     parts.push(fg);
@@ -248,7 +248,7 @@ export function sgrSequence(
   if (bg) {
     parts.push(bg);
   }
-  return `\x1b[${parts.join(';')}m`;
+  return `\x1b[${parts.join(";")}m`;
 }
 
 /**
@@ -272,7 +272,7 @@ export function sgrText(text, settings) {
  * @return {string} The hyperlink with OSC-8 escape sequences.
  */
 export function osc8Link(url, text = url) {
-  if (url.startsWith('/')) {
+  if (url.startsWith("/")) {
     url = lib.f.getURL(url);
   }
   return `\x1b]8;;${url}\x07${text}\x1b]8;;\x07`;
@@ -288,11 +288,11 @@ let Font;
 
 /** @type {!Array<!Font>} */
 const FONTS = [
-  {name: 'Noto Sans Mono', isWebFont: false},
-  {name: 'Cousine', isWebFont: true},
-  {name: 'Inconsolata', isWebFont: true},
-  {name: 'Roboto Mono', isWebFont: true},
-  {name: 'Source Code Pro', isWebFont: true},
+  {name: "Noto Sans Mono", isWebFont: false},
+  {name: "Cousine", isWebFont: true},
+  {name: "Inconsolata", isWebFont: true},
+  {name: "Roboto Mono", isWebFont: true},
+  {name: "Source Code Pro", isWebFont: true},
 ];
 
 /**
@@ -306,13 +306,13 @@ export function loadWebFonts(document) {
   for (const font of FONTS) {
     if (font.isWebFont) {
       // Load normal (400) and bold (700).
-      imports.push(`@import url('https://fonts.googleapis.com/css2?family=` +
+      imports.push("@import url('https://fonts.googleapis.com/css2?family=" +
         `${encodeURIComponent(font.name)}:wght@400;700&display=swap');`);
     }
     fontFaces.push(`
       @font-face {
         font-family: 'Powerline For ${font.name}';
-        src: url('../fonts/PowerlineFor${font.name.replace(/\s/g, '')}.woff2')
+        src: url('../fonts/PowerlineFor${font.name.replace(/\s/g, "")}.woff2')
              format('woff2');
         font-weight: normal bold;
         unicode-range:
@@ -321,8 +321,8 @@ export function loadWebFonts(document) {
       }`);
   }
 
-  const style = document.createElement('style');
-  style.textContent = imports.join('\n') + fontFaces.join('');
+  const style = document.createElement("style");
+  style.textContent = imports.join("\n") + fontFaces.join("");
   document.head.appendChild(style);
 }
 
@@ -346,9 +346,9 @@ export function getManifest() {
     return chrome.runtime.getManifest();
   } else {
     return /** @type {!chrome.runtime.Manifest} */ ({
-      'name': 'SSH',
-      'version': lib.f.getChromeMilestone().toString(),
-      'icons': {'192': '/images/dev/crostini-192.png'},
+      "name": "SSH",
+      "version": lib.f.getChromeMilestone().toString(),
+      "icons": {"192": "/images/dev/crostini-192.png"},
     });
   }
 }
@@ -381,7 +381,7 @@ export function getSyncStorage() {
  export function sanitizeScriptUrl(url) {
   if (globalThis.trustedTypes?.createPolicy) {
     if (!sanitizeScriptUrl.policy) {
-      sanitizeScriptUrl.policy = trustedTypes.createPolicy('nassh', {
+      sanitizeScriptUrl.policy = trustedTypes.createPolicy("nassh", {
         createScriptURL: (url) => url,
       });
     }

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {css, html, live} from './lit.js';
-import {TerminalSettingsElement} from './terminal_settings_element.js';
+import {css, html, live} from "./lit.js";
+import {TerminalSettingsElement} from "./terminal_settings_element.js";
 
 
 export class TerminalSettingsScrollbackLimit extends TerminalSettingsElement {
@@ -36,7 +36,7 @@ export class TerminalSettingsScrollbackLimit extends TerminalSettingsElement {
   constructor() {
     super();
 
-    this.preference = 'scrollback-limit';
+    this.preference = "scrollback-limit";
   }
 
   /**
@@ -46,13 +46,13 @@ export class TerminalSettingsScrollbackLimit extends TerminalSettingsElement {
   render() {
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
 
-    let text = '';
-    if (typeof this.value === 'number' && this.value >= 0) {
+    let text = "";
+    if (typeof this.value === "number" && this.value >= 0) {
       text = this.value.toString();
     }
     return html`
         <terminal-textfield
-            ariaLabel="${msg('TERMINAL_NAME_PREF_SCROLLBACK_LIMIT')}"
+            ariaLabel="${msg("TERMINAL_NAME_PREF_SCROLLBACK_LIMIT")}"
             inputType="number"
             .value=${live(text)}
             @change=${this.onInputChange_}>
@@ -69,5 +69,5 @@ export class TerminalSettingsScrollbackLimit extends TerminalSettingsElement {
   }
 }
 
-customElements.define('terminal-settings-scrollback-limit',
+customElements.define("terminal-settings-scrollback-limit",
     TerminalSettingsScrollbackLimit);

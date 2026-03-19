@@ -6,9 +6,9 @@
  * @fileoverview hterm.FindBar unit tests.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../index.js';
+import {hterm} from "../index.js";
 
 /**
  * Ensure fresh terminal is used for every test case.
@@ -16,10 +16,10 @@ import {hterm} from '../index.js';
 beforeEach(function(done) {
   const document = globalThis.document;
 
-  const div = this.div = document.createElement('div');
-  div.style.position = 'absolute';
-  div.style.height = '100%';
-  div.style.width = '100%';
+  const div = this.div = document.createElement("div");
+  div.style.position = "absolute";
+  div.style.height = "100%";
+  div.style.width = "100%";
 
   const width = 25;
   const height = 4;
@@ -61,7 +61,7 @@ afterEach(function() {
  */
 function setInputElementValue(value, inputElement) {
   inputElement.value = value;
-  inputElement.dispatchEvent(new Event('input', {
+  inputElement.dispatchEvent(new Event("input", {
     bubbles: true,
   }));
 }
@@ -75,61 +75,61 @@ const classes = (ele) => Array.from(ele.classList.values());
 /**
  * Test if find bar is not visible when disabled and vice-versa.
  */
-it('findbar-visible', function() {
+it("findbar-visible", function() {
   // Find bar should be non-null, closed by default and not visible.
   assert(this.findBarDiv);
-  assert.notInclude(classes(this.findBarDiv), 'enabled');
+  assert.notInclude(classes(this.findBarDiv), "enabled");
   assert.isAtMost(this.findBarDiv.getBoundingClientRect().bottom, 0);
 
   this.findBar.display();
-  assert.include(classes(this.findBarDiv), 'enabled');
+  assert.include(classes(this.findBarDiv), "enabled");
 
   this.findBar.close();
-  assert.notInclude(classes(this.findBarDiv), 'enabled');
+  assert.notInclude(classes(this.findBarDiv), "enabled");
 });
 
 /**
  * Test if find bar opens when Ctrl+Shift+F key is pressed
  * and closes when ESC key is pressed.
  */
-it('open-findbar-on-keys-pressed', function() {
-  this.document.body.dispatchEvent(new KeyboardEvent('keydown', {
+it("open-findbar-on-keys-pressed", function() {
+  this.document.body.dispatchEvent(new KeyboardEvent("keydown", {
     keyCode: 70,   // keyCode for key F.
     ctrlKey: true,
     shiftKey: true,
     bubbles: true,
   }));
 
-  assert.include(classes(this.findBarDiv), 'enabled');
+  assert.include(classes(this.findBarDiv), "enabled");
   assert.equal(this.document.activeElement, this.inputElement);
 
-  this.inputElement.dispatchEvent(new KeyboardEvent('keydown', {
-    key: 'Escape',
+  this.inputElement.dispatchEvent(new KeyboardEvent("keydown", {
+    key: "Escape",
     bubbles: true,
   }));
-  assert.notInclude(classes(this.findBarDiv), 'enabled');
+  assert.notInclude(classes(this.findBarDiv), "enabled");
 });
 
 /**
  * Test find bar close button.
  */
-it('close-findbar-on-close-button-clicked', function() {
+it("close-findbar-on-close-button-clicked", function() {
   this.findBar.display();
-  this.closeButton.dispatchEvent(new Event('click', {
+  this.closeButton.dispatchEvent(new Event("click", {
     bubbles: true,
   }));
-  assert.notInclude(classes(this.findBarDiv), 'enabled');
+  assert.notInclude(classes(this.findBarDiv), "enabled");
 });
 
 /**
  * Test with fake input in find bar.
  */
-it('handles-findbar-input', function() {
+it("handles-findbar-input", function() {
   this.findBar.display();
 
-  setInputElementValue('Hello World', this.inputElement);
+  setInputElementValue("Hello World", this.inputElement);
 
-  assert.equal(this.inputElement.value, 'Hello World');
+  assert.equal(this.inputElement.value, "Hello World");
   assert.equal(this.document.activeElement, this.inputElement);
 });
 
@@ -145,13 +145,13 @@ const extractIndexes = (results) => {
 /**
  * Test findInRow.
  */
-it('finds-matches-in-a-row-and-updates-count', function(done) {
-  this.terminal.io.println('Findbar^Findbar^Findbar');
+it("finds-matches-in-a-row-and-updates-count", function(done) {
+  this.terminal.io.println("Findbar^Findbar^Findbar");
   for (let i = 0; i < 10; i++) {
-    this.terminal.io.println('No matches in this row.');
+    this.terminal.io.println("No matches in this row.");
   }
-  this.terminal.io.println('Findbar_Findbar_Findbar');
-  this.findBar.searchText_ = 'findbar';
+  this.terminal.io.println("Findbar_Findbar_Findbar");
+  this.findBar.searchText_ = "findbar";
 
   // Wait for scrollDown in terminal.js.
   setTimeout(() => {
@@ -188,9 +188,9 @@ it('finds-matches-in-a-row-and-updates-count', function(done) {
 /**
  * Close findbar during search.
  */
-it('stops-search-when-findbar-closes', function(done) {
+it("stops-search-when-findbar-closes", function(done) {
   for (let i = 0; i < 10; i++) {
-    this.terminal.io.println('Findbar Findbar Findbar');
+    this.terminal.io.println("Findbar Findbar Findbar");
   }
 
   // Close after 3rd batch and ensure search stops.
@@ -202,16 +202,16 @@ it('stops-search-when-findbar-closes', function(done) {
 
   this.findBar.display();
   this.findBar.batchSize = 2;
-  setInputElementValue('fInDbAr', this.inputElement);
+  setInputElementValue("fInDbAr", this.inputElement);
 });
 
 /**
  * Change search in the middle of the searching process.
  */
-it('clears-results-and-restarts-when-input-changes', function(done) {
-  this.terminal.io.println('Findbar Findbar Findbar');
+it("clears-results-and-restarts-when-input-changes", function(done) {
+  this.terminal.io.println("Findbar Findbar Findbar");
   for (let i = 0; i < 9; i++) {
-    this.terminal.io.println('No match');
+    this.terminal.io.println("No match");
   }
 
   this.findBar.setBatchCallbackForTest(0, () => {
@@ -221,7 +221,7 @@ it('clears-results-and-restarts-when-input-changes', function(done) {
 
   this.findBar.setBatchCallbackForTest(3, () => {
     assert.deepEqual(extractIndexes(this.findBar.results_), {0: [0, 8, 16]});
-    setInputElementValue('bAr', this.inputElement);
+    setInputElementValue("bAr", this.inputElement);
   });
 
   this.findBar.setBatchCallbackForTest(4, () => {
@@ -230,7 +230,7 @@ it('clears-results-and-restarts-when-input-changes', function(done) {
 
   this.findBar.display();
   this.findBar.batchSize = 2;
-  setInputElementValue('fInDbAr', this.inputElement);
+  setInputElementValue("fInDbAr", this.inputElement);
 });
 
 /**
@@ -252,20 +252,20 @@ const getDiffBoundingClientRect = (element1, element2) => {
 /**
  * Test redraw.
  */
-it('draws-results-on-screen-and-first-result-is-selected', function() {
-  this.terminal.io.println('Findbar is here.');
-  this.terminal.io.println('Here is the findbar.');
+it("draws-results-on-screen-and-first-result-is-selected", function() {
+  this.terminal.io.println("Findbar is here.");
+  this.terminal.io.println("Here is the findbar.");
 
-  this.findBar.searchText_ = 'findbar';
+  this.findBar.searchText_ = "findbar";
   this.findBar.batchRow_ = 0;
   const doc = this.document;
   doc.body.appendChild(this.findBar.resultScreen_);
   this.findBar.redraw_();
-  this.findBar.resultScreen_.style.display = '';
+  this.findBar.resultScreen_.style.display = "";
 
   // First result should be selected.
   const highlighter1 = this.findBar.results_[0].rowResult[0].highlighter;
-  assert.include(classes(highlighter1), 'selected');
+  assert.include(classes(highlighter1), "selected");
 
   // highlighter should be on top of matching text.
   const range = doc.createRange();
@@ -287,26 +287,26 @@ it('draws-results-on-screen-and-first-result-is-selected', function() {
 /**
  * Test findbar counter.
  */
-it('changes-count-of-results', function(done) {
+it("changes-count-of-results", function(done) {
   for (let i = 0; i < 6; i++) {
-    this.terminal.io.println('Findbar Findbar Findbar');
+    this.terminal.io.println("Findbar Findbar Findbar");
   }
 
   this.findBar.setBatchCallbackForTest(0, () => {
     assert.equal(this.findBar.counterLabel_.textContent,
-        hterm.msg('FIND_COUNTER_LABEL', [13, 18]));
+        hterm.msg("FIND_COUNTER_LABEL", [13, 18]));
     done();
   });
 
   this.findBar.display();
   this.findBar.batchSize = 2;
-  setInputElementValue('fInDbAr', this.inputElement);
+  setInputElementValue("fInDbAr", this.inputElement);
 });
 
 /**
  * Test indexOf.
  */
-it('finds-index-of', function() {
+it("finds-index-of", function() {
   const arr = [1, 2, 4, 4, 5];
   [
     [0, -1],
@@ -324,7 +324,7 @@ it('finds-index-of', function() {
 /**
  * Test canUseMatchingRowsIndex_.
  */
-it('uses-index-correctly', function() {
+it("uses-index-correctly", function() {
   const expectCanUseMatchingRowsIndex = (selectedRow, step, expected) => {
     this.findBar.selectedRowNum_ = selectedRow;
     assert.equal(this.findBar.canUseMatchingRowsIndex_(step), expected);
@@ -358,14 +358,14 @@ it('uses-index-correctly', function() {
 /**
  * Test onNext.
  */
-it('finds-next', function() {
-  this.terminal.io.println('Findbar Findbar');
-  this.terminal.io.println('FindBar');
+it("finds-next", function() {
+  this.terminal.io.println("Findbar Findbar");
+  this.terminal.io.println("FindBar");
   for (let i = 0; i < 2; i++) {
-    this.terminal.io.println('No matches in this row.');
+    this.terminal.io.println("No matches in this row.");
   }
-  this.terminal.io.println('Findbar FindBar');
-  this.findBar.searchText_ = 'findbar';
+  this.terminal.io.println("Findbar FindBar");
+  this.findBar.searchText_ = "findbar";
 
   const expectNext = (row, index, ordinal) => {
     this.findBar.onNext_();
@@ -374,7 +374,7 @@ it('finds-next', function() {
     assert.equal(this.findBar.selectedOrdinal_, ordinal);
   };
 
-  this.findBar.downArrowButton_.classList.add('enabled');
+  this.findBar.downArrowButton_.classList.add("enabled");
 
   // Searching process incomplete and canUseMatchingRowsIndex_ returns false.
   this.batchRow_ = 0;
@@ -414,14 +414,14 @@ it('finds-next', function() {
 /**
  * Test onPrevious.
  */
-it('finds-previous', function() {
-  this.terminal.io.println('Findbar Findbar');
-  this.terminal.io.println('FindBar');
+it("finds-previous", function() {
+  this.terminal.io.println("Findbar Findbar");
+  this.terminal.io.println("FindBar");
   for (let i = 0; i < 2; i++) {
-    this.terminal.io.println('No matches in this row.');
+    this.terminal.io.println("No matches in this row.");
   }
-  this.terminal.io.println('Findbar FindBar');
-  this.findBar.searchText_ = 'findbar';
+  this.terminal.io.println("Findbar FindBar");
+  this.findBar.searchText_ = "findbar";
 
   const expectPrevious = (row, index, ordinal) => {
     this.findBar.onPrevious_();
@@ -430,7 +430,7 @@ it('finds-previous', function() {
     assert.equal(this.findBar.selectedOrdinal_, ordinal);
   };
 
-  this.findBar.downArrowButton_.classList.add('enabled');
+  this.findBar.downArrowButton_.classList.add("enabled");
 
   // Searching process incomplete and canUseMatchingRowsIndex_ returns false.
   this.batchRow_ = 0;
@@ -467,7 +467,7 @@ it('finds-previous', function() {
   expectPrevious(1, 0, 2);
 });
 
-it('keeps-focus-after-scroll', async function() {
+it("keeps-focus-after-scroll", async function() {
   // Call setTimeout multiple times to allow multiple async calls.
   const waitForAsync = (n) => {
     return new Promise((resolve) => {
@@ -493,9 +493,9 @@ it('keeps-focus-after-scroll', async function() {
 /**
  * Test notifyChanges.
  */
-it('notifies-findbar-when-row-changes', function(done) {
+it("notifies-findbar-when-row-changes", function(done) {
   this.findBar.isVisible = true;
-  this.findBar.searchText_ = 'find';
+  this.findBar.searchText_ = "find";
   const callbacks = [];
 
   const expectNotifyChanges = (
@@ -515,25 +515,25 @@ it('notifies-findbar-when-row-changes', function(done) {
   };
 
   // Rows are added to terminal.
-  expectNotifyChanges(1, 'Find Find', 1, 0, 0, 2, [1], true);
+  expectNotifyChanges(1, "Find Find", 1, 0, 0, 2, [1], true);
   callbacks.push(
-      () => expectNotifyChanges(0, 'Find Find', 1, 0, 2, 4, [0, 1], true));
+      () => expectNotifyChanges(0, "Find Find", 1, 0, 2, 4, [0, 1], true));
   callbacks.push(
-      () => expectNotifyChanges(2, 'Find Find', 1, 0, 2, 6, [0, 1, 2], true));
+      () => expectNotifyChanges(2, "Find Find", 1, 0, 2, 6, [0, 1, 2], true));
 
   // Row is modified, selected result is present at starting of row.
   callbacks.push(() => {
     this.findBar.selectNext_(1);
-    expectNotifyChanges(1, 'Find     ', 1, 0, 2, 5, [0, 1, 2], true);
+    expectNotifyChanges(1, "Find     ", 1, 0, 2, 5, [0, 1, 2], true);
   });
 
   // Row is deleted, invalidate the selected result.
   callbacks.push(
-      () => expectNotifyChanges(1, '         ', 1, 0, 2, 4, [0, 2], false));
+      () => expectNotifyChanges(1, "         ", 1, 0, 2, 4, [0, 2], false));
 
   // Row is modified, selected result is present at starting of row.
   callbacks.push(
-      () => expectNotifyChanges(1, 'Find     ', 1, 0, 2, 5, [0, 1, 2], true));
+      () => expectNotifyChanges(1, "Find     ", 1, 0, 2, 5, [0, 1, 2], true));
 
   callbacks.push(done);
 });
@@ -542,14 +542,14 @@ it('notifies-findbar-when-row-changes', function(done) {
 /**
  * Test onNext with undecided selected result.
  */
-it('selects-next-to-cursor-if-selected-result-is-unknown', function(done) {
+it("selects-next-to-cursor-if-selected-result-is-unknown", function(done) {
   this.findBar.isVisible = true;
   const callbacks = [];
 
-  this.terminal.io.println('Find Find');
-  this.terminal.io.println('Find Find');
-  this.terminal.io.println('Find Find');
-  this.findBar.searchText_ = 'find';
+  this.terminal.io.println("Find Find");
+  this.terminal.io.println("Find Find");
+  this.terminal.io.println("Find Find");
+  this.findBar.searchText_ = "find";
 
   this.findBar.findInRow_(1);
   this.findBar.findInRow_(0);
@@ -568,36 +568,36 @@ it('selects-next-to-cursor-if-selected-result-is-unknown', function(done) {
   };
 
   // Searching process incomplete and canUseMatchingRowsIndex_ returns false.
-  expectNext(1, '         ', 2, 0, 2);
+  expectNext(1, "         ", 2, 0, 2);
 
   callbacks.push(() => {
     // Restore deleted text.
     this.terminal.setAbsoluteCursorPosition(1, 0);
-    this.terminal.print('Find Find');
+    this.terminal.print("Find Find");
     this.terminal.setAbsoluteCursorPosition(2, 0);
-    this.terminal.print('Find Find');
+    this.terminal.print("Find Find");
     this.findBar.selectedRowNum_ = 2;
 
     // Searching process complete and canUseMatchingRowsIndex_ returns true.
     this.batchRow_ = 4;
     this.findBar.matchingRowsIndex_ = [0, 1, 2];
-    expectNext(2, '         ', 0, 0, 0);
+    expectNext(2, "         ", 0, 0, 0);
   });
-  callbacks.push(() => expectNext(0, '         ', 1, 0, 0));
+  callbacks.push(() => expectNext(0, "         ", 1, 0, 0));
   callbacks.push(() => done());
 });
 
 /**
  * Test onPrevious with undecided selected result.
  */
-it('selects-previous-to-cursor-if-selected-result-is-unknown', function(done) {
+it("selects-previous-to-cursor-if-selected-result-is-unknown", function(done) {
   this.findBar.isVisible = true;
   const callbacks = [];
 
-  this.terminal.io.println('Find Find');
-  this.terminal.io.println('Find Find');
-  this.terminal.io.println('Find Find');
-  this.findBar.searchText_ = 'find';
+  this.terminal.io.println("Find Find");
+  this.terminal.io.println("Find Find");
+  this.terminal.io.println("Find Find");
+  this.findBar.searchText_ = "find";
 
   this.findBar.findInRow_(1);
   this.findBar.findInRow_(0);
@@ -616,21 +616,21 @@ it('selects-previous-to-cursor-if-selected-result-is-unknown', function(done) {
   };
 
   // Searching process incomplete and canUseMatchingRowsIndex_ returns false.
-  expectPrevious(1, '         ', 0, 1, 1);
+  expectPrevious(1, "         ", 0, 1, 1);
 
   callbacks.push(() => {
     // Restore deleted text.
     this.terminal.setAbsoluteCursorPosition(1, 0);
-    this.terminal.print('Find Find');
+    this.terminal.print("Find Find");
     this.terminal.setAbsoluteCursorPosition(0, 0);
-    this.terminal.print('Find Find');
+    this.terminal.print("Find Find");
     this.findBar.selectedRowNum_ = 0;
 
     // Searching process complete and canUseMatchingRowsIndex_ returns true.
     this.batchRow_ = 4;
     this.findBar.matchingRowsIndex_ = [0, 1, 2];
-    expectPrevious(0, '         ', 2, 1, 3);
+    expectPrevious(0, "         ", 2, 1, 3);
   });
-  callbacks.push(() => expectPrevious(2, '         ', 1, 1, 1));
+  callbacks.push(() => expectPrevious(2, "         ", 1, 1, 1));
   callbacks.push(done);
 });

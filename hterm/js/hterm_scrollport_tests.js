@@ -6,10 +6,10 @@
  * @fileoverview Scrollport test suite.
  */
 
-import {hterm} from '../index.js';
-import {MockRowProvider} from './hterm_mock_row_provider.js';
+import {hterm} from "../index.js";
+import {MockRowProvider} from "./hterm_mock_row_provider.js";
 
-describe('scrollport', () => {
+describe("scrollport", () => {
 
 /**
  * A mock accessibility reader which will simply record the last string passed
@@ -19,7 +19,7 @@ describe('scrollport', () => {
  */
 const MockAccessibilityReader = function() {
   this.accessibilityEnabled = false;
-  this.lastStringAnnounced = '';
+  this.lastStringAnnounced = "";
 };
 
 /**
@@ -45,11 +45,11 @@ before(function() {
   this.rowProvider = new MockRowProvider(document, this.totalRowCount);
 
   // The scrollport will attach to this.
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   this.div = div;
-  div.style.position = 'relative';
-  div.style.height = '100%';
-  div.style.width = '100%';
+  div.style.position = "relative";
+  div.style.height = "100%";
+  div.style.width = "100%";
   document.body.appendChild(div);
 });
 
@@ -75,7 +75,7 @@ beforeEach(function(done) {
   this.scrollPort = new hterm.ScrollPort(this.rowProvider);
   this.scrollPort.decorate(this.div, () => {
     this.div.style.height = (this.scrollPort.characterSize.height *
-                             this.visibleRowCount + 1 + 'px');
+                             this.visibleRowCount + 1 + "px");
     this.scrollPort.resize();
     done();
   });
@@ -94,7 +94,7 @@ afterEach(function() {
  * Basic test to make sure that the viewport contains the right number of
  * rows at the right places after some scrolling.
  */
-it('basic-scroll', function() {
+it("basic-scroll", function() {
     let topRow = this.scrollPort.getTopRowIndex();
     assert.equal(topRow, 0);
     assert.equal(this.scrollPort.getBottomRowIndex(topRow),
@@ -110,18 +110,18 @@ it('basic-scroll', function() {
 /**
  * Make sure the hterm.ScrollPort is reusing the same row nodes when it can.
  */
-it('node-recycler', function() {
+it("node-recycler", function() {
     // Force a sync redraw before we get started so we know we're done
     // calling getRowNode.
     this.scrollPort.redraw_();
 
-    this.rowProvider.resetCallCount('getRowNode');
+    this.rowProvider.resetCallCount("getRowNode");
     this.scrollPort.scrollRowToTop(1);
 
     // Sync redraw so we know getRowNode was called again.
     this.scrollPort.redraw_();
 
-    const count = this.rowProvider.getCallCount('getRowNode');
+    const count = this.rowProvider.getCallCount("getRowNode");
 
     // Scrolling from 0 to 1 should result in only one call to getRowNode.
     assert.equal(count, 1);
@@ -130,7 +130,7 @@ it('node-recycler', function() {
 /**
  * Make sure the selection is maintained even after scrolling off screen.
  */
-it('scroll-selection', function() {
+it("scroll-selection", function() {
     const doc = this.scrollPort.getDocument();
 
     const s = doc.getSelection();
@@ -183,7 +183,7 @@ it('scroll-selection', function() {
 /**
  * Make sure the selection is maintained for a collapsed selection.
  */
-it('scroll-selection-collapsed', function() {
+it("scroll-selection-collapsed", function() {
   const doc = this.scrollPort.getDocument();
 
   const s = doc.getSelection();
@@ -228,7 +228,7 @@ it('scroll-selection-collapsed', function() {
 /**
  * Set focus to top or bottom row when focus moves off rows.
  */
-it('scroll-selection-moves-off-rows', function() {
+it("scroll-selection-moves-off-rows", function() {
   const doc = this.scrollPort.getDocument();
 
   const s = doc.getSelection();
@@ -253,14 +253,14 @@ it('scroll-selection-moves-off-rows', function() {
   assert.equal(7, this.scrollPort.selection.endRow.rowIndex);
 
   // Extend focus off rows to top fold, startRow should be 3.
-  const topFold = doc.getElementById('hterm:top-fold-for-row-selection');
+  const topFold = doc.getElementById("hterm:top-fold-for-row-selection");
   s.extend(topFold, 0);
   this.scrollPort.selection.sync();
   assert.equal(3, this.scrollPort.selection.startRow.rowIndex);
   assert.equal(7, this.scrollPort.selection.endRow.rowIndex);
 
   // Extend focus off rows to bottom fold, startRow should be 3.
-  const bottomFold = doc.getElementById('hterm:bottom-fold-for-row-selection');
+  const bottomFold = doc.getElementById("hterm:bottom-fold-for-row-selection");
   s.extend(bottomFold, 0);
   this.scrollPort.selection.sync();
   assert.equal(7, this.scrollPort.selection.startRow.rowIndex);
@@ -272,7 +272,7 @@ it('scroll-selection-moves-off-rows', function() {
  * Keep focus row in fold if this is not auto scroll, else change focus to
  * adjacent row.
  */
-it('scroll-selection-focus-row-in-fold', function() {
+it("scroll-selection-focus-row-in-fold", function() {
   const doc = this.scrollPort.getDocument();
 
   const s = doc.getSelection();
@@ -305,7 +305,7 @@ it('scroll-selection-focus-row-in-fold', function() {
 /**
  * Test redraw_() handles selection rows and folds.
  */
-it('redraw-with-selection', function() {
+it("redraw-with-selection", function() {
   const doc = this.scrollPort.getDocument();
   const s = doc.getSelection();
 
@@ -375,7 +375,7 @@ it('redraw-with-selection', function() {
 /**
  * Test auto scroll starts and stops correctly with correct direction.
  */
-it('auto-scroll-start-stop', function() {
+it("auto-scroll-start-stop", function() {
   const padding = this.scrollPort.screenPaddingSize;
   const rowsHeight = this.scrollPort.visibleRowsHeight;
   const mouseAboveRows = {pageY: -1};
@@ -408,7 +408,7 @@ it('auto-scroll-start-stop', function() {
 /**
  * Test the auto scroll delta acceleration.
  */
-it('auto-scroll-delta', function() {
+it("auto-scroll-delta", function() {
   const doc = this.scrollPort.getDocument();
   const s = doc.getSelection();
   this.scrollPort.redraw_();
@@ -445,7 +445,7 @@ it('auto-scroll-delta', function() {
 /**
  * Test the select-all function.
  */
-it('select-all', function() {
+it("select-all", function() {
   // Scroll at top.
   this.scrollPort.scrollRowToTop(0);
   this.scrollPort.redraw_();
@@ -475,7 +475,7 @@ it('select-all', function() {
  * Test that the page up/down buttons are onscreen when selected but offscreen
  * otherwise.
  */
-it('page-up-down-options-visible', function() {
+it("page-up-down-options-visible", function() {
   const doc = this.scrollPort.getDocument();
 
   this.scrollPort.allowA11yButtonsToDisplay_ = true;
@@ -485,18 +485,18 @@ it('page-up-down-options-visible', function() {
 
   const selection = doc.getSelection();
 
-  const pageUp = doc.getElementById('hterm:a11y:page-up');
+  const pageUp = doc.getElementById("hterm:a11y:page-up");
   assert.isAtMost(pageUp.getBoundingClientRect().bottom, 0);
 
   selection.removeAllRanges();
   let range = document.createRange();
   range.selectNodeContents(pageUp.firstChild);
   selection.addRange(range);
-  doc.dispatchEvent(new Event('selectionchange'));
+  doc.dispatchEvent(new Event("selectionchange"));
 
   assert.isAtLeast(pageUp.getBoundingClientRect().top, 0);
 
-  const pageDown = doc.getElementById('hterm:a11y:page-down');
+  const pageDown = doc.getElementById("hterm:a11y:page-down");
   assert.isAtLeast(pageDown.getBoundingClientRect().top,
                    this.scrollPort.getScreenHeight());
 
@@ -504,12 +504,12 @@ it('page-up-down-options-visible', function() {
   range = document.createRange();
   range.selectNodeContents(pageDown.firstChild);
   selection.addRange(range);
-  doc.dispatchEvent(new Event('selectionchange'));
+  doc.dispatchEvent(new Event("selectionchange"));
 
   assert.isAtMost(pageDown.getBoundingClientRect().bottom,
                   this.scrollPort.getScreenHeight());
 
-  const options = doc.getElementById('hterm:a11y:options');
+  const options = doc.getElementById("hterm:a11y:options");
   assert.isAtLeast(options.getBoundingClientRect().top,
                    this.scrollPort.getScreenHeight());
 
@@ -517,7 +517,7 @@ it('page-up-down-options-visible', function() {
   range = document.createRange();
   range.selectNodeContents(options.firstChild);
   selection.addRange(range);
-  doc.dispatchEvent(new Event('selectionchange'));
+  doc.dispatchEvent(new Event("selectionchange"));
 
   assert.isAtMost(options.getBoundingClientRect().bottom,
                   this.scrollPort.getScreenHeight());
@@ -528,7 +528,7 @@ it('page-up-down-options-visible', function() {
  * isn't enabled.
  *
  */
-it('page-up-down-options-hidden', function() {
+it("page-up-down-options-hidden", function() {
   const doc = this.scrollPort.getDocument();
 
   this.scrollPort.allowA11yButtonsToDisplay_ = true;
@@ -538,18 +538,18 @@ it('page-up-down-options-hidden', function() {
 
   const selection = doc.getSelection();
 
-  const pageUp = doc.getElementById('hterm:a11y:page-up');
+  const pageUp = doc.getElementById("hterm:a11y:page-up");
   assert.isAtMost(pageUp.getBoundingClientRect().bottom, 0);
 
   selection.removeAllRanges();
   let range = document.createRange();
   range.selectNodeContents(pageUp.firstChild);
   selection.addRange(range);
-  doc.dispatchEvent(new Event('selectionchange'));
+  doc.dispatchEvent(new Event("selectionchange"));
 
   assert.isAtMost(pageUp.getBoundingClientRect().bottom, 0);
 
-  const pageDown = doc.getElementById('hterm:a11y:page-down');
+  const pageDown = doc.getElementById("hterm:a11y:page-down");
   assert.isAtLeast(pageDown.getBoundingClientRect().top,
                    this.scrollPort.getScreenHeight());
 
@@ -557,12 +557,12 @@ it('page-up-down-options-hidden', function() {
   range = document.createRange();
   range.selectNodeContents(pageDown.firstChild);
   selection.addRange(range);
-  doc.dispatchEvent(new Event('selectionchange'));
+  doc.dispatchEvent(new Event("selectionchange"));
 
   assert.isAtLeast(pageDown.getBoundingClientRect().top,
                    this.scrollPort.getScreenHeight());
 
-  const options = doc.getElementById('hterm:a11y:options');
+  const options = doc.getElementById("hterm:a11y:options");
   assert.isAtLeast(options.getBoundingClientRect().top,
                    this.scrollPort.getScreenHeight());
 
@@ -570,7 +570,7 @@ it('page-up-down-options-hidden', function() {
   range = document.createRange();
   range.selectNodeContents(options.firstChild);
   selection.addRange(range);
-  doc.dispatchEvent(new Event('selectionchange'));
+  doc.dispatchEvent(new Event("selectionchange"));
 
   assert.isAtLeast(options.getBoundingClientRect().top,
                    this.scrollPort.getScreenHeight());
@@ -579,19 +579,19 @@ it('page-up-down-options-hidden', function() {
 /**
  * Test that clicking page up/down causes the viewport to scroll up/down.
  */
-it('page-up-down-scroll', function() {
+it("page-up-down-scroll", function() {
   const doc = this.scrollPort.getDocument();
 
   const topRow = 50;
   this.scrollPort.scrollRowToTop(topRow);
   assert.equal(this.scrollPort.getTopRowIndex(), topRow);
 
-  const pageDown = doc.getElementById('hterm:a11y:page-down');
-  pageDown.dispatchEvent(new Event('click'));
+  const pageDown = doc.getElementById("hterm:a11y:page-down");
+  pageDown.dispatchEvent(new Event("click"));
   assert.equal(this.scrollPort.getTopRowIndex(), topRow + 24);
 
-  const pageUp = doc.getElementById('hterm:a11y:page-up');
-  pageUp.dispatchEvent(new Event('click'));
+  const pageUp = doc.getElementById("hterm:a11y:page-up");
+  pageUp.dispatchEvent(new Event("click"));
   assert.equal(this.scrollPort.getTopRowIndex(), topRow);
 });
 
@@ -599,97 +599,97 @@ it('page-up-down-scroll', function() {
  * Test that the page up/down buttons are enabled/disabled correctly at the top
  * and bottom of the scrollport.
  */
-it('page-up-down-state', function() {
+it("page-up-down-state", function() {
   const doc = this.scrollPort.getDocument();
-  const pageUp = doc.getElementById('hterm:a11y:page-up');
-  const pageDown = doc.getElementById('hterm:a11y:page-down');
+  const pageUp = doc.getElementById("hterm:a11y:page-up");
+  const pageDown = doc.getElementById("hterm:a11y:page-down");
 
   this.scrollPort.scrollRowToTop(0);
   this.scrollPort.redraw_();
-  assert.equal(pageUp.getAttribute('aria-disabled'), 'true');
-  assert.equal(pageDown.getAttribute('aria-disabled'), 'false');
+  assert.equal(pageUp.getAttribute("aria-disabled"), "true");
+  assert.equal(pageDown.getAttribute("aria-disabled"), "false");
 
   this.scrollPort.scrollRowToTop(50);
   this.scrollPort.redraw_();
-  assert.equal(pageUp.getAttribute('aria-disabled'), 'false');
-  assert.equal(pageDown.getAttribute('aria-disabled'), 'false');
+  assert.equal(pageUp.getAttribute("aria-disabled"), "false");
+  assert.equal(pageDown.getAttribute("aria-disabled"), "false");
 
   this.scrollPort.scrollRowToTop(10000);
   this.scrollPort.redraw_();
-  assert.equal(pageUp.getAttribute('aria-disabled'), 'false');
-  assert.equal(pageDown.getAttribute('aria-disabled'), 'true');
+  assert.equal(pageUp.getAttribute("aria-disabled"), "false");
+  assert.equal(pageDown.getAttribute("aria-disabled"), "true");
 });
 
 /**
  * Test that paging up/down causes the screen contents to be announced
  * correctly.
  */
-it('page-up-down-announce', function() {
+it("page-up-down-announce", function() {
   const doc = this.scrollPort.getDocument();
 
   this.scrollPort.scrollRowToTop(0);
   const mockAccessibilityReader = new MockAccessibilityReader();
   this.scrollPort.setAccessibilityReader(mockAccessibilityReader);
 
-  const pageDown = doc.getElementById('hterm:a11y:page-down');
-  pageDown.dispatchEvent(new Event('click'));
+  const pageDown = doc.getElementById("hterm:a11y:page-down");
+  pageDown.dispatchEvent(new Event("click"));
   assert.equal(
       mockAccessibilityReader.lastStringAnnounced,
-      '0% scrolled,\n' +
-      'This is line 24 red green yellow blue magenta cyan\n' +
-      'This is line 25 red green yellow blue magenta cyan\n' +
-      'This is line 26 red green yellow blue magenta cyan\n' +
-      'This is line 27 red green yellow blue magenta cyan\n' +
-      'This is line 28 red green yellow blue magenta cyan\n' +
-      'This is line 29 red green yellow blue magenta cyan\n' +
-      'This is line 30 red green yellow blue magenta cyan\n' +
-      'This is line 31 red green yellow blue magenta cyan\n' +
-      'This is line 32 red green yellow blue magenta cyan\n' +
-      'This is line 33 red green yellow blue magenta cyan\n' +
-      'This is line 34 red green yellow blue magenta cyan\n' +
-      'This is line 35 red green yellow blue magenta cyan\n' +
-      'This is line 36 red green yellow blue magenta cyan\n' +
-      'This is line 37 red green yellow blue magenta cyan\n' +
-      'This is line 38 red green yellow blue magenta cyan\n' +
-      'This is line 39 red green yellow blue magenta cyan\n' +
-      'This is line 40 red green yellow blue magenta cyan\n' +
-      'This is line 41 red green yellow blue magenta cyan\n' +
-      'This is line 42 red green yellow blue magenta cyan\n' +
-      'This is line 43 red green yellow blue magenta cyan\n' +
-      'This is line 44 red green yellow blue magenta cyan\n' +
-      'This is line 45 red green yellow blue magenta cyan\n' +
-      'This is line 46 red green yellow blue magenta cyan\n' +
-      'This is line 47 red green yellow blue magenta cyan\n' +
-      'This is line 48 red green yellow blue magenta cyan\n');
+      "0% scrolled,\n" +
+      "This is line 24 red green yellow blue magenta cyan\n" +
+      "This is line 25 red green yellow blue magenta cyan\n" +
+      "This is line 26 red green yellow blue magenta cyan\n" +
+      "This is line 27 red green yellow blue magenta cyan\n" +
+      "This is line 28 red green yellow blue magenta cyan\n" +
+      "This is line 29 red green yellow blue magenta cyan\n" +
+      "This is line 30 red green yellow blue magenta cyan\n" +
+      "This is line 31 red green yellow blue magenta cyan\n" +
+      "This is line 32 red green yellow blue magenta cyan\n" +
+      "This is line 33 red green yellow blue magenta cyan\n" +
+      "This is line 34 red green yellow blue magenta cyan\n" +
+      "This is line 35 red green yellow blue magenta cyan\n" +
+      "This is line 36 red green yellow blue magenta cyan\n" +
+      "This is line 37 red green yellow blue magenta cyan\n" +
+      "This is line 38 red green yellow blue magenta cyan\n" +
+      "This is line 39 red green yellow blue magenta cyan\n" +
+      "This is line 40 red green yellow blue magenta cyan\n" +
+      "This is line 41 red green yellow blue magenta cyan\n" +
+      "This is line 42 red green yellow blue magenta cyan\n" +
+      "This is line 43 red green yellow blue magenta cyan\n" +
+      "This is line 44 red green yellow blue magenta cyan\n" +
+      "This is line 45 red green yellow blue magenta cyan\n" +
+      "This is line 46 red green yellow blue magenta cyan\n" +
+      "This is line 47 red green yellow blue magenta cyan\n" +
+      "This is line 48 red green yellow blue magenta cyan\n");
 
-  const pageUp = doc.getElementById('hterm:a11y:page-up');
-  pageUp.dispatchEvent(new Event('click'));
-  const linesOneToTwentyFive = '0% scrolled,\n' +
-      'This is line 0 red green yellow blue magenta cyan\n' +
-      'This is line 1 red green yellow blue magenta cyan\n' +
-      'This is line 2 red green yellow blue magenta cyan\n' +
-      'This is line 3 red green yellow blue magenta cyan\n' +
-      'This is line 4 red green yellow blue magenta cyan\n' +
-      'This is line 5 red green yellow blue magenta cyan\n' +
-      'This is line 6 red green yellow blue magenta cyan\n' +
-      'This is line 7 red green yellow blue magenta cyan\n' +
-      'This is line 8 red green yellow blue magenta cyan\n' +
-      'This is line 9 red green yellow blue magenta cyan\n' +
-      'This is line 10 red green yellow blue magenta cyan\n' +
-      'This is line 11 red green yellow blue magenta cyan\n' +
-      'This is line 12 red green yellow blue magenta cyan\n' +
-      'This is line 13 red green yellow blue magenta cyan\n' +
-      'This is line 14 red green yellow blue magenta cyan\n' +
-      'This is line 15 red green yellow blue magenta cyan\n' +
-      'This is line 16 red green yellow blue magenta cyan\n' +
-      'This is line 17 red green yellow blue magenta cyan\n' +
-      'This is line 18 red green yellow blue magenta cyan\n' +
-      'This is line 19 red green yellow blue magenta cyan\n' +
-      'This is line 20 red green yellow blue magenta cyan\n' +
-      'This is line 21 red green yellow blue magenta cyan\n' +
-      'This is line 22 red green yellow blue magenta cyan\n' +
-      'This is line 23 red green yellow blue magenta cyan\n' +
-      'This is line 24 red green yellow blue magenta cyan\n';
+  const pageUp = doc.getElementById("hterm:a11y:page-up");
+  pageUp.dispatchEvent(new Event("click"));
+  const linesOneToTwentyFive = "0% scrolled,\n" +
+      "This is line 0 red green yellow blue magenta cyan\n" +
+      "This is line 1 red green yellow blue magenta cyan\n" +
+      "This is line 2 red green yellow blue magenta cyan\n" +
+      "This is line 3 red green yellow blue magenta cyan\n" +
+      "This is line 4 red green yellow blue magenta cyan\n" +
+      "This is line 5 red green yellow blue magenta cyan\n" +
+      "This is line 6 red green yellow blue magenta cyan\n" +
+      "This is line 7 red green yellow blue magenta cyan\n" +
+      "This is line 8 red green yellow blue magenta cyan\n" +
+      "This is line 9 red green yellow blue magenta cyan\n" +
+      "This is line 10 red green yellow blue magenta cyan\n" +
+      "This is line 11 red green yellow blue magenta cyan\n" +
+      "This is line 12 red green yellow blue magenta cyan\n" +
+      "This is line 13 red green yellow blue magenta cyan\n" +
+      "This is line 14 red green yellow blue magenta cyan\n" +
+      "This is line 15 red green yellow blue magenta cyan\n" +
+      "This is line 16 red green yellow blue magenta cyan\n" +
+      "This is line 17 red green yellow blue magenta cyan\n" +
+      "This is line 18 red green yellow blue magenta cyan\n" +
+      "This is line 19 red green yellow blue magenta cyan\n" +
+      "This is line 20 red green yellow blue magenta cyan\n" +
+      "This is line 21 red green yellow blue magenta cyan\n" +
+      "This is line 22 red green yellow blue magenta cyan\n" +
+      "This is line 23 red green yellow blue magenta cyan\n" +
+      "This is line 24 red green yellow blue magenta cyan\n";
   assert.equal(mockAccessibilityReader.lastStringAnnounced,
                linesOneToTwentyFive);
 
@@ -699,62 +699,62 @@ it('page-up-down-announce', function() {
                linesOneToTwentyFive);
 
   // Ensure the percentage is computed correctly.
-  pageDown.dispatchEvent(new Event('click'));
+  pageDown.dispatchEvent(new Event("click"));
   assert.equal(
       mockAccessibilityReader.lastStringAnnounced,
-      '20% scrolled,\n' +
-      'This is line 2024 red green yellow blue magenta cyan\n' +
-      'This is line 2025 red green yellow blue magenta cyan\n' +
-      'This is line 2026 red green yellow blue magenta cyan\n' +
-      'This is line 2027 red green yellow blue magenta cyan\n' +
-      'This is line 2028 red green yellow blue magenta cyan\n' +
-      'This is line 2029 red green yellow blue magenta cyan\n' +
-      'This is line 2030 red green yellow blue magenta cyan\n' +
-      'This is line 2031 red green yellow blue magenta cyan\n' +
-      'This is line 2032 red green yellow blue magenta cyan\n' +
-      'This is line 2033 red green yellow blue magenta cyan\n' +
-      'This is line 2034 red green yellow blue magenta cyan\n' +
-      'This is line 2035 red green yellow blue magenta cyan\n' +
-      'This is line 2036 red green yellow blue magenta cyan\n' +
-      'This is line 2037 red green yellow blue magenta cyan\n' +
-      'This is line 2038 red green yellow blue magenta cyan\n' +
-      'This is line 2039 red green yellow blue magenta cyan\n' +
-      'This is line 2040 red green yellow blue magenta cyan\n' +
-      'This is line 2041 red green yellow blue magenta cyan\n' +
-      'This is line 2042 red green yellow blue magenta cyan\n' +
-      'This is line 2043 red green yellow blue magenta cyan\n' +
-      'This is line 2044 red green yellow blue magenta cyan\n' +
-      'This is line 2045 red green yellow blue magenta cyan\n' +
-      'This is line 2046 red green yellow blue magenta cyan\n' +
-      'This is line 2047 red green yellow blue magenta cyan\n' +
-      'This is line 2048 red green yellow blue magenta cyan\n');
+      "20% scrolled,\n" +
+      "This is line 2024 red green yellow blue magenta cyan\n" +
+      "This is line 2025 red green yellow blue magenta cyan\n" +
+      "This is line 2026 red green yellow blue magenta cyan\n" +
+      "This is line 2027 red green yellow blue magenta cyan\n" +
+      "This is line 2028 red green yellow blue magenta cyan\n" +
+      "This is line 2029 red green yellow blue magenta cyan\n" +
+      "This is line 2030 red green yellow blue magenta cyan\n" +
+      "This is line 2031 red green yellow blue magenta cyan\n" +
+      "This is line 2032 red green yellow blue magenta cyan\n" +
+      "This is line 2033 red green yellow blue magenta cyan\n" +
+      "This is line 2034 red green yellow blue magenta cyan\n" +
+      "This is line 2035 red green yellow blue magenta cyan\n" +
+      "This is line 2036 red green yellow blue magenta cyan\n" +
+      "This is line 2037 red green yellow blue magenta cyan\n" +
+      "This is line 2038 red green yellow blue magenta cyan\n" +
+      "This is line 2039 red green yellow blue magenta cyan\n" +
+      "This is line 2040 red green yellow blue magenta cyan\n" +
+      "This is line 2041 red green yellow blue magenta cyan\n" +
+      "This is line 2042 red green yellow blue magenta cyan\n" +
+      "This is line 2043 red green yellow blue magenta cyan\n" +
+      "This is line 2044 red green yellow blue magenta cyan\n" +
+      "This is line 2045 red green yellow blue magenta cyan\n" +
+      "This is line 2046 red green yellow blue magenta cyan\n" +
+      "This is line 2047 red green yellow blue magenta cyan\n" +
+      "This is line 2048 red green yellow blue magenta cyan\n");
 });
 
 /**
  * Test that paging up/down when at the top/bottom of the screen doesn't trigger
  * any announcement.
  */
-it('page-up-down-dont-announce', function() {
+it("page-up-down-dont-announce", function() {
   const doc = this.scrollPort.getDocument();
 
   this.scrollPort.scrollRowToTop(0);
   const mockAccessibilityReader = new MockAccessibilityReader();
   this.scrollPort.setAccessibilityReader(mockAccessibilityReader);
 
-  const pageUp = doc.getElementById('hterm:a11y:page-up');
-  pageUp.dispatchEvent(new Event('click'));
-  assert.equal(mockAccessibilityReader.lastStringAnnounced, '');
+  const pageUp = doc.getElementById("hterm:a11y:page-up");
+  pageUp.dispatchEvent(new Event("click"));
+  assert.equal(mockAccessibilityReader.lastStringAnnounced, "");
 
   this.scrollPort.scrollRowToTop(10000);
-  const pageDown = doc.getElementById('hterm:a11y:page-down');
-  pageDown.dispatchEvent(new Event('click'));
-  assert.equal(mockAccessibilityReader.lastStringAnnounced, '');
+  const pageDown = doc.getElementById("hterm:a11y:page-down");
+  pageDown.dispatchEvent(new Event("click"));
+  assert.equal(mockAccessibilityReader.lastStringAnnounced, "");
 });
 
 /**
  * Make sure that offscreen elements are marked aria-hidden.
  */
-it('scroll-selection-hidden', function() {
+it("scroll-selection-hidden", function() {
   const doc = this.scrollPort.getDocument();
 
   const s = doc.getSelection();
@@ -788,26 +788,26 @@ it('scroll-selection-hidden', function() {
   }
   s.extend(focusNode, focusNode.length || 0);
 
-  assert.isNull(anchorRow.getAttribute('aria-hidden'));
-  assert.isNull(focusRow.getAttribute('aria-hidden'));
+  assert.isNull(anchorRow.getAttribute("aria-hidden"));
+  assert.isNull(focusRow.getAttribute("aria-hidden"));
 
   this.scrollPort.scrollRowToTop(0);
   this.scrollPort.redraw_();
 
-  assert.equal(anchorRow.getAttribute('aria-hidden'), 'true');
-  assert.equal(focusRow.getAttribute('aria-hidden'), 'true');
+  assert.equal(anchorRow.getAttribute("aria-hidden"), "true");
+  assert.equal(focusRow.getAttribute("aria-hidden"), "true");
 
   this.scrollPort.scrollRowToTop(1000);
   this.scrollPort.redraw_();
 
-  assert.isNull(anchorRow.getAttribute('aria-hidden'));
-  assert.isNull(focusRow.getAttribute('aria-hidden'));
+  assert.isNull(anchorRow.getAttribute("aria-hidden"));
+  assert.isNull(focusRow.getAttribute("aria-hidden"));
 
   this.scrollPort.scrollRowToTop(2000);
   this.scrollPort.redraw_();
 
-  assert.equal(anchorRow.getAttribute('aria-hidden'), 'true');
-  assert.equal(focusRow.getAttribute('aria-hidden'), 'true');
+  assert.equal(anchorRow.getAttribute("aria-hidden"), "true");
+  assert.equal(focusRow.getAttribute("aria-hidden"), "true");
 });
 
 /**
@@ -817,15 +817,15 @@ it('scroll-selection-hidden', function() {
  * This should always be the last test of the suite, since it leaves the user
  * with a full page scrollPort to poke at.
  */
-it('fullscreen', function() {
+it("fullscreen", function() {
     const document = globalThis.document;
 
     const rowProvider = new MockRowProvider(document, this.totalRowCount);
 
-    const div = document.createElement('div');
-    div.style.position = 'absolute';
-    div.style.height = '100%';
-    div.style.width = '100%';
+    const div = document.createElement("div");
+    div.style.position = "absolute";
+    div.style.height = "100%";
+    div.style.width = "100%";
     document.body.appendChild(div);
 
     const scrollPort = new hterm.ScrollPort(rowProvider);
@@ -843,7 +843,7 @@ it('fullscreen', function() {
 
 });
 
-describe('DragAndDrop', () => {
+describe("DragAndDrop", () => {
 
 /**
  * We can't generate useful DragEvents as the dataTransfer member is forced
@@ -869,12 +869,12 @@ beforeEach(function() {
 /**
  * A single text/plain element.
  */
-it('drag-drop-text', function(done) {
+it("drag-drop-text", function(done) {
   const e = new MockDragEvent();
-  e.dataTransfer.setData('text/plain', 'plain');
+  e.dataTransfer.setData("text/plain", "plain");
 
-  this.scrollPort.subscribe('paste', (e) => {
-    assert.equal('plain', e.text);
+  this.scrollPort.subscribe("paste", (e) => {
+    assert.equal("plain", e.text);
     done();
   });
   this.scrollPort.onDragAndDrop_(e);
@@ -883,13 +883,13 @@ it('drag-drop-text', function(done) {
 /**
  * Pick between text & html based on shift key not pressed.
  */
-it('drag-drop-text-no-shift', function(done) {
+it("drag-drop-text-no-shift", function(done) {
   const e = new MockDragEvent();
-  e.dataTransfer.setData('text/html', 'html');
-  e.dataTransfer.setData('text/plain', 'plain');
+  e.dataTransfer.setData("text/html", "html");
+  e.dataTransfer.setData("text/plain", "plain");
 
-  this.scrollPort.subscribe('paste', (e) => {
-    assert.equal('plain', e.text);
+  this.scrollPort.subscribe("paste", (e) => {
+    assert.equal("plain", e.text);
     done();
   });
   this.scrollPort.onDragAndDrop_(e);
@@ -898,13 +898,13 @@ it('drag-drop-text-no-shift', function(done) {
 /**
  * Pick between text & html based on shift key pressed.
  */
-it('drag-drop-text-shift', function(done) {
+it("drag-drop-text-shift", function(done) {
   const e = new MockDragEvent(true /* shift */);
-  e.dataTransfer.setData('text/html', 'html');
-  e.dataTransfer.setData('text/plain', 'plain');
+  e.dataTransfer.setData("text/html", "html");
+  e.dataTransfer.setData("text/plain", "plain");
 
-  this.scrollPort.subscribe('paste', (e) => {
-    assert.equal('html', e.text);
+  this.scrollPort.subscribe("paste", (e) => {
+    assert.equal("html", e.text);
     done();
   });
   this.scrollPort.onDragAndDrop_(e);
@@ -913,13 +913,13 @@ it('drag-drop-text-shift', function(done) {
 /**
  * Verify fallback when first source is empty & shift key is not pressed.
  */
-it('drag-drop-text-fallback-no-shift', function(done) {
+it("drag-drop-text-fallback-no-shift", function(done) {
   const e = new MockDragEvent();
-  e.dataTransfer.setData('text/html', '');
-  e.dataTransfer.setData('text/plain', 'plain');
+  e.dataTransfer.setData("text/html", "");
+  e.dataTransfer.setData("text/plain", "plain");
 
-  this.scrollPort.subscribe('paste', (e) => {
-    assert.equal('plain', e.text);
+  this.scrollPort.subscribe("paste", (e) => {
+    assert.equal("plain", e.text);
     done();
   });
   this.scrollPort.onDragAndDrop_(e);
@@ -928,13 +928,13 @@ it('drag-drop-text-fallback-no-shift', function(done) {
 /**
  * Verify fallback when first source is empty & shift key is pressed.
  */
-it('drag-drop-text-fallback-shift', function(done) {
+it("drag-drop-text-fallback-shift", function(done) {
   const e = new MockDragEvent(true /* shift */);
-  e.dataTransfer.setData('text/html', '');
-  e.dataTransfer.setData('text/plain', 'plain');
+  e.dataTransfer.setData("text/html", "");
+  e.dataTransfer.setData("text/plain", "plain");
 
-  this.scrollPort.subscribe('paste', (e) => {
-    assert.equal('plain', e.text);
+  this.scrollPort.subscribe("paste", (e) => {
+    assert.equal("plain", e.text);
     done();
   });
   this.scrollPort.onDragAndDrop_(e);
@@ -943,29 +943,29 @@ it('drag-drop-text-fallback-shift', function(done) {
 /**
  * Verify paste doesn't happen if it's disabled.
  */
-it('drag-drop-disabled', function() {
+it("drag-drop-disabled", function() {
   const e = new MockDragEvent();
-  this.scrollPort.subscribe('paste', assert.fail);
+  this.scrollPort.subscribe("paste", assert.fail);
 
   this.scrollPort.setPasteOnDrop(false);
 
-  e.dataTransfer.setData('text/plain', 'plain');
+  e.dataTransfer.setData("text/plain", "plain");
   this.scrollPort.onDragAndDrop_(e);
 });
 
 /**
  * Verify bad sources don't trigger paste events.
  */
-it('drag-drop-unusable', function() {
+it("drag-drop-unusable", function() {
   const e = new MockDragEvent();
-  this.scrollPort.subscribe('paste', assert.fail);
+  this.scrollPort.subscribe("paste", assert.fail);
 
   // Binary only data shouldn't trigger an event.
-  e.dataTransfer.setData('application/x-executable', 'plain');
+  e.dataTransfer.setData("application/x-executable", "plain");
   this.scrollPort.onDragAndDrop_(e);
 
   // Neither should empty text.
-  e.dataTransfer.setData('text/plain', '');
+  e.dataTransfer.setData("text/plain", "");
   this.scrollPort.onDragAndDrop_(e);
 });
 

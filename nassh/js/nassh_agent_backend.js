@@ -7,8 +7,8 @@
  * derive.
  */
 
-import {UserIO} from './nassh_agent.js';
-import {Identity} from './nassh_agent_message_types.js';
+import {UserIO} from "./nassh_agent.js";
+import {Identity} from "./nassh_agent_message_types.js";
 
 /**
  * Base class for SSH agent backends compatible with Agent.
@@ -98,11 +98,11 @@ export class Backend {
  *
  * @type {string}
  */
-Backend.prototype.BACKEND_ID = 'stub';
+Backend.prototype.BACKEND_ID = "stub";
 
 /**
  *  Generic response for request types that are not implemented.
  *
  * @const {!Error}
  */
-Backend.ERR_NOT_IMPLEMENTED = new Error('not implemented');
+Backend.ERR_NOT_IMPLEMENTED = new Error("not implemented");

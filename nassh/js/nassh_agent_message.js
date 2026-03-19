@@ -7,8 +7,8 @@
  * protocol.
  */
 
-import {concatTyped} from './lib_array.js';
-import {MessageNumbers, readMessage} from './nassh_agent_message_types.js';
+import {concatTyped} from "./lib_array.js";
+import {MessageNumbers, readMessage} from "./nassh_agent_message_types.js";
 
 /**
  * Create an SSH agent message from a raw byte array containing the message
@@ -87,7 +87,7 @@ Message.prototype.eom = function() {
  */
 Message.prototype.readUint32 = function() {
   if (this.data_.length < this.offset_ + 4) {
-    throw new Error('Message.readUint32: end of data_ reached prematurely');
+    throw new Error("Message.readUint32: end of data_ reached prematurely");
   }
   const dv = new DataView(this.data_.buffer, this.data_.byteOffset);
   const uint32 = dv.getUint32(this.offset_);
@@ -122,7 +122,7 @@ Message.prototype.writeUint32 = function(uint32) {
 Message.prototype.readString = function() {
   const length = this.readUint32();
   if (this.data_.length < this.offset_ + length) {
-    throw new Error('Message.readString: end of data_ reached prematurely');
+    throw new Error("Message.readString: end of data_ reached prematurely");
   }
   const string = this.data_.slice(this.offset_, this.offset_ + length);
   this.offset_ += length;
@@ -137,7 +137,7 @@ Message.prototype.readString = function() {
  */
 Message.prototype.writeString = function(string) {
   if (!(string instanceof Uint8Array)) {
-    throw new Error('Message.writeString: string is not of type Uint8Array');
+    throw new Error("Message.writeString: string is not of type Uint8Array");
   }
   const length = string.length;
   this.writeUint32(length);

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Input/Output interface used by commands to communicate with the terminal.
@@ -33,7 +33,7 @@ hterm.Terminal.IO = function(terminal) {
   this.previousIO_ = null;
 
   // Any data this object accumulated while not active.
-  this.buffered_ = '';
+  this.buffered_ = "";
 
   // Decoder to maintain UTF-8 decode state.
   this.textDecoder_ = new TextDecoder();
@@ -109,7 +109,7 @@ hterm.Terminal.IO.prototype.pop = function() {
 hterm.Terminal.IO.prototype.flush = function() {
   if (this.buffered_) {
     this.terminal_.interpret(this.buffered_);
-    this.buffered_ = '';
+    this.buffered_ = "";
   }
 };
 
@@ -122,7 +122,7 @@ hterm.Terminal.IO.prototype.flush = function() {
  */
 hterm.Terminal.IO.prototype.sendString = function(string) {
   // Override this.
-  console.log('Unhandled sendString: ' + string);
+  console.log("Unhandled sendString: " + string);
 };
 
 /**
@@ -134,7 +134,7 @@ hterm.Terminal.IO.prototype.sendString = function(string) {
  */
 hterm.Terminal.IO.prototype.onVTKeystroke = function(string) {
   // Override this.
-  console.log('Unobserverd VT keystroke: ' + JSON.stringify(string));
+  console.log("Unobserverd VT keystroke: " + JSON.stringify(string));
 };
 
 /**
@@ -144,7 +144,7 @@ hterm.Terminal.IO.prototype.onVTKeystroke = function(string) {
  * @param {number} height The new terminal height.
  */
 hterm.Terminal.IO.prototype.onTerminalResize_ = function(width, height) {
-  // eslint-disable-next-line consistent-this
+   
   let obj = this;
   while (obj) {
     obj.columnCount = width;
@@ -215,5 +215,5 @@ hterm.Terminal.IO.prototype.writeUTF16 = function(string) {
  */
 hterm.Terminal.IO.prototype.println =
 hterm.Terminal.IO.prototype.writelnUTF16 = function(string) {
-  this.print(string + '\r\n');
+  this.print(string + "\r\n");
 };

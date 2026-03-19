@@ -16,8 +16,8 @@
  * @enum {string}
  */
 export const LayoutType = {
-  LEFT_RIGHT: 'left_right',
-  TOP_BOTTOM: 'top_bottom',
+  LEFT_RIGHT: "left_right",
+  TOP_BOTTOM: "top_bottom",
 };
 
 /**
@@ -127,7 +127,7 @@ function unescapeString(str) {
   // Unescape double slash and \0XX.
   return str.replace(
       /\\(?:\\|[01][0-7]{2})/g,
-      (x) => x === '\\\\' ? '\\' : String.fromCharCode(parseInt(x.slice(1), 8)),
+      (x) => x === "\\\\" ? "\\" : String.fromCharCode(parseInt(x.slice(1), 8)),
   );
 }
 
@@ -214,15 +214,15 @@ export class Controller {
         // %begin/%error (just like when a command is sent to tmux). Put a fake
         // command here to process it.
         new Command(
-            '',
+            "",
             (lines) => {
               if (lines.length) {
-                console.warn('unexpected lines when tmux is starting: ', lines);
+                console.warn("unexpected lines when tmux is starting: ", lines);
               }
               this.init_();
             },
             (lines) => {
-              this.onError_(lines.join('\n'));
+              this.onError_(lines.join("\n"));
             },
         ),
     ];
@@ -235,10 +235,10 @@ export class Controller {
      * @type {!Object<string, function(string)>}
      */
     this.handlers_ = {
-      '%exit': this.handleExit_.bind(this),
-      '%layout-change': this.handleLayoutChange_.bind(this),
-      '%output': this.handleOutput_.bind(this),
-      '%pane-mode-changed': this.handlePaneModeChanged_.bind(this),
+      "%exit": this.handleExit_.bind(this),
+      "%layout-change": this.handleLayoutChange_.bind(this),
+      "%output": this.handleOutput_.bind(this),
+      "%pane-mode-changed": this.handlePaneModeChanged_.bind(this),
     };
 
     /**
@@ -268,8 +268,8 @@ export class Controller {
         this.tmuxVersion_ = parseTmuxVersion(lines[0]);
         console.log(`tmux version: ${JSON.stringify(this.tmuxVersion_)}`);
       } catch (error) {
-        console.warn('unable to parse version from ', lines);
-        this.tmuxVersion_ = {major: 0, minor: ''};
+        console.warn("unable to parse version from ", lines);
+        this.tmuxVersion_ = {major: 0, minor: ""};
       }
 
       const postInit = () => {
@@ -281,19 +281,19 @@ export class Controller {
           }
 
           // Start handling changes to windows.
-          this.handlers_['%window-add'] = this.handleWindowAdd_.bind(this);
-          this.handlers_['%window-close'] =
-              this.handlers_['%unlinked-window-close'] =
+          this.handlers_["%window-add"] = this.handleWindowAdd_.bind(this);
+          this.handlers_["%window-close"] =
+              this.handlers_["%unlinked-window-close"] =
               this.handleWindowClose_.bind(this);
         });
       };
 
-      if (this.checkTmuxMinVersion_({major: 3.2, minor: 'a'})) {
+      if (this.checkTmuxMinVersion_({major: 3.2, minor: "a"})) {
         // Set wait-exit so that tmux will wait for an empty line after it
         // outputs '%exit'. This prevent a race condition where we send tmux
         // commands after tmux exited.
-        console.info('set wait-exit');
-        this.queueCommand('refresh-client -f wait-exit', () => {
+        console.info("set wait-exit");
+        this.queueCommand("refresh-client -f wait-exit", () => {
           this.waitExit_ = true;
           postInit();
         });
@@ -307,7 +307,7 @@ export class Controller {
       // here. Calling init_() one more time solves this problem.
       if (this.firstInit_) {
         this.firstInit_ = false;
-        console.warn(`First init failed: ${lines.join('\n')}`);
+        console.warn(`First init failed: ${lines.join("\n")}`);
         this.init_();
         return;
       }
@@ -334,7 +334,7 @@ export class Controller {
         // line should detach the tmux session. And unlike the `detach` command,
         // it will not trigger a %begin/%end block, which could potentially mess
         // up the internal state further.
-        this.input_('\r');
+        this.input_("\r");
       }
     }
   }
@@ -343,7 +343,7 @@ export class Controller {
    * @param {string} line
    */
   interpretLine_(line) {
-    let tagEnd = line.indexOf(' ');
+    let tagEnd = line.indexOf(" ");
     if (tagEnd === -1) {
       tagEnd = line.length;
     }
@@ -352,14 +352,14 @@ export class Controller {
 
     /** @type {!Command|undefined} */
     const currentCommand = this.commands_[0];
-    if (tag === '%end' || tag === '%error') {
+    if (tag === "%end" || tag === "%error") {
       if (args === currentCommand?.beginArgs) {
-        currentCommand.finish(tag === '%end');
+        currentCommand.finish(tag === "%end");
         this.commands_.shift();
         return;
       }
 
-      console.warn(`encountered %end/%error tag but the args do not match: ` +
+      console.warn("encountered %end/%error tag but the args do not match: " +
           `${args} !== ${currentCommand?.beginArgs}`);
     }
 
@@ -368,9 +368,9 @@ export class Controller {
       return;
     }
 
-    if (tag === '%begin') {
+    if (tag === "%begin") {
       if (!currentCommand) {
-        throw new Error('unexpected %begin line: no current command');
+        throw new Error("unexpected %begin line: no current command");
       }
       currentCommand.start(args);
       return;
@@ -423,7 +423,7 @@ export class Controller {
     this.queueCommand(capturePaneCommand, (output) => {
       pane.winInfo.win.onPaneSyncStart(paneId);
       pane.winInfo.win.onPaneOutput(paneId,
-          unescapeString(output.join('\r\n')));
+          unescapeString(output.join("\r\n")));
     });
 
     this.listPane_(paneId, ({x, y, title}) => {
@@ -439,10 +439,10 @@ export class Controller {
       if (output.length > 1) {
         // I don't think this should happen, but let print a warning just in
         // case.
-        console.warn('multiple lines of incomplete escape sequences');
+        console.warn("multiple lines of incomplete escape sequences");
       }
       pane.winInfo.win.onPaneOutput(paneId,
-          unescapeString(output.join('\r\n')));
+          unescapeString(output.join("\r\n")));
     });
   }
 
@@ -460,12 +460,12 @@ export class Controller {
 
     const pane = this.panes_.get(paneId);
     if (!pane) {
-      throw new Error(`unknown pane id {paneId}`);
+      throw new Error("unknown pane id {paneId}");
     }
     if (pane.needResetMode) {
       pane.needResetMode = false;
       // Note that this "cancels copy mode and any other modes".
-      this.queueCommand('copy-mode -q');
+      this.queueCommand("copy-mode -q");
     }
 
     let command = `send-keys -H -t ${paneId}`;
@@ -483,7 +483,7 @@ export class Controller {
    * @param {number} height
    */
   resizeWindow(windowId, width, height) {
-    if (this.checkTmuxMinVersion_({major: 3.4, minor: ''})) {
+    if (this.checkTmuxMinVersion_({major: 3.4, minor: ""})) {
       this.queueCommand(`refresh-client -C ${windowId}:${width}x${height}`);
     } else {
       this.queueCommand(
@@ -498,7 +498,7 @@ export class Controller {
    * Create a tmux window.
    */
   newWindow() {
-    this.queueCommand(`new-window`);
+    this.queueCommand("new-window");
   }
 
   /**
@@ -526,7 +526,7 @@ export class Controller {
    * @param {function(!Array<!WindowData>)} callback
    */
   listWindows(callback) {
-    this.listWindowsImpl_('', callback);
+    this.listWindowsImpl_("", callback);
   }
 
   /**
@@ -537,7 +537,7 @@ export class Controller {
    *     data or null if we cannot find the window.
    */
   listWindow(winId, callback) {
-    if (this.checkTmuxMinVersion_({major: 3.2, minor: 'a'})) {
+    if (this.checkTmuxMinVersion_({major: 3.2, minor: "a"})) {
       // Let tmux filter it by the window id.
       this.listWindowsImpl_(` -f "#{==:#{window_id},${winId}}"`, (windows) => {
         callback(windows[0] || null);
@@ -590,7 +590,7 @@ export class Controller {
    * Send an detach command to tmux.
    */
   detach() {
-    this.queueCommand('detach');
+    this.queueCommand("detach");
   }
 
   /**
@@ -626,14 +626,14 @@ export class Controller {
     this.sendPendingCommandsScheduled_ = false;
     if (this.closed_ || this.hasError_) {
       console.warn(
-          'tmux is closed or in error mode. Ignoring all pending commands');
+          "tmux is closed or in error mode. Ignoring all pending commands");
       this.pendingCommands_.length = 0;
       return;
     }
 
-    let joinedCommands = '';
+    let joinedCommands = "";
     for (const command of this.pendingCommands_) {
-      joinedCommands += command.commandStr + '\r';
+      joinedCommands += command.commandStr + "\r";
       this.commands_.push(command);
     }
     this.pendingCommands_.length = 0;
@@ -648,7 +648,7 @@ export class Controller {
    */
   checkTmuxMinVersion_(tmuxVersion) {
     if (!this.tmuxVersion_) {
-      throw new Error('version is not available');
+      throw new Error("version is not available");
     }
     const {major, minor} = this.tmuxVersion_;
     return major > tmuxVersion.major ||
@@ -816,7 +816,7 @@ export class Controller {
     this.closed_ = true;
 
     if (this.waitExit_) {
-      this.input_('\r');
+      this.input_("\r");
     }
     this.input_ = () => {};
 
@@ -861,7 +861,7 @@ export function parseWindowLayout(layoutStr) {
   // Parse exactly one layout (either `SimpleLayout` or `ComplexLayout`) from
   // `layoutStr` starting at index `cursor`. Return the layout and a new cursor.
   function parse(cursor) {
-    function throwParseError(msg = '') {
+    function throwParseError(msg = "") {
       throw new Error(
           `failed to parse '${layoutStr}' at index ${cursor}: ${msg}`);
     }
@@ -870,7 +870,7 @@ export function parseWindowLayout(layoutStr) {
     // layouts.
     const match = layoutStr.slice(cursor).match(/^(\d+)x(\d+),(\d+),(\d+)/);
     if (!match) {
-      throwParseError('expecting size and offset');
+      throwParseError("expecting size and offset");
     }
     const current = {
       xSize: Number(match[1]),
@@ -880,24 +880,24 @@ export function parseWindowLayout(layoutStr) {
     };
     cursor += match[0].length;
     let childrenLayout = LayoutType.TOP_BOTTOM;
-    let closeBracket = ']';
+    let closeBracket = "]";
     switch (layoutStr[cursor]) {
-      case ',': {
+      case ",": {
         // Simple layout, expecting pane id.
         ++cursor;
         const match = layoutStr.slice(cursor).match(/^\d+/);
         if (!match) {
-          throwParseError('expecting pane id');
+          throwParseError("expecting pane id");
         }
         current.paneId = `%${match[0]}`;
         cursor += match[0].length;
         break;
       }
-      case '{':
+      case "{":
         childrenLayout = LayoutType.LEFT_RIGHT;
-        closeBracket = '}';
+        closeBracket = "}";
         // Fall through
-      case '[': {
+      case "[": {
         current.childrenLayout = childrenLayout;
         const children = current.children = [];
         ++cursor;
@@ -908,10 +908,10 @@ export function parseWindowLayout(layoutStr) {
           if (lastChar === closeBracket) {
             // All children has been parsed.
             if (children.length < 2) {
-              throwParseError(`expecting more than 1 child`);
+              throwParseError("expecting more than 1 child");
             }
             break;
-          } else if (lastChar !== ',') {
+          } else if (lastChar !== ",") {
             throwParseError(`expecting ',', got ${lastChar}`);
           }
           // More children following. Continue the loop.
@@ -970,7 +970,7 @@ class Command {
    */
   start(beginArgs) {
     if (this.started) {
-      throw new Error('command has already started');
+      throw new Error("command has already started");
     }
     this.buffer_ = [];
     this.beginArgs_ = beginArgs;
@@ -1010,7 +1010,7 @@ class Command {
 
 /** @param {!Array<string>} lines */
 function throwUnhandledCommandError(lines) {
-  throw new Error(`unhandled command error: ${lines.join('\n')}`);
+  throw new Error(`unhandled command error: ${lines.join("\n")}`);
 }
 
 /** @param {string} winId */

@@ -6,10 +6,10 @@
  * @fileoverview Misc logic for Google-specific integration.
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {localize, runtimeSendMessage} from './nassh.js';
-import {SshPolicy} from './ssh_policy.js';
+import {localize, runtimeSendMessage} from "./nassh.js";
+import {SshPolicy} from "./ssh_policy.js";
 
 /**
  * The different certificate slots in the gnubby.
@@ -33,14 +33,14 @@ const gnubbySlot = {
  * @enum {string}
  */
 const gnubbyErrReason = {
-  OTHER_ERROR: 'other error',
-  REQUEST_EXPIRED: 'request expired',
-  ACL_FAIL: 'acl failed',
-  BAD_REQUEST_DATA: 'bad request data',
-  NATIVE_HELPER_ERROR: 'native helper error',
-  NETWORK_ERROR: 'network error',
-  GNUBBY_CERT_NOT_FOUND: 'gnubby SSH cert missing',
-  CANCELLED: 'request is cancelled',
+  OTHER_ERROR: "other error",
+  REQUEST_EXPIRED: "request expired",
+  ACL_FAIL: "acl failed",
+  BAD_REQUEST_DATA: "bad request data",
+  NATIVE_HELPER_ERROR: "native helper error",
+  NETWORK_ERROR: "network error",
+  GNUBBY_CERT_NOT_FOUND: "gnubby SSH cert missing",
+  CANCELLED: "request is cancelled",
 };
 
 /**
@@ -60,7 +60,7 @@ let skeResponse;
  *
  * @type {string}
  */
-let defaultSkeExtension = '';
+let defaultSkeExtension = "";
 
 /**
  * Find a usable SKE.
@@ -76,8 +76,8 @@ async function findSkeExtension() {
   // The possible extensions.
   // The order matches the SKE team preferences: https://crbug.com/1275205
   const extensions = [
-    'ckcendljdlmgnhghiaomidhiiclmapok',  // v3 ext (dev)
-    'lfboplenmmjcmpbkeemecobbadnmpfhi',  // v3 ext (stable)
+    "ckcendljdlmgnhghiaomidhiiclmapok",  // v3 ext (dev)
+    "lfboplenmmjcmpbkeemecobbadnmpfhi",  // v3 ext (stable)
   ];
 
   // Ping the extension to see if it's installed/enabled/alive.
@@ -85,14 +85,14 @@ async function findSkeExtension() {
     let result;
     try {
       result = /** @type {!skeResponse} */ (await runtimeSendMessage(
-          id, {'type': 'HELLO'}));
+          id, {"type": "HELLO"}));
     } catch (e) {
       return;
     }
 
     // If the probe worked, return the id, else return nothing so we can
     // clear out all the pending promises.
-    if (result !== undefined && result.type === 'HELLO') {
+    if (result !== undefined && result.type === "HELLO") {
       return id;
     }
   };
@@ -116,10 +116,10 @@ async function findSkeExtension() {
 export async function fetchSshPolicy() {
   const response = await runtimeSendMessage(
     defaultSkeExtension, {
-      type: 'get_ssh_policy_request',
+      type: "get_ssh_policy_request",
     }).catch((e) => ({}));
 
-  const data = response['data'] ?? {};
+  const data = response["data"] ?? {};
 
   return SshPolicy.from(data);
 }
@@ -134,17 +134,17 @@ export async function fetchSshPolicy() {
  * @return {!Promise<boolean>} Resolve true if certificate is up-to-date.
  */
 export async function refreshGoogleSshCert(io) {
-  io.print(localize('SSH_CERT_CHECK_START'));
+  io.print(localize("SSH_CERT_CHECK_START"));
 
   let result;
   try {
     result = /** @type {!skeResponse} */ (await runtimeSendMessage(
         defaultSkeExtension, {
-          type: 'cert_status_request',
+          type: "cert_status_request",
           slot: gnubbySlot.CORP_NORMAL_CERT_SLOT,
         }));
   } catch (e) {
-    io.println(localize('SSH_CERT_CHECK_ERROR', [e]));
+    io.println(localize("SSH_CERT_CHECK_ERROR", [e]));
     return false;
   }
 
@@ -152,30 +152,30 @@ export async function refreshGoogleSshCert(io) {
 
   // If no certificate exists at all, we still want to refresh, so rewrite the
   // message as if it was a valid expire of right now.
-  if (result.type === 'error_response' &&
+  if (result.type === "error_response" &&
       result.errorReason === gnubbyErrReason.GNUBBY_CERT_NOT_FOUND) {
-    result.type = 'cert_status_response';
+    result.type = "cert_status_response";
     result.expiry = now;
   }
 
-  if (result.type !== 'error_response') {
+  if (result.type !== "error_response") {
     // Refresh the certificate if it expires in the next hour.
     const hoursLeft = Math.max(0, Math.floor((result.expiry - now) / 60 / 60));
-    io.println(localize('SSH_CERT_CHECK_RESULT', [hoursLeft]));
+    io.println(localize("SSH_CERT_CHECK_RESULT", [hoursLeft]));
     if (hoursLeft < 1) {
-      io.showOverlay(localize('SSH_CERT_CHECK_REFRESH'));
+      io.showOverlay(localize("SSH_CERT_CHECK_REFRESH"));
       result = /** @type {!skeResponse} */ (await runtimeSendMessage(
           defaultSkeExtension, {
-            type: 'get_new_cert_request',
+            type: "get_new_cert_request",
             slot: gnubbySlot.CORP_NORMAL_CERT_SLOT,
           }));
       // Fall thru.
     }
   }
 
-  if (result.type === 'error_response') {
+  if (result.type === "error_response") {
     io.println(localize(
-        'SSH_CERT_CHECK_ERROR',
+        "SSH_CERT_CHECK_ERROR",
         [`${result.errorReason} ${result.errorDetail}`]));
     return false;
   }

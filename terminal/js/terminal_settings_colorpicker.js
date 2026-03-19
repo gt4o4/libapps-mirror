@@ -8,23 +8,23 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {LitElement, css, html, ifDefined} from './lit.js';
-import {CHROME_VERSION} from './terminal_common.js';
-import {TerminalSettingsElement} from './terminal_settings_element.js';
-import './terminal_button.js';
-import './terminal_settings_hue_slider.js';
-import './terminal_settings_saturation_value_picker.js';
-import './terminal_settings_transparency_slider.js';
-import './terminal_textfield.js';
-import './terminal_dialog.js';
+import {LitElement, css, html, ifDefined} from "./lit.js";
+import {CHROME_VERSION} from "./terminal_common.js";
+import {TerminalSettingsElement} from "./terminal_settings_element.js";
+import "./terminal_button.js";
+import "./terminal_settings_hue_slider.js";
+import "./terminal_settings_saturation_value_picker.js";
+import "./terminal_settings_transparency_slider.js";
+import "./terminal_textfield.js";
+import "./terminal_dialog.js";
 
 // Export for testing.
-export const TOO_WHITE_BOX_SHADOW = 'inset 0 0 0 1px black';
-export const TOO_BLACK_BOX_SHADOW = 'inset 0 0 0 1px white';
+export const TOO_WHITE_BOX_SHADOW = "inset 0 0 0 1px black";
+export const TOO_BLACK_BOX_SHADOW = "inset 0 0 0 1px white";
 export const FOCUS_BOX_SHADOW =
-    '0 0 0 2px var(--cros-color-prominent)';
+    "0 0 0 2px var(--cros-color-prominent)";
 
 /**
  * Convert CSS color to hex color.  Always use uppercase for display.
@@ -52,7 +52,7 @@ function swatchStyle(color, showFocusRing) {
         ...lib.notNull(lib.colors.crackRGB(
         lib.notNull(lib.colors.normalizeCSS(color))))));
     const darkMode = window.matchMedia &&
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
     if (!darkMode && contrastRatio < 1.25) {
       // The color is too white. Put a "border" to make it stands out from the
       // background.
@@ -66,11 +66,11 @@ function swatchStyle(color, showFocusRing) {
     boxShadows.push(FOCUS_BOX_SHADOW);
   }
 
-  return `background-color: ${color}; box-shadow: ${boxShadows.join(',')}`;
+  return `background-color: ${color}; box-shadow: ${boxShadows.join(",")}`;
 }
 
 export class TerminalColorpickerElement extends LitElement {
-  static get is() { return 'terminal-colorpicker'; }
+  static get is() { return "terminal-colorpicker"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}
@@ -184,7 +184,7 @@ export class TerminalColorpickerElement extends LitElement {
    * @override
    */
   render() {
-    const transparency = this.disableTransparency ? '' : html`
+    const transparency = this.disableTransparency ? "" : html`
         <transparency-slider color="${this.value}"
             transparency="${this.transparency_}"
             @change="${this.onTransparency_}">
@@ -209,7 +209,7 @@ export class TerminalColorpickerElement extends LitElement {
                     this.dialogIsOpened_ || this.swatchFocusVisible_)}">
             </div>
           </div>
-          ${this.inputInDialog ? '' : input}
+          ${this.inputInDialog ? "" : input}
         </div>
         <terminal-dialog @close="${this.onDialogClose_}">
           <saturation-value-picker
@@ -219,14 +219,14 @@ export class TerminalColorpickerElement extends LitElement {
           </saturation-value-picker>
           <hue-slider hue="${this.hue_}" @change="${this.onHue_}"></hue-slider>
           ${transparency}
-          ${this.inputInDialog ? input : ''}
+          ${this.inputInDialog ? input : ""}
         </terminal-dialog>
     `;
   }
 
   onSwatchFocus_(event) {
     this.swatchFocusVisible_ = event.target.matches(
-        CHROME_VERSION >= 87 ? ':focus-visible' : ':focus');
+        CHROME_VERSION >= 87 ? ":focus-visible" : ":focus");
   }
 
   onSwatchBlur_(event) {
@@ -235,8 +235,8 @@ export class TerminalColorpickerElement extends LitElement {
 
   onSwatchKeydown_(event) {
     switch (event.code) {
-      case 'Enter':
-      case 'Space':
+      case "Enter":
+      case "Space":
         this.onSwatchActivated_();
         event.preventDefault();
         break;
@@ -284,7 +284,7 @@ export class TerminalColorpickerElement extends LitElement {
           this.saturation_, this.hsvValue_, this.transparency_]);
       this.value = lib.colors.arrayToHSL(hslaArray);
     }
-    this.dispatchEvent(new CustomEvent('change'));
+    this.dispatchEvent(new CustomEvent("change"));
   }
 
   /** @param {string} value */
@@ -311,7 +311,7 @@ export class TerminalColorpickerElement extends LitElement {
       this.hsvValue_ = v;
     }
     this.transparency_ = a;
-    this.requestUpdate('value', oldValue);
+    this.requestUpdate("value", oldValue);
   }
 
   /** @return {string} */
@@ -356,9 +356,9 @@ export class TerminalColorpickerElement extends LitElement {
 
   /** @param {!KeyboardEvent} event */
   onInputKeydown_(event) {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       this.onInputChange_(event);
-      this.shadowRoot.querySelector('terminal-dialog').accept();
+      this.shadowRoot.querySelector("terminal-dialog").accept();
     }
   }
 
@@ -376,7 +376,7 @@ export class TerminalColorpickerElement extends LitElement {
 
   openDialog() {
     this.dialogIsOpened_ = true;
-    this.shadowRoot.querySelector('terminal-dialog').show();
+    this.shadowRoot.querySelector("terminal-dialog").show();
   }
 }
 
@@ -385,7 +385,7 @@ customElements.define(TerminalColorpickerElement.is,
 
 export class TerminalSettingsColorpickerElement extends
     TerminalSettingsElement {
-  static get is() { return 'terminal-settings-colorpicker'; }
+  static get is() { return "terminal-settings-colorpicker"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}
@@ -429,7 +429,7 @@ export class TerminalSettingsColorpickerElement extends
     /** If true, transparency is not shown. */
     this.disableTransparency = false;
     /** @private {string} */
-    this.pendingValue_ = '';
+    this.pendingValue_ = "";
     /** @private {?Promise<void>} */
     this.pendingUpdate_ = null;
     /** @public {number} */

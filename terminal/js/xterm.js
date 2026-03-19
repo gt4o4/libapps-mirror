@@ -5,7 +5,7 @@
  * @suppress {moduleLoad}
  */
 
-import {xterm} from './deps_xterm.rollup.js';
+import {xterm} from "./deps_xterm.rollup.js";
 
 /** @suppress {undefinedVars} */
 export const {Terminal, CanvasAddon, ImageAddon, SearchAddon, Unicode11Addon,

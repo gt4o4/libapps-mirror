@@ -6,10 +6,10 @@
  * @fileoverview Stream for connecting to a ssh server via a Websocket relay.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {newBuffer} from './nassh_buffer.js';
-import {Stream} from './nassh_stream.js';
+import {newBuffer} from "./nassh_buffer.js";
+import {Stream} from "./nassh_stream.js";
 
 /**
  * WebSocket backed stream.
@@ -60,7 +60,7 @@ export class RelayWebsockifyStream extends Stream {
    */
   connect_() {
     if (this.socket_) {
-      throw new Error('stream already connected');
+      throw new Error("stream already connected");
     }
 
     // Since websockify will usually be running on the same host as the ssh
@@ -72,7 +72,7 @@ export class RelayWebsockifyStream extends Stream {
     });
 
     this.socket_ = new WebSocket(uri);
-    this.socket_.binaryType = 'arraybuffer';
+    this.socket_.binaryType = "arraybuffer";
     this.socket_.onopen = this.onSocketOpen_.bind(this);
     this.socket_.onmessage = this.onSocketData_.bind(this);
     this.socket_.onclose = this.onSocketClose_.bind(this);
@@ -186,4 +186,4 @@ export class RelayWebsockifyStream extends Stream {
  * URI to establish a new connection to the ssh server via the relay.
  */
 RelayWebsockifyStream.prototype.connectTemplate_ =
-    '%(protocol)://%(relayHost):%(relayPort)';
+    "%(protocol)://%(relayHost):%(relayPort)";

@@ -7,10 +7,10 @@
  * the SSH agent protocol.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {concatTyped} from './lib_array.js';
-import {Message} from './nassh_agent_message.js';
+import {concatTyped} from "./lib_array.js";
+import {Message} from "./nassh_agent_message.js";
 
 /**
  * Types of requests/responses exchanged between client application and SSH
@@ -79,7 +79,7 @@ export function readMessage(message) {
 readers[MessageNumbers.AGENTC_REQUEST_IDENTITIES] = function(message) {
   if (!message.eom()) {
     throw new Error(
-        'AGENTC_REQUEST_IDENTITIES: message body longer than expected');
+        "AGENTC_REQUEST_IDENTITIES: message body longer than expected");
   }
   return message;
 };
@@ -96,7 +96,7 @@ readers[MessageNumbers.AGENTC_SIGN_REQUEST] = function(message) {
   message.fields.data = message.readString();
   message.fields.flags = message.readUint32();
   if (!message.eom()) {
-    throw new Error('AGENTC_SIGN_REQUEST: message body longer than expected');
+    throw new Error("AGENTC_SIGN_REQUEST: message body longer than expected");
   }
   return message;
 };
@@ -136,7 +136,7 @@ readers[MessageNumbers.AGENT_PUBLIC_KEY_RESPONSE] = function(message) {
   }
   if (!message.eom()) {
     throw new Error(
-        'AGENT_PUBLIC_KEY_RESPONSE: message body longer than expected');
+        "AGENT_PUBLIC_KEY_RESPONSE: message body longer than expected");
   }
 
   const pk = new Message(
@@ -145,11 +145,11 @@ readers[MessageNumbers.AGENT_PUBLIC_KEY_RESPONSE] = function(message) {
       message.fields.publicKeyRaw);
   message.fields.publicKeyAlgo =
       lib.codec.codeUnitArrayToString(pk.readString());
-  if (message.fields.publicKeyAlgo.startsWith('ecdsa')) {
+  if (message.fields.publicKeyAlgo.startsWith("ecdsa")) {
     message.fields.publicKeyCurve =
         lib.codec.codeUnitArrayToString(pk.readString());
     message.fields.publicKeyBytes = pk.readString();
-    if (message.fields.publicKeyCurve == 'nistp256') {
+    if (message.fields.publicKeyCurve == "nistp256") {
       message.fields.publicKeyX = message.fields.publicKeyBytes.slice(1, 33);
       message.fields.publicKeyY = message.fields.publicKeyBytes.slice(33);
     }
@@ -270,7 +270,7 @@ export function decodeOid(asn1Bytes) {
     return null;
   }
 
-  let oid = Math.floor(asn1Bytes[0] / 40) + '.' + (asn1Bytes[0] % 40);
+  let oid = Math.floor(asn1Bytes[0] / 40) + "." + (asn1Bytes[0] % 40);
 
   let i = 1;
   while (i < asn1Bytes.length) {
@@ -283,7 +283,7 @@ export function decodeOid(asn1Bytes) {
       // The last byte in a multibyte sequence must not have the high bit set.
       return null;
     }
-    oid += '.' + acc;
+    oid += "." + acc;
   }
   return oid;
 }
@@ -315,25 +315,25 @@ const CurveInfo = undefined;
  * @see https://tools.ietf.org/id/draft-koch-eddsa-for-openpgp-03.html#rfc.section.6
  */
 export const OidToCurveInfo = {
-  '1.2.840.10045.3.1.7': {
-    prefix: 'ecdsa-sha2-',
-    identifier: 'nistp256',
-    hashAlgorithm: 'SHA-256',
+  "1.2.840.10045.3.1.7": {
+    prefix: "ecdsa-sha2-",
+    identifier: "nistp256",
+    hashAlgorithm: "SHA-256",
     pivAlgorithmId: 0x11,
   },
-  '1.3.132.0.34': {
-    prefix: 'ecdsa-sha2-',
-    identifier: 'nistp384',
-    hashAlgorithm: 'SHA-384',
+  "1.3.132.0.34": {
+    prefix: "ecdsa-sha2-",
+    identifier: "nistp384",
+    hashAlgorithm: "SHA-384",
     pivAlgorithmId: 0x14,
   },
-  '1.3.132.0.35': {
-    prefix: 'ecdsa-sha2-',
-    identifier: 'nistp521',
-    hashAlgorithm: 'SHA-512',
+  "1.3.132.0.35": {
+    prefix: "ecdsa-sha2-",
+    identifier: "nistp521",
+    hashAlgorithm: "SHA-512",
   },
-  '1.3.6.1.4.1.11591.15.1': {
-    prefix: 'ssh-ed25519',
+  "1.3.6.1.4.1.11591.15.1": {
+    prefix: "ssh-ed25519",
   },
 };
 
@@ -364,7 +364,7 @@ export function decodeCurveOidWithVendorFixes(asn1Bytes, reader) {
   let curveOid = decodeOid(asn1Bytes);
   if (!(curveOid in OidToCurveInfo) &&
       reader != null &&
-      reader.toLowerCase().includes('yubikey') &&
+      reader.toLowerCase().includes("yubikey") &&
       asn1Bytes.length > 0) {
     // https://crbug.com/1120933#c10:
     // Certain Yubikeys (those with firmware version below 5.2.8) may
@@ -453,7 +453,7 @@ export function encodeAsWireMpint(bytes) {
 keyBlobGenerators[KeyTypes.RSA] = function(exponent, modulus) {
   const exponentMpint = encodeAsWireMpint(exponent);
   const modulusMpint = encodeAsWireMpint(modulus);
-  const BYTES_SSH_RSA = new TextEncoder().encode('ssh-rsa');
+  const BYTES_SSH_RSA = new TextEncoder().encode("ssh-rsa");
   return concatTyped(
       encodeAsWireString(BYTES_SSH_RSA),
       exponentMpint,

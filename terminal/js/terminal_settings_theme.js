@@ -8,14 +8,14 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, css, html, unsafeCSS} from './lit.js';
+import {LitElement, css, html, unsafeCSS} from "./lit.js";
 import {DEFAULT_THEME, DEFAULT_ANSI_COLORS, DEFAULT_BACKGROUND_COLOR,
-    DEFAULT_CURSOR_COLOR, DEFAULT_FOREGROUND_COLOR} from './terminal_common.js';
-import './terminal_button.js';
-import './terminal_dialog.js';
+    DEFAULT_CURSOR_COLOR, DEFAULT_FOREGROUND_COLOR} from "./terminal_common.js";
+import "./terminal_button.js";
+import "./terminal_dialog.js";
 
 /** @typedef {!Object<string, *>} */
 let ThemeVariation;
@@ -29,11 +29,11 @@ let ThemeVariations;
  * @type {!Array<string>}
  */
 const PREFS = [
-    'theme',
-    'background-color',
-    'foreground-color',
-    'cursor-color',
-    'color-palette-overrides',
+    "theme",
+    "background-color",
+    "foreground-color",
+    "cursor-color",
+    "color-palette-overrides",
   ];
 
 class Theme {
@@ -54,11 +54,11 @@ class Theme {
      * @const
      */
     this.defaults_ = {
-        'theme': id,
-        'background-color': background,
-        'foreground-color': font,
-        'cursor-color': cursor,
-        'color-palette-overrides': ansi,
+        "theme": id,
+        "background-color": background,
+        "foreground-color": font,
+        "cursor-color": cursor,
+        "color-palette-overrides": ansi,
       };
 
     /** @private {!lib.PreferenceManager} */
@@ -74,7 +74,7 @@ class Theme {
    */
   init(preferenceManager) {
     this.preferenceManager_ = preferenceManager;
-    this.variations_ = preferenceManager.get('theme-variations')[this.id] || {};
+    this.variations_ = preferenceManager.get("theme-variations")[this.id] || {};
   }
 
   /**
@@ -91,21 +91,21 @@ class Theme {
 
   /** @return {string} */
   get background() {
-    return /** @type {string} */ (this.getPref_('background-color'));
+    return /** @type {string} */ (this.getPref_("background-color"));
   }
 
   /** @return {string} */
   get font() {
-    return /** @type {string} */ (this.getPref_('foreground-color'));
+    return /** @type {string} */ (this.getPref_("foreground-color"));
   }
 
   /** @return {string} */
-  get cursor() { return /** @type {string} */ (this.getPref_('cursor-color')); }
+  get cursor() { return /** @type {string} */ (this.getPref_("cursor-color")); }
 
   /** @return {!Array<string>} */
   get ansi() {
     return /** @type {!Array<string>} */ (
-        this.getPref_('color-palette-overrides'));
+        this.getPref_("color-palette-overrides"));
   }
 
   /**
@@ -141,7 +141,7 @@ class Theme {
     // Update 'theme-variations' pref.
     /** @type {!ThemeVariations} */
     const tvs = /** @type {!ThemeVariations} */ (
-        this.preferenceManager_.get('theme-variations'));
+        this.preferenceManager_.get("theme-variations"));
     const tv = tvs[this.id];
     if (!this.hasVariations()) {
       if (tv === undefined) {
@@ -156,7 +156,7 @@ class Theme {
       // Stringify and parse to duplicate before updating pref.
       tvs[this.id] = /** @type {!ThemeVariation} */(JSON.parse(s));
     }
-    this.preferenceManager_.set('theme-variations', tvs);
+    this.preferenceManager_.set("theme-variations", tvs);
   }
 
   /** @return {boolean} Returns true if theme has a variation. */
@@ -169,58 +169,58 @@ class Theme {
     this.variations_ = {};
     /** @type {!ThemeVariations} */
     const tvs = /** @type {!ThemeVariations} */ (
-        this.preferenceManager_.get('theme-variations'));
+        this.preferenceManager_.get("theme-variations"));
     delete tvs[this.id];
-    this.preferenceManager_.set('theme-variations', tvs);
+    this.preferenceManager_.set("theme-variations", tvs);
     this.writeToPrefs();
   }
 }
 
 /** @type {!Object<string, !Theme>} */
 const THEMES = {
-  'dark': new Theme('dark',
-      'TERMINAL_THEME_DARK_LABEL', DEFAULT_BACKGROUND_COLOR,
+  "dark": new Theme("dark",
+      "TERMINAL_THEME_DARK_LABEL", DEFAULT_BACKGROUND_COLOR,
       DEFAULT_FOREGROUND_COLOR, DEFAULT_CURSOR_COLOR, DEFAULT_ANSI_COLORS),
-  'light': new Theme('light',
-      'TERMINAL_THEME_LIGHT_LABEL', '#FFFFFF', '#000000', '#1967D280',
-      ['#E8EAED', '#F28B82', '#108468', '#F29900',
-       '#8AB4F8', '#F882FF', '#03BFC8', '#202124',
-       '#F8F9FA', '#EE675C', '#108468', '#DB7000',
-       '#1A73E8', '#AA00B8', '#009099', '#9AA0A6']),
-  'classic': new Theme('classic',
-      'TERMINAL_THEME_CLASSIC_LABEL', '#101010', '#FFFFFF', '#FF000080',
+  "light": new Theme("light",
+      "TERMINAL_THEME_LIGHT_LABEL", "#FFFFFF", "#000000", "#1967D280",
+      ["#E8EAED", "#F28B82", "#108468", "#F29900",
+       "#8AB4F8", "#F882FF", "#03BFC8", "#202124",
+       "#F8F9FA", "#EE675C", "#108468", "#DB7000",
+       "#1A73E8", "#AA00B8", "#009099", "#9AA0A6"]),
+  "classic": new Theme("classic",
+      "TERMINAL_THEME_CLASSIC_LABEL", "#101010", "#FFFFFF", "#FF000080",
       lib.colors.stockPalette.slice(0, 16)),
-  'solarizedDark': new Theme('solarizedDark',
-      'TERMINAL_THEME_SOLARIZED_DARK_LABEL', '#002B36', '#83949680',
-      '#93A1A180',
-      ['#073642', '#DC322F', '#859900', '#B58900',
-       '#268BD2', '#D33682', '#2AA198', '#EEE8D5',
-       '#002B36', '#CB4B16', '#586E75', '#657B83',
-       '#839496', '#6C71C4', '#93A1A1', '#FDF6E3']),
-  'solarizedLight': new Theme('solarizedLight',
-      'TERMINAL_THEME_SOLARIZED_LIGHT_LABEL', '#FDF6E3', '#657B83', '#586E7580',
-      ['#EEE8D5', '#DC322F', '#859900', '#B58900',
-       '#268BD2', '#D33682', '#2AA198', '#073642',
-       '#FDF6E3', '#CB4B16', '#93A1A1', '#839496',
-       '#657B83', '#6C71C4', '#586E75', '#002B36']),
-  'dusk': new Theme('dusk',
-      'TERMINAL_THEME_DUSK_LABEL', '#22273E', '#FFFFFF', '#87FFC580',
-      ['#2D3452', '#F4B5FB', '#E3FEEF', '#E7F936',
-       '#9573F5', '#FFA08B', '#30E2EA', '#434D7B',
-       '#8D9CF6', '#F882FF', '#87FFC5', '#F1FF67',
-       '#B39AF5', '#FFBCAD', '#80F9F9', '#414976']),
-  'haze': new Theme('haze',
-      'TERMINAL_THEME_HAZE_LABEL', '#3E1C43', '#FFFFFF', '#FEEFC380',
-      ['#5B3062', '#F6AEA9', '#CDD8FA', '#F7FFA4',
-       '#956FE4', '#F994FF', '#87FFC5', '#2C222E',
-       '#FBE1FF', '#F9C6C3', '#97B0FC', '#F1FF67',
-       '#D3BEFF', '#FBB4FF', '#ABFFD6', '#76427D']),
-  'forest': new Theme('forest',
-      'TERMINAL_THEME_FOREST_LABEL', '#1F3334', '#FFFFFF', '#CCB4FF80',
-      ['#2B4E50', '#FFA07A', '#7097B0', '#F1FF67',
-       '#C6FFE3', '#FAA5FF', '#8584CD', '#202124',
-       '#AAFCFF', '#FFB79A', '#A2D3F2', '#DCF775',
-       '#87FFC5', '#FBB4FF', '#8B88FF', '#486B6C']),
+  "solarizedDark": new Theme("solarizedDark",
+      "TERMINAL_THEME_SOLARIZED_DARK_LABEL", "#002B36", "#83949680",
+      "#93A1A180",
+      ["#073642", "#DC322F", "#859900", "#B58900",
+       "#268BD2", "#D33682", "#2AA198", "#EEE8D5",
+       "#002B36", "#CB4B16", "#586E75", "#657B83",
+       "#839496", "#6C71C4", "#93A1A1", "#FDF6E3"]),
+  "solarizedLight": new Theme("solarizedLight",
+      "TERMINAL_THEME_SOLARIZED_LIGHT_LABEL", "#FDF6E3", "#657B83", "#586E7580",
+      ["#EEE8D5", "#DC322F", "#859900", "#B58900",
+       "#268BD2", "#D33682", "#2AA198", "#073642",
+       "#FDF6E3", "#CB4B16", "#93A1A1", "#839496",
+       "#657B83", "#6C71C4", "#586E75", "#002B36"]),
+  "dusk": new Theme("dusk",
+      "TERMINAL_THEME_DUSK_LABEL", "#22273E", "#FFFFFF", "#87FFC580",
+      ["#2D3452", "#F4B5FB", "#E3FEEF", "#E7F936",
+       "#9573F5", "#FFA08B", "#30E2EA", "#434D7B",
+       "#8D9CF6", "#F882FF", "#87FFC5", "#F1FF67",
+       "#B39AF5", "#FFBCAD", "#80F9F9", "#414976"]),
+  "haze": new Theme("haze",
+      "TERMINAL_THEME_HAZE_LABEL", "#3E1C43", "#FFFFFF", "#FEEFC380",
+      ["#5B3062", "#F6AEA9", "#CDD8FA", "#F7FFA4",
+       "#956FE4", "#F994FF", "#87FFC5", "#2C222E",
+       "#FBE1FF", "#F9C6C3", "#97B0FC", "#F1FF67",
+       "#D3BEFF", "#FBB4FF", "#ABFFD6", "#76427D"]),
+  "forest": new Theme("forest",
+      "TERMINAL_THEME_FOREST_LABEL", "#1F3334", "#FFFFFF", "#CCB4FF80",
+      ["#2B4E50", "#FFA07A", "#7097B0", "#F1FF67",
+       "#C6FFE3", "#FAA5FF", "#8584CD", "#202124",
+       "#AAFCFF", "#FFB79A", "#A2D3F2", "#DCF775",
+       "#87FFC5", "#FBB4FF", "#8B88FF", "#486B6C"]),
 };
 
 /**
@@ -234,7 +234,7 @@ const RESET =
     'fill="none" stroke-width="1.75" stroke="white"/></svg>';
 
 export class TerminalSettingsThemeElement extends LitElement {
-  static get is() { return 'terminal-settings-theme'; }
+  static get is() { return "terminal-settings-theme"; }
 
   constructor() {
     super();
@@ -396,30 +396,30 @@ export class TerminalSettingsThemeElement extends LitElement {
               ?reset-theme="${this.theme_.hasVariations()}">
             <div class="theme-inner" tabindex="0"
                 aria-label="${
-                    msg('TERMINAL_TITLE_THEME')} ${msg(t.translationKey)}"
+                    msg("TERMINAL_TITLE_THEME")} ${msg(t.translationKey)}"
                 @click="${this.onClicked_}"
                 @keydown="${this.onKeydown_}">
               <div class="preview" aria-hidden="true"
                   style="background-color:${t.background};color:${t.font}">
-<pre>drwxr-xr-x 1 joel 13:28 ${span(t.ansi[12], '.')}
-drwxr-xr-x 1 root 07:00 ${span(t.ansi[12], '..')}
+<pre>drwxr-xr-x 1 joel 13:28 ${span(t.ansi[12], ".")}
+drwxr-xr-x 1 root 07:00 ${span(t.ansi[12], "..")}
 -rw-r--r-- 1 joel 15:24 .bashrc
-drwxr-xr-x 1 joel 10:38 ${span(t.ansi[12], '.config')}
--rwxr-xr-x 1 joel 14:30 ${span(t.ansi[10], 'a.out')}
-${span(t.ansi[10], 'joel@penguin')}:${span(t.ansi[12], '~')
+drwxr-xr-x 1 joel 10:38 ${span(t.ansi[12], ".config")}
+-rwxr-xr-x 1 joel 14:30 ${span(t.ansi[10], "a.out")}
+${span(t.ansi[10], "joel@penguin")}:${span(t.ansi[12], "~")
 }$ ls -al<span style="background:${t.cursor}"> </span></pre>
                 <div class="reset">
-                  <div>${msg('TERMINAL_SETTINGS_RESET_LABEL')}</div>
+                  <div>${msg("TERMINAL_SETTINGS_RESET_LABEL")}</div>
                 </div>
               </div>
               <div class="label"><p>${msg(t.translationKey)}</p></div>
             </div>
           </div>`)}
         </div>
-        <terminal-dialog acceptText="${msg('TERMINAL_SETTINGS_RESET_LABEL')}"
+        <terminal-dialog acceptText="${msg("TERMINAL_SETTINGS_RESET_LABEL")}"
             @close=${this.onDialogClose}>
-          <div slot="title">${msg('TERMINAL_SETTINGS_RESET_DIALOG_TITLE')}</div>
-          ${msg('TERMINAL_SETTINGS_RESET_DIALOG_MESSAGE')}
+          <div slot="title">${msg("TERMINAL_SETTINGS_RESET_DIALOG_TITLE")}</div>
+          ${msg("TERMINAL_SETTINGS_RESET_DIALOG_MESSAGE")}
         </terminal-dialog>
     `;
   }
@@ -434,7 +434,7 @@ ${span(t.ansi[10], 'joel@penguin')}:${span(t.ansi[12], '~')
       return;
     }
     if (this.theme_.id === id && this.theme_.hasVariations()) {
-      this.shadowRoot.querySelector('terminal-dialog').show();
+      this.shadowRoot.querySelector("terminal-dialog").show();
     } else {
       this.theme_ = THEMES[id];
       this.theme_.writeToPrefs();
@@ -456,8 +456,8 @@ ${span(t.ansi[10], 'joel@penguin')}:${span(t.ansi[12], '~')
    */
   onKeydown_(event) {
     switch (event.code) {
-      case 'Enter':
-      case 'Space':
+      case "Enter":
+      case "Space":
         this.onActivated_(event.currentTarget.parentNode.id);
         event.preventDefault();
         break;
@@ -470,7 +470,7 @@ ${span(t.ansi[10], 'joel@penguin')}:${span(t.ansi[12], '~')
       t.init(window.preferenceManager);
     });
     this.preferenceChanged_(
-        window.preferenceManager.get('theme'), 'theme');
+        window.preferenceManager.get("theme"), "theme");
   }
 
   /**
@@ -479,7 +479,7 @@ ${span(t.ansi[10], 'joel@penguin')}:${span(t.ansi[12], '~')
    * @protected
    */
   preferenceChanged_(value, name) {
-    if (name === 'theme') {
+    if (name === "theme") {
       if (!THEMES.hasOwnProperty(value)) {
         value = DEFAULT_THEME;
       }

@@ -8,10 +8,10 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {LitElement, css, html} from './lit.js';
-import {CHROME_VERSION} from './terminal_common.js';
+import {LitElement, css, html} from "./lit.js";
+import {CHROME_VERSION} from "./terminal_common.js";
 
 export const ARROW_KEY_OFFSET = 0.01;
 
@@ -88,33 +88,33 @@ export class TerminalSlider extends LitElement {
   connectedCallback() {
     super.connectedCallback();
 
-    this.addEventListener('pointerdown', this.onPointerDown_);
-    this.addEventListener('pointerup', this.onPointerUp_);
+    this.addEventListener("pointerdown", this.onPointerDown_);
+    this.addEventListener("pointerup", this.onPointerUp_);
   }
 
   /** @override */
   disconnectedCallback() {
-    this.removeEventListener('pointerdown', this.onPointerDown_);
-    this.removeEventListener('pointerup', this.onPointerUp_);
+    this.removeEventListener("pointerdown", this.onPointerDown_);
+    this.removeEventListener("pointerup", this.onPointerUp_);
 
     super.disconnectedCallback();
   }
 
   onFocus_() {
     this.focusVisible = this.shadowRoot.getElementById(
-        'knob-container').matches(
-            CHROME_VERSION >= 87 ? ':focus-visible' : ':focus');
+        "knob-container").matches(
+            CHROME_VERSION >= 87 ? ":focus-visible" : ":focus");
   }
 
   onKeydown_(event) {
     switch (event.code) {
-      case 'ArrowLeft':
-      case 'ArrowUp':
+      case "ArrowLeft":
+      case "ArrowUp":
         this.update_(this.value - ARROW_KEY_OFFSET);
         event.preventDefault();
         break;
-      case 'ArrowRight':
-      case 'ArrowDown':
+      case "ArrowRight":
+      case "ArrowDown":
         this.update_(this.value + ARROW_KEY_OFFSET);
         event.preventDefault();
         break;
@@ -123,7 +123,7 @@ export class TerminalSlider extends LitElement {
 
   /** @param {!Event} event */
   onPointerDown_(event) {
-    this.addEventListener('pointermove', this.onPointerMove_);
+    this.addEventListener("pointermove", this.onPointerMove_);
     this.setPointerCapture(event.pointerId);
     this.onPointerEvent_(event);
   }
@@ -135,10 +135,10 @@ export class TerminalSlider extends LitElement {
 
   /** @param {!Event} event */
   onPointerUp_(event) {
-    this.removeEventListener('pointermove', this.onPointerMove_);
+    this.removeEventListener("pointermove", this.onPointerMove_);
     this.releasePointerCapture(event.pointerId);
     this.onPointerEvent_(event);
-    this.shadowRoot.getElementById('knob-container').focus();
+    this.shadowRoot.getElementById("knob-container").focus();
   }
 
   /** @param {!Event} event */
@@ -148,8 +148,8 @@ export class TerminalSlider extends LitElement {
 
   update_(value) {
     this.value = lib.f.clamp(value, 0, 1);
-    this.dispatchEvent(new CustomEvent('change', {bubbles: true}));
+    this.dispatchEvent(new CustomEvent("change", {bubbles: true}));
   }
 }
 
-customElements.define('terminal-slider', TerminalSlider);
+customElements.define("terminal-slider", TerminalSlider);

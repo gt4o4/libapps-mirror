@@ -18,9 +18,9 @@ export function MockNotification() {
       opts = {};
     }
     this.title = title;
-    this.body = opts.body || '';
+    this.body = opts.body || "";
     mock.count++;
-    mock.lastCall = Object.assign({'title': title}, opts);
+    mock.lastCall = Object.assign({"title": title}, opts);
     mock.calls.push(mock.lastCall);
   }
   mock.prototype.close = function() {
@@ -29,7 +29,7 @@ export function MockNotification() {
 
   // We are missing requestPermission(), because hterm doesn't call it if
   // permission == 'granted'.
-  mock.permission = 'granted';
+  mock.permission = "granted";
   mock.count = 0;
   mock.calls = [];
 

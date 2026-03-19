@@ -36,7 +36,7 @@ GoogleSmartCard.PcscLiteClient.API.prototype.pcsc_stringify_error =
     function(code) {};
 
 /** @constructor */
-GoogleSmartCard.PcscLiteClient.API.Result = function() {}
+GoogleSmartCard.PcscLiteClient.API.Result = function() {};
 
 /**
  * @param {function(...)} onSuccess
@@ -120,10 +120,10 @@ GoogleSmartCard.PcscLiteClient.Context.prototype.addOnInitializedCallback =
     function(callback) {};
 
 /** @const */
-GoogleSmartCard.PcscLiteCommon = {}
+GoogleSmartCard.PcscLiteCommon = {};
 
 /** @const */
-GoogleSmartCard.PcscLiteCommon.Constants = {}
+GoogleSmartCard.PcscLiteCommon.Constants = {};
 
 /** @type {string} */
 GoogleSmartCard.PcscLiteCommon.Constants.SERVER_OFFICIAL_APP_ID;

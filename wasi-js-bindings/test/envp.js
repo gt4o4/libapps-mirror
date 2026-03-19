@@ -6,9 +6,9 @@
  * @fileoverview Tests for initial environment passing.
  */
 
-import {Process, SyscallEntry, SyscallHandler, WASI} from '../index.js';
+import {Process, SyscallEntry, SyscallHandler, WASI} from "../index.js";
 
-describe('envp.js', () => {
+describe("envp.js", () => {
 
 /**
  * A handler just to capture output.
@@ -16,8 +16,8 @@ describe('envp.js', () => {
 class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
   constructor(...args) {
     super(...args);
-    this.stdout = '';
-    this.stderr = '';
+    this.stdout = "";
+    this.stderr = "";
     this.td = new TextDecoder();
   }
 
@@ -65,7 +65,7 @@ async function run(prog, environ) {
   const sys_handlers = [handler];
   const proc = new Process.Foreground({
     executable: prog,
-    argv: ['envp.wasm'],
+    argv: ["envp.wasm"],
     environ: environ,
     sys_handlers: sys_handlers,
     sys_entries: [
@@ -73,7 +73,7 @@ async function run(prog, environ) {
     ],
   });
   const status = await proc.run();
-  assert.equal(handler.stderr, '');
+  assert.equal(handler.stderr, "");
   return {
     returncode: status,
     stdout: handler.stdout,
@@ -87,14 +87,14 @@ async function run(prog, environ) {
  */
 before(async function() {
   // Fetch & read the body once to speed up the tests.
-  this.prog = await fetch('envp.wasm')
+  this.prog = await fetch("envp.wasm")
     .then((response) => response.arrayBuffer());
 });
 
 /**
  * Check default Program environ behavior.
  */
-it('no env', async function() {
+it("no env", async function() {
   const result = await run(this.prog);
   const data = result.data;
   assert.equal(data.envc, 1);
@@ -104,7 +104,7 @@ it('no env', async function() {
 /**
  * Check empty environ={} behavior.
  */
-it('empty', async function() {
+it("empty", async function() {
   const result = await run(this.prog, {});
   const data = result.data;
   assert.equal(data.envc, 1);
@@ -114,38 +114,38 @@ it('empty', async function() {
 /**
  * Check a single env var set.
  */
-it('one var', async function() {
-  const result = await run(this.prog, {'foo': 'bar'});
+it("one var", async function() {
+  const result = await run(this.prog, {"foo": "bar"});
   const data = result.data;
   assert.equal(data.envc, 2);
-  assert.deepEqual(data.environ, ['foo=bar', null]);
+  assert.deepEqual(data.environ, ["foo=bar", null]);
 });
 
 /**
  * Check a multiple env vars set.
  */
-it('couple vars', async function() {
-  const result = await run(this.prog, {'foo': 'bar', 'fox': 'cat'});
+it("couple vars", async function() {
+  const result = await run(this.prog, {"foo": "bar", "fox": "cat"});
   const data = result.data;
   assert.equal(data.envc, 3);
-  assert.deepEqual(data.environ, ['foo=bar', 'fox=cat', null]);
+  assert.deepEqual(data.environ, ["foo=bar", "fox=cat", null]);
 });
 
 /**
  * Check vars with whitespace.
  */
-it('whitespace vars', async function() {
+it("whitespace vars", async function() {
   const result = await run(this.prog, {
-    'spa ce': 'sp ace',
-    'ta\tb': 't\tab',
-    'new\nline': 'newline\n',
+    "spa ce": "sp ace",
+    "ta\tb": "t\tab",
+    "new\nline": "newline\n",
   });
   const data = result.data;
   assert.equal(data.envc, 4);
   assert.deepEqual(data.environ, [
-    'spa ce=sp ace',
-    'ta\tb=t\tab',
-    'new\nline=newline\n',
+    "spa ce=sp ace",
+    "ta\tb=t\tab",
+    "new\nline=newline\n",
     null,
   ]);
 });
@@ -153,11 +153,11 @@ it('whitespace vars', async function() {
 /**
  * Check UTF-8 encoded env vars.
  */
-it('utf8 vars', async function() {
-  const result = await run(this.prog, {'das': 'heiß', 'mögen': 'tests'});
+it("utf8 vars", async function() {
+  const result = await run(this.prog, {"das": "heiß", "mögen": "tests"});
   const data = result.data;
   assert.equal(data.envc, 3);
-  assert.deepEqual(data.environ, ['das=heiß', 'mögen=tests', null]);
+  assert.deepEqual(data.environ, ["das=heiß", "mögen=tests", null]);
 });
 
 });

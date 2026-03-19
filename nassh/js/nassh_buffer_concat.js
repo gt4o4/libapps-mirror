@@ -6,8 +6,8 @@
  * @fileoverview Basic buffer that concats inputs together.
  */
 
-import {concatTyped} from './lib_array.js';
-import {BufferInterface} from './nassh_buffer_interface.js';
+import {concatTyped} from "./lib_array.js";
+import {BufferInterface} from "./nassh_buffer_interface.js";
 
 /**
  * A very simple buffer that concats inputs together.

@@ -7,10 +7,10 @@
  *
  * @suppress {moduleLoad}
  */
-import {css, LitElement, html} from './lit.js';
+import {css, LitElement, html} from "./lit.js";
 
 export class TerminalSettingsCategorySelectorElement extends LitElement {
-  static get is() { return 'terminal-settings-category-selector'; }
+  static get is() { return "terminal-settings-category-selector"; }
 
   /**
    * @return {!CSSResult|!Array<!CSSResult>}
@@ -87,25 +87,25 @@ export class TerminalSettingsCategorySelectorElement extends LitElement {
    * @override
    */
   firstUpdated(changedProperties) {
-    this.addEventListener('click', (e) => {
+    this.addEventListener("click", (e) => {
       if (e.target.parentElement !== this) {
         return;
       }
       this.activate_(/** @type {!Element} */(e.target));
     });
-    this.addEventListener('keydown', (e) => {
+    this.addEventListener("keydown", (e) => {
       if (e.target.parentElement !== this) {
         return;
       }
-      if (e.code == 'Enter' || e.code == 'Space') {
+      if (e.code == "Enter" || e.code == "Space") {
         this.activate_(/** @type {!Element} */(e.target));
       }
     });
-    this.shadowRoot.querySelector('slot').addEventListener(
-        'slotchange', (e) => {
+    this.shadowRoot.querySelector("slot").addEventListener(
+        "slotchange", (e) => {
           for (const option of this.children) {
-            option.setAttribute('tabindex', 0);  // Make option focusable.
-            option.setAttribute('role', 'link');
+            option.setAttribute("tabindex", 0);  // Make option focusable.
+            option.setAttribute("role", "link");
           }
         });
     if (this.firstElementChild) {
@@ -116,13 +116,13 @@ export class TerminalSettingsCategorySelectorElement extends LitElement {
   /** @param {!Element} element */
   activate_(element) {
     if (this.activeElement_) {
-      this.activeElement_.removeAttribute('active');
+      this.activeElement_.removeAttribute("active");
     }
     this.activeElement_ = element;
-    element.setAttribute('active', '');
-    this.dispatchEvent(new CustomEvent('category-change', {
+    element.setAttribute("active", "");
+    this.dispatchEvent(new CustomEvent("category-change", {
       detail: {
-        category: element.getAttribute('data-name'),
+        category: element.getAttribute("data-name"),
       },
     }));
   }

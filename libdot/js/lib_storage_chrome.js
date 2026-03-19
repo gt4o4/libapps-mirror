@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /**
  * Helper to retry operations when exceeding write quota.
@@ -18,8 +18,8 @@ async function retryQuotaErrors(callback, delay = 1000) {
     } catch (e) {
       // Doesn't seem to be any better way of handling this.
       // https://crbug.com/764759
-      if (e.message.indexOf('MAX_WRITE_OPERATIONS')) {
-        console.warn(`Will retry write after exceeding quota:`, e);
+      if (e.message.indexOf("MAX_WRITE_OPERATIONS")) {
+        console.warn("Will retry write after exceeding quota:", e);
         await new Promise((resolve) => setTimeout(resolve, delay));
       } else {
         throw e;

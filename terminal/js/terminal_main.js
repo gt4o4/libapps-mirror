@@ -7,15 +7,15 @@
  * @suppress {moduleLoad} Loading wassh files is unhappy.
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
-import {cleanupChromeSockets} from '../../wassh/js/sockets.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
+import {cleanupChromeSockets} from "../../wassh/js/sockets.js";
 
-import {terminal} from './terminal.js';
+import {terminal} from "./terminal.js";
 import {composeSshUrl, definePrefs, init, watchColors}
-  from './terminal_common.js';
-import './terminal_home_app.js';
-import {getTerminalInfoTracker, setUpTitleHandler} from './terminal_info.js';
+  from "./terminal_common.js";
+import "./terminal_home_app.js";
+import {getTerminalInfoTracker, setUpTitleHandler} from "./terminal_info.js";
 
 const globalInit = getTerminalInfoTracker().then((tracker) => {
   if (tracker.launchInfo.ssh?.needRedirect) {
@@ -46,31 +46,31 @@ function runTerminalHome() {
   // Dynamically change colors if settings change.
   const setColorRgbCssVar = (name, color) => {
     const css = lib.notNull(lib.colors.normalizeCSS(color));
-    const rgb = lib.colors.crackRGB(css).slice(0, 3).join(',');
+    const rgb = lib.colors.crackRGB(css).slice(0, 3).join(",");
     document.body.style.setProperty(`--${name}-rgb`, rgb);
   };
-  ['background-color', 'cursor-color', 'foreground-color'].forEach((p) => {
+  ["background-color", "cursor-color", "foreground-color"].forEach((p) => {
     prefs.addObserver(p, setColorRgbCssVar.bind(null, p));
   });
-  prefs.addObserver('color-palette-overrides', (v) => {
+  prefs.addObserver("color-palette-overrides", (v) => {
     // Use ANSI bright blue (12) for buttons.
     const c = lib.colors.normalizeCSS(v[12] || lib.colors.stockPalette[12]);
-    setColorRgbCssVar('button-color', c);
+    setColorRgbCssVar("button-color", c);
   });
   watchColors(prefs);
   prefs.readStorage().then(() => {
     prefs.notifyAll();
-    document.body.style.overflow = 'auto';
-    document.body.appendChild(document.createElement('terminal-home-app'));
+    document.body.style.overflow = "auto";
+    document.body.appendChild(document.createElement("terminal-home-app"));
   });
   // Ctrl+{N,P} for new window, settings page. Ignore Ctrl+T.
   const keyMaps = {
-    'N': () => chrome.terminalPrivate.openWindow(),
-    'P': () => chrome.terminalPrivate.openOptionsPage(() => {}),
-    'T': () => {},
+    "N": () => chrome.terminalPrivate.openWindow(),
+    "P": () => chrome.terminalPrivate.openOptionsPage(() => {}),
+    "T": () => {},
   };
   for (const [keyCode, f] of Object.entries(keyMaps)) {
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.keyCode === keyCode.charCodeAt(0)) {
         f();
         e.preventDefault();
@@ -81,7 +81,7 @@ function runTerminalHome() {
   cleanupChromeSockets();
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener("DOMContentLoaded", async () => {
   await init();
   const tracker = await globalInit;
   setUpTitleHandler(tracker);
@@ -91,8 +91,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const div = document.createElement('div');
-  div.id = 'terminal';
+  const div = document.createElement("div");
+  div.id = "terminal";
   document.body.appendChild(div);
   window.term_ = await terminal.init(div, tracker.launchInfo);
 });

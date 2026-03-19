@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Constructor for the Terminal class.
@@ -57,11 +57,11 @@ hterm.Terminal = function({profileId, storage} = {}) {
 
   // The scroll port we'll be using to display the visible rows.
   this.scrollPort_ = new hterm.ScrollPort(this);
-  this.scrollPort_.subscribe('resize', this.onResize_.bind(this));
-  this.scrollPort_.subscribe('scroll', this.onScroll_.bind(this));
-  this.scrollPort_.subscribe('paste', this.onPaste_.bind(this));
-  this.scrollPort_.subscribe('focus', this.onScrollportFocus_.bind(this));
-  this.scrollPort_.subscribe('options', this.onOpenOptionsPage_.bind(this));
+  this.scrollPort_.subscribe("resize", this.onResize_.bind(this));
+  this.scrollPort_.subscribe("scroll", this.onScroll_.bind(this));
+  this.scrollPort_.subscribe("paste", this.onPaste_.bind(this));
+  this.scrollPort_.subscribe("focus", this.onScrollportFocus_.bind(this));
+  this.scrollPort_.subscribe("options", this.onOpenOptionsPage_.bind(this));
   this.scrollPort_.onCopy = this.onCopy_.bind(this);
 
   // The div that contains this terminal.
@@ -134,9 +134,9 @@ hterm.Terminal = function({profileId, storage} = {}) {
   this.mouseHideDelay_ = null;
 
   // Terminal bell sound.
-  this.bellAudio_ = this.document_.createElement('audio');
-  this.bellAudio_.id = 'hterm:bell-audio';
-  this.bellAudio_.setAttribute('preload', 'auto');
+  this.bellAudio_ = this.document_.createElement("audio");
+  this.bellAudio_.id = "hterm:bell-audio";
+  this.bellAudio_.setAttribute("preload", "auto");
 
   // The AccessibilityReader object for announcing command output.
   this.accessibilityReader_ = null;
@@ -209,15 +209,15 @@ hterm.Terminal = function({profileId, storage} = {}) {
  *
  * @const {string}
  */
-hterm.Terminal.DEFAULT_PROFILE_ID = 'default';
+hterm.Terminal.DEFAULT_PROFILE_ID = "default";
 
 /**
  * Possible cursor shapes.
  */
 hterm.Terminal.cursorShape = {
-  BLOCK: 'BLOCK',
-  BEAM: 'BEAM',
-  UNDERLINE: 'UNDERLINE',
+  BLOCK: "BLOCK",
+  BEAM: "BEAM",
+  UNDERLINE: "UNDERLINE",
 };
 
 /**
@@ -247,7 +247,7 @@ hterm.Terminal.prototype.tabWidth = 8;
  */
 hterm.Terminal.prototype.setProfile = function(
     profileId, callback = undefined) {
-  profileId = profileId.replace(/\//g, '');
+  profileId = profileId.replace(/\//g, "");
   if (this.profileId_ === profileId) {
     if (callback) {
       callback();
@@ -280,7 +280,7 @@ hterm.Terminal.prototype.setProfile = function(
     }
 
     if (!(bindings instanceof Object)) {
-      console.error('Error in keybindings preference: Expected object');
+      console.error("Error in keybindings preference: Expected object");
       bindings = {};
       // Fall through to handle OS defaults.
     }
@@ -288,65 +288,65 @@ hterm.Terminal.prototype.setProfile = function(
     try {
       this.keyboard.bindings.addBindings(bindings, !!useOsDefaults);
     } catch (ex) {
-      console.error('Error in keybindings preference: ' + ex);
+      console.error("Error in keybindings preference: " + ex);
     }
   };
 
   this.prefs_.addObservers(null, {
-    'alt-gr-mode': (v) => {
+    "alt-gr-mode": (v) => {
       if (v == null) {
-        if (navigator.language.toLowerCase() == 'en-us') {
-          v = 'none';
+        if (navigator.language.toLowerCase() == "en-us") {
+          v = "none";
         } else {
-          v = 'right-alt';
+          v = "right-alt";
         }
-      } else if (typeof v == 'string') {
+      } else if (typeof v == "string") {
         v = v.toLowerCase();
       } else {
-        v = 'none';
+        v = "none";
       }
 
       if (!/^(none|ctrl-alt|left-alt|right-alt)$/.test(v)) {
-        v = 'none';
+        v = "none";
       }
 
       this.keyboard.altGrMode = v;
     },
 
-    'alt-backspace-is-meta-backspace': (v) => {
+    "alt-backspace-is-meta-backspace": (v) => {
       this.keyboard.altBackspaceIsMetaBackspace = v;
     },
 
-    'alt-is-meta': (v) => {
+    "alt-is-meta": (v) => {
       this.keyboard.altIsMeta = v;
     },
 
-    'alt-sends-what': (v) => {
+    "alt-sends-what": (v) => {
       if (!/^(escape|8-bit|browser-key)$/.test(v)) {
-        v = 'escape';
+        v = "escape";
       }
 
       this.keyboard.altSendsWhat = v;
     },
 
-    'audible-bell-sound': (v) => {
+    "audible-bell-sound": (v) => {
       const ary = v.match(/^lib-resource:(\S+)/);
       if (ary) {
         const name = ary[1];
-        if (name !== 'hterm/audio/bell') {
+        if (name !== "hterm/audio/bell") {
           console.warn(`Invalid resource name '${name}'`);
-          this.prefs_.reset('audible-bell-sound');
+          this.prefs_.reset("audible-bell-sound");
           return;
         }
-        this.bellAudio_.setAttribute('src', hterm.resources.AU_BELL);
+        this.bellAudio_.setAttribute("src", hterm.resources.AU_BELL);
       } else {
-        this.bellAudio_.setAttribute('src', v);
+        this.bellAudio_.setAttribute("src", v);
       }
     },
 
-    'desktop-notification-bell': (v) => {
+    "desktop-notification-bell": (v) => {
       if (v && Notification) {
-        this.desktopNotificationBell_ = Notification.permission === 'granted';
+        this.desktopNotificationBell_ = Notification.permission === "granted";
         if (!this.desktopNotificationBell_) {
           // Note: We don't call Notification.requestPermission here because
           // Chrome requires the call be the result of a user action (such as an
@@ -354,38 +354,38 @@ hterm.Terminal.prototype.setProfile = function(
           //
           // A way of working around this would be to display a dialog in the
           // terminal with a "click-to-request-permission" button.
-          console.warn('desktop-notification-bell is true but we do not have ' +
-                       'permission to display notifications.');
+          console.warn("desktop-notification-bell is true but we do not have " +
+                       "permission to display notifications.");
         }
       } else {
         this.desktopNotificationBell_ = false;
       }
     },
 
-    'background-color': (v) => {
+    "background-color": (v) => {
       this.setBackgroundColor(v);
     },
 
-    'background-image': (v) => {
+    "background-image": (v) => {
       this.scrollPort_.setBackgroundImage(v);
     },
 
-    'background-size': (v) => {
+    "background-size": (v) => {
       this.scrollPort_.setBackgroundSize(v);
     },
 
-    'background-position': (v) => {
+    "background-position": (v) => {
       this.scrollPort_.setBackgroundPosition(v);
     },
 
-    'backspace-sends-backspace': (v) => {
+    "backspace-sends-backspace": (v) => {
       this.keyboard.backspaceSendsBackspace = v;
     },
 
-    'character-map-overrides': (v) => {
+    "character-map-overrides": (v) => {
       if (!(v == null || v instanceof Object)) {
-        console.warn('Preference character-map-modifications is not an ' +
-                     'object: ' + v);
+        console.warn("Preference character-map-modifications is not an " +
+                     "object: " + v);
         return;
       }
 
@@ -393,20 +393,20 @@ hterm.Terminal.prototype.setProfile = function(
       this.vt.characterMaps.setOverrides(v);
     },
 
-    'cursor-blink': (v) => {
+    "cursor-blink": (v) => {
       this.setCursorBlink(!!v);
     },
 
-    'cursor-shape': (v) => {
+    "cursor-shape": (v) => {
       this.setCursorShape(v);
     },
 
-    'cursor-blink-cycle': (v) => {
+    "cursor-blink-cycle": (v) => {
         if (v instanceof Array &&
-            typeof v[0] == 'number' &&
-            typeof v[1] == 'number') {
+            typeof v[0] == "number" &&
+            typeof v[1] == "number") {
           this.cursorBlinkCycle_ = v;
-        } else if (typeof v == 'number') {
+        } else if (typeof v == "number") {
           this.cursorBlinkCycle_ = [v, v];
         } else {
           // Fast blink indicates an error.
@@ -414,14 +414,14 @@ hterm.Terminal.prototype.setProfile = function(
         }
     },
 
-    'cursor-color': (v) => {
+    "cursor-color": (v) => {
       this.setCursorColor(v);
     },
 
-    'color-palette-overrides': (v) => {
+    "color-palette-overrides": (v) => {
       if (!(v == null || v instanceof Object || v instanceof Array)) {
-        console.warn('Preference color-palette-overrides is not an array or ' +
-                     'object: ' + v);
+        console.warn("Preference color-palette-overrides is not an array or " +
+                     "object: " + v);
         return;
       }
 
@@ -435,7 +435,7 @@ hterm.Terminal.prototype.setProfile = function(
         for (const key in v) {
           const i = parseInt(key, 10);
           if (isNaN(i) || i < 0 || i > 255) {
-            console.log('Invalid value in palette: ' + key + ': ' + v[key]);
+            console.log("Invalid value in palette: " + key + ": " + v[key]);
             continue;
           }
 
@@ -453,81 +453,81 @@ hterm.Terminal.prototype.setProfile = function(
       this.alternateScreen_.textAttributes.colorPaletteOverrides = [];
     },
 
-    'copy-on-select': (v) => {
+    "copy-on-select": (v) => {
       this.copyOnSelect = !!v;
     },
 
-    'use-default-window-copy': (v) => {
+    "use-default-window-copy": (v) => {
       this.useDefaultWindowCopy = !!v;
     },
 
-    'clear-selection-after-copy': (v) => {
+    "clear-selection-after-copy": (v) => {
       this.clearSelectionAfterCopy = !!v;
     },
 
-    'ctrl-plus-minus-zero-zoom': (v) => {
+    "ctrl-plus-minus-zero-zoom": (v) => {
       this.keyboard.ctrlPlusMinusZeroZoom = v;
     },
 
-    'ctrl-c-copy': (v) => {
+    "ctrl-c-copy": (v) => {
       this.keyboard.ctrlCCopy = v;
     },
 
-    'ctrl-v-paste': (v) => {
+    "ctrl-v-paste": (v) => {
       this.keyboard.ctrlVPaste = v;
       this.scrollPort_.setCtrlVPaste(v);
     },
 
-    'paste-on-drop': (v) => {
+    "paste-on-drop": (v) => {
       this.scrollPort_.setPasteOnDrop(v);
     },
 
-    'east-asian-ambiguous-as-two-column': (v) => {
+    "east-asian-ambiguous-as-two-column": (v) => {
       hterm.wc.regardCjkAmbiguous = v;
     },
 
-    'enable-8-bit-control': (v) => {
+    "enable-8-bit-control": (v) => {
       this.vt.enable8BitControl = !!v;
     },
 
-    'enable-bold': (v) => {
+    "enable-bold": (v) => {
       this.syncBoldSafeState();
     },
 
-    'enable-bold-as-bright': (v) => {
+    "enable-bold-as-bright": (v) => {
       this.primaryScreen_.textAttributes.enableBoldAsBright = !!v;
       this.alternateScreen_.textAttributes.enableBoldAsBright = !!v;
     },
 
-    'enable-blink': (v) => {
+    "enable-blink": (v) => {
       this.setTextBlink(!!v);
     },
 
-    'enable-clipboard-write': (v) => {
+    "enable-clipboard-write": (v) => {
       this.vt.enableClipboardWrite = !!v;
     },
 
-    'enable-dec12': (v) => {
+    "enable-dec12": (v) => {
       this.vt.enableDec12 = !!v;
     },
 
-    'enable-csi-j-3': (v) => {
+    "enable-csi-j-3": (v) => {
       this.vt.enableCsiJ3 = !!v;
     },
 
-    'find-result-color': (v) => {
+    "find-result-color": (v) => {
       this.findBar.setFindResultColor(v);
     },
 
-    'find-result-selected-color': (v) => {
+    "find-result-selected-color": (v) => {
       this.findBar.setFindResultSelectedColor(v);
     },
 
-    'font-family': (v) => {
+    "font-family": (v) => {
       this.syncFontFamily();
     },
 
-    'font-size': (v) => {
+    "font-size": (v) => {
       v = parseInt(v, 10);
       if (isNaN(v) || v <= 0) {
         console.error(`Invalid font size: ${v}`);
@@ -537,31 +537,31 @@ hterm.Terminal.prototype.setProfile = function(
       this.setFontSize(v);
     },
 
-    'font-smoothing': (v) => {
+    "font-smoothing": (v) => {
       this.syncFontFamily();
     },
 
-    'foreground-color': (v) => {
+    "foreground-color": (v) => {
       this.setForegroundColor(v);
     },
 
-    'hide-mouse-while-typing': (v) => {
+    "hide-mouse-while-typing": (v) => {
       this.setAutomaticMouseHiding(v);
     },
 
-    'home-keys-scroll': (v) => {
+    "home-keys-scroll": (v) => {
       this.keyboard.homeKeysScroll = v;
     },
 
-    'keybindings': (v) => {
-      loadKeyBindings(v, this.prefs_.get('keybindings-os-defaults'));
+    "keybindings": (v) => {
+      loadKeyBindings(v, this.prefs_.get("keybindings-os-defaults"));
     },
 
-    'keybindings-os-defaults': (v) => {
-      loadKeyBindings(this.prefs_.get('keybindings'), v);
+    "keybindings-os-defaults": (v) => {
+      loadKeyBindings(this.prefs_.get("keybindings"), v);
     },
 
-    'line-height-padding-size': (v) => {
+    "line-height-padding-size": (v) => {
       v = parseFloat(v);
       if (isNaN(v)) {
         console.error(`Invalid line height padding size: ${v}`);
@@ -570,83 +570,83 @@ hterm.Terminal.prototype.setProfile = function(
       this.setLineHeightPaddingSize(v);
     },
 
-    'media-keys-are-fkeys': (v) => {
+    "media-keys-are-fkeys": (v) => {
       this.keyboard.mediaKeysAreFKeys = v;
     },
 
-    'meta-sends-escape': (v) => {
+    "meta-sends-escape": (v) => {
       this.keyboard.metaSendsEscape = v;
     },
 
-    'mouse-right-click-paste': (v) => {
+    "mouse-right-click-paste": (v) => {
       this.mouseRightClickPaste = v;
     },
 
-    'mouse-paste-button': (v) => {
+    "mouse-paste-button": (v) => {
       this.syncMousePasteButton();
     },
 
-    'page-keys-scroll': (v) => {
+    "page-keys-scroll": (v) => {
       this.keyboard.pageKeysScroll = v;
     },
 
-    'pass-alt-number': (v) => {
+    "pass-alt-number": (v) => {
       if (v == null) {
         // Let Alt+1..9 pass to the browser (to control tab switching) on
         // non-OS X systems, or if hterm is not opened in an app window.
-        v = (hterm.os !== 'mac' &&
-             hterm.windowType !== 'popup' &&
-             hterm.windowType !== 'app');
+        v = (hterm.os !== "mac" &&
+             hterm.windowType !== "popup" &&
+             hterm.windowType !== "app");
       }
 
       this.passAltNumber = v;
     },
 
-    'pass-ctrl-number': (v) => {
+    "pass-ctrl-number": (v) => {
       if (v == null) {
         // Let Ctrl+1..9 pass to the browser (to control tab switching) on
         // non-OS X systems, or if hterm is not opened in an app window.
-        v = (hterm.os !== 'mac' &&
-             hterm.windowType !== 'popup' &&
-             hterm.windowType !== 'app');
+        v = (hterm.os !== "mac" &&
+             hterm.windowType !== "popup" &&
+             hterm.windowType !== "app");
       }
 
       this.passCtrlNumber = v;
     },
 
-    'pass-ctrl-n': (v) => {
+    "pass-ctrl-n": (v) => {
       this.passCtrlN = v;
     },
 
-    'pass-ctrl-t': (v) => {
+    "pass-ctrl-t": (v) => {
       this.passCtrlT = v;
     },
 
-    'pass-ctrl-tab': (v) => {
+    "pass-ctrl-tab": (v) => {
       this.passCtrlTab = v;
     },
 
-    'pass-ctrl-w': (v) => {
+    "pass-ctrl-w": (v) => {
       this.passCtrlW = v;
     },
 
-    'pass-meta-number': (v) => {
+    "pass-meta-number": (v) => {
       if (v == null) {
         // Let Meta+1..9 pass to the browser (to control tab switching) on
         // OS X systems, or if hterm is not opened in an app window.
-        v = (hterm.os === 'mac' &&
-             hterm.windowType !== 'popup' &&
-             hterm.windowType !== 'app');
+        v = (hterm.os === "mac" &&
+             hterm.windowType !== "popup" &&
+             hterm.windowType !== "app");
       }
 
       this.passMetaNumber = v;
     },
 
-    'pass-meta-v': (v) => {
+    "pass-meta-v": (v) => {
       this.keyboard.passMetaV = v;
     },
 
-    'screen-padding-size': (v) => {
+    "screen-padding-size": (v) => {
       v = parseInt(v, 10);
       if (isNaN(v) || v < 0) {
         console.error(`Invalid screen padding size: ${v}`);
@@ -655,7 +655,7 @@ hterm.Terminal.prototype.setProfile = function(
       this.setScreenPaddingSize(v);
     },
 
-    'screen-border-size': (v) => {
+    "screen-border-size": (v) => {
       v = parseInt(v, 10);
       if (isNaN(v) || v < 0) {
         console.error(`Invalid screen border size: ${v}`);
@@ -664,62 +664,62 @@ hterm.Terminal.prototype.setProfile = function(
       this.setScreenBorderSize(v);
     },
 
-    'screen-border-color': (v) => {
+    "screen-border-color": (v) => {
       this.div_.style.borderColor = v;
     },
 
-    'scroll-on-keystroke': (v) => {
+    "scroll-on-keystroke": (v) => {
       this.scrollOnKeystroke_ = v;
     },
 
-    'scroll-on-output': (v) => {
+    "scroll-on-output": (v) => {
       this.scrollOnOutput_ = v;
     },
 
-    'scrollbar-visible': (v) => {
+    "scrollbar-visible": (v) => {
       this.setScrollbarVisible(v);
     },
 
-    'scroll-wheel-may-send-arrow-keys': (v) => {
+    "scroll-wheel-may-send-arrow-keys": (v) => {
       this.scrollWheelArrowKeys_ = v;
     },
 
-    'scroll-wheel-move-multiplier': (v) => {
+    "scroll-wheel-move-multiplier": (v) => {
       this.setScrollWheelMoveMultipler(v);
     },
 
-    'shift-insert-paste': (v) => {
+    "shift-insert-paste": (v) => {
       this.keyboard.shiftInsertPaste = v;
     },
 
-    'terminal-encoding': (v) => {
+    "terminal-encoding": (v) => {
       this.vt.setEncoding(v);
     },
 
-    'user-css': (v) => {
+    "user-css": (v) => {
       this.scrollPort_.setUserCssUrl(v);
     },
 
-    'user-css-text': (v) => {
+    "user-css-text": (v) => {
       this.scrollPort_.setUserCssText(v);
     },
 
-    'word-break-match-left': (v) => {
+    "word-break-match-left": (v) => {
       this.primaryScreen_.wordBreakMatchLeft = v;
       this.alternateScreen_.wordBreakMatchLeft = v;
     },
 
-    'word-break-match-right': (v) => {
+    "word-break-match-right": (v) => {
       this.primaryScreen_.wordBreakMatchRight = v;
       this.alternateScreen_.wordBreakMatchRight = v;
     },
 
-    'word-break-match-middle': (v) => {
+    "word-break-match-middle": (v) => {
       this.primaryScreen_.wordBreakMatchMiddle = v;
       this.alternateScreen_.wordBreakMatchMiddle = v;
     },
 
-    'allow-images-inline': (v) => {
+    "allow-images-inline": (v) => {
       this.allowImagesInline = v;
     },
   });
@@ -767,10 +767,10 @@ hterm.Terminal.prototype.setBracketedPaste = function(state) {
  */
 hterm.Terminal.prototype.setCursorColor = function(color) {
   if (color === undefined) {
-    color = this.prefs_.getString('cursor-color');
+    color = this.prefs_.getString("cursor-color");
   }
 
-  this.setCssVar('cursor-color', color);
+  this.setCssVar("cursor-color", color);
 };
 
 /**
@@ -779,7 +779,7 @@ hterm.Terminal.prototype.setCursorColor = function(color) {
  * @return {string}
  */
 hterm.Terminal.prototype.getCursorColor = function() {
-  return this.getCssVar('cursor-color');
+  return this.getCssVar("cursor-color");
 };
 
 /**
@@ -802,7 +802,7 @@ hterm.Terminal.prototype.setSelectionEnabled = function(state) {
  */
 hterm.Terminal.prototype.setBackgroundImage = function(cssUrl) {
   if (cssUrl === undefined) {
-    cssUrl = this.prefs_.getString('background-image');
+    cssUrl = this.prefs_.getString("background-image");
   }
   this.scrollPort_.setBackgroundImage(cssUrl);
 };
@@ -818,11 +818,11 @@ hterm.Terminal.prototype.setBackgroundImage = function(cssUrl) {
  */
 hterm.Terminal.prototype.setBackgroundColor = function(color) {
   if (color === undefined) {
-    color = this.prefs_.getString('background-color');
+    color = this.prefs_.getString("background-color");
   }
 
   this.backgroundColor_ = lib.colors.normalizeCSS(color);
-  this.setRgbColorCssVar('background-color', this.backgroundColor_);
+  this.setRgbColorCssVar("background-color", this.backgroundColor_);
 };
 
 /**
@@ -848,11 +848,11 @@ hterm.Terminal.prototype.getBackgroundColor = function() {
  */
 hterm.Terminal.prototype.setForegroundColor = function(color) {
   if (color === undefined) {
-    color = this.prefs_.getString('foreground-color');
+    color = this.prefs_.getString("foreground-color");
   }
 
   this.foregroundColor_ = lib.colors.normalizeCSS(color);
-  this.setRgbColorCssVar('foreground-color', this.foregroundColor_);
+  this.setRgbColorCssVar("foreground-color", this.foregroundColor_);
 };
 
 /**
@@ -903,7 +903,7 @@ hterm.Terminal.prototype.uninstallKeyboard = function() {
  * @param {string=} prefix The variable namespace/prefix to use.
  */
 hterm.Terminal.prototype.setCssVar = function(name, value,
-                                              prefix = '--hterm-') {
+                                              prefix = "--hterm-") {
   this.document_.documentElement.style.setProperty(
       `${prefix}${name}`, value.toString());
 };
@@ -918,7 +918,7 @@ hterm.Terminal.prototype.setCssVar = function(name, value,
 hterm.Terminal.prototype.setRgbColorCssVar = function(name, rgb) {
   const ary = rgb ? lib.colors.crackRGB(rgb) : null;
   if (ary) {
-    this.setCssVar(name, ary.slice(0, 3).join(','));
+    this.setCssVar(name, ary.slice(0, 3).join(","));
   }
 };
 
@@ -975,7 +975,7 @@ hterm.Terminal.prototype.resetColorPalette = function() {
  * @param {string=} prefix The variable namespace/prefix to use.
  * @return {string} The current setting for this variable.
  */
-hterm.Terminal.prototype.getCssVar = function(name, prefix = '--hterm-') {
+hterm.Terminal.prototype.getCssVar = function(name, prefix = "--hterm-") {
   return this.document_.documentElement.style.getPropertyValue(
       `${prefix}${name}`);
 };
@@ -991,9 +991,9 @@ hterm.Terminal.prototype.getScrollPort = function() {
  * Update CSS character size variables to match the scrollport.
  */
 hterm.Terminal.prototype.updateCssCharsize_ = function() {
-  this.setCssVar('charsize-width', this.scrollPort_.characterSize.width + 'px');
-  this.setCssVar('charsize-height',
-                 this.scrollPort_.characterSize.height + 'px');
+  this.setCssVar("charsize-width", this.scrollPort_.characterSize.width + "px");
+  this.setCssVar("charsize-height",
+                 this.scrollPort_.characterSize.height + "px");
 };
 
 /**
@@ -1007,11 +1007,11 @@ hterm.Terminal.prototype.updateCssCharsize_ = function() {
  */
 hterm.Terminal.prototype.setFontSize = function(px) {
   if (px <= 0) {
-    px = this.prefs_.getNumber('font-size');
+    px = this.prefs_.getNumber("font-size");
   }
 
   this.scrollPort_.setFontSize(px);
-  this.setCssVar('font-size', `${px}px`);
+  this.setCssVar("font-size", `${px}px`);
   this.updateCssCharsize_();
 };
 
@@ -1037,8 +1037,8 @@ hterm.Terminal.prototype.getFontFamily = function() {
  * Set the CSS "font-family" for this terminal.
  */
 hterm.Terminal.prototype.syncFontFamily = function() {
-  this.scrollPort_.setFontFamily(this.prefs_.getString('font-family'),
-                                 this.prefs_.getString('font-smoothing'));
+  this.scrollPort_.setFontFamily(this.prefs_.getString("font-family"),
+                                 this.prefs_.getString("font-smoothing"));
   this.updateCssCharsize_();
   this.syncBoldSafeState();
 };
@@ -1048,13 +1048,13 @@ hterm.Terminal.prototype.syncFontFamily = function() {
  * autodetecting if necessary.
  */
 hterm.Terminal.prototype.syncMousePasteButton = function() {
-  const button = this.prefs_.get('mouse-paste-button');
-  if (typeof button == 'number') {
+  const button = this.prefs_.get("mouse-paste-button");
+  if (typeof button == "number") {
     this.mousePasteButton = button;
     return;
   }
 
-  if (hterm.os != 'linux') {
+  if (hterm.os != "linux") {
     this.mousePasteButton = 1;  // Middle mouse button.
   } else {
     this.mousePasteButton = 2;  // Right mouse button.
@@ -1066,7 +1066,7 @@ hterm.Terminal.prototype.syncMousePasteButton = function() {
  * necessary.
  */
 hterm.Terminal.prototype.syncBoldSafeState = function() {
-  const enableBold = this.prefs_.get('enable-bold');
+  const enableBold = this.prefs_.get("enable-bold");
   if (enableBold !== null) {
     this.primaryScreen_.textAttributes.enableBold = enableBold;
     this.alternateScreen_.textAttributes.enableBold = enableBold;
@@ -1074,12 +1074,12 @@ hterm.Terminal.prototype.syncBoldSafeState = function() {
   }
 
   const normalSize = this.scrollPort_.measureCharacterSize();
-  const boldSize = this.scrollPort_.measureCharacterSize('bold');
+  const boldSize = this.scrollPort_.measureCharacterSize("bold");
 
   const isBoldSafe = normalSize.equals(boldSize);
   if (!isBoldSafe) {
-    console.warn('Bold characters disabled: Size of bold weight differs ' +
-                 'from normal.  Font family is: ' +
+    console.warn("Bold characters disabled: Size of bold weight differs " +
+                 "from normal.  Font family is: " +
                  this.scrollPort_.getFontFamily());
   }
 
@@ -1094,19 +1094,19 @@ hterm.Terminal.prototype.syncBoldSafeState = function() {
  */
 hterm.Terminal.prototype.setTextBlink = function(state) {
   if (state === undefined) {
-    state = this.prefs_.getBoolean('enable-blink');
+    state = this.prefs_.getBoolean("enable-blink");
   }
-  this.setCssVar('blink-node-duration', state ? '0.7s' : '0');
+  this.setCssVar("blink-node-duration", state ? "0.7s" : "0");
 };
 
 /**
  * Set the mouse cursor style based on the current terminal mode.
  */
 hterm.Terminal.prototype.syncMouseStyle = function() {
-  this.setCssVar('mouse-cursor-style',
+  this.setCssVar("mouse-cursor-style",
                  this.vt.mouseReport == this.vt.MOUSE_REPORT_DISABLED ?
-                     'var(--hterm-mouse-cursor-text)' :
-                     'var(--hterm-mouse-cursor-default)');
+                     "var(--hterm-mouse-cursor-text)" :
+                     "var(--hterm-mouse-cursor-default)");
 };
 
 /**
@@ -1243,7 +1243,7 @@ hterm.Terminal.prototype.setLineHeightPaddingSize = function(size) {
  * @param {number} size
  */
 hterm.Terminal.prototype.setScreenPaddingSize = function(size) {
-  this.setCssVar('screen-padding-size', `${size}px`);
+  this.setCssVar("screen-padding-size", `${size}px`);
   this.scrollPort_.setScreenPaddingSize(size);
 };
 
@@ -1265,7 +1265,7 @@ hterm.Terminal.prototype.setScreenBorderSize = function(size) {
  */
 hterm.Terminal.prototype.setWidth = function(columnCount) {
   if (columnCount == null) {
-    this.div_.style.width = '100%';
+    this.div_.style.width = "100%";
     return;
   }
 
@@ -1275,7 +1275,7 @@ hterm.Terminal.prototype.setWidth = function(columnCount) {
   this.div_.style.width = Math.ceil(
       (this.scrollPort_.characterSize.width * columnCount) +
       this.scrollPort_.screenPaddingSize + rightPadding +
-      (2 * this.screenBorderSize_)) + 'px';
+      (2 * this.screenBorderSize_)) + "px";
   this.realizeSize_(columnCount, this.screenSize.height);
   this.scheduleSyncCursorPosition_();
 };
@@ -1287,13 +1287,13 @@ hterm.Terminal.prototype.setWidth = function(columnCount) {
  */
 hterm.Terminal.prototype.setHeight = function(rowCount) {
   if (rowCount == null) {
-    this.div_.style.height = '100%';
+    this.div_.style.height = "100%";
     return;
   }
 
   this.div_.style.height = (this.scrollPort_.characterSize.height * rowCount) +
                            (2 * this.scrollPort_.screenPaddingSize) +
-                           (2 * this.screenBorderSize_) + 'px';
+                           (2 * this.screenBorderSize_) + "px";
   this.realizeSize_(this.screenSize.width, rowCount);
   this.scheduleSyncCursorPosition_();
 };
@@ -1338,7 +1338,7 @@ hterm.Terminal.prototype.realizeSize_ = function(columnCount, rowCount) {
  */
 hterm.Terminal.prototype.realizeWidth_ = function(columnCount) {
   if (columnCount <= 0) {
-    throw new Error('Attempt to realize bad width: ' + columnCount);
+    throw new Error("Attempt to realize bad width: " + columnCount);
   }
 
   const deltaColumns = columnCount - this.screen_.getWidth();
@@ -1382,7 +1382,7 @@ hterm.Terminal.prototype.realizeWidth_ = function(columnCount) {
  */
 hterm.Terminal.prototype.realizeHeight_ = function(rowCount) {
   if (rowCount <= 0) {
-    throw new Error('Attempt to realize bad height: ' + rowCount);
+    throw new Error("Attempt to realize bad height: " + rowCount);
   }
 
   let deltaRows = rowCount - this.screen_.getHeight();
@@ -1541,7 +1541,7 @@ hterm.Terminal.prototype.reset = function() {
 
   // Reset terminal options to their default values.
   this.options_ = new hterm.Options();
-  this.setCursorBlink(!!this.prefs_.get('cursor-blink'));
+  this.setCursorBlink(!!this.prefs_.get("cursor-blink"));
 
   this.setVTScrollRegion(null, null);
 
@@ -1706,15 +1706,15 @@ hterm.Terminal.prototype.interpret = function(str) {
  */
 hterm.Terminal.prototype.decorate = function(div) {
   const charset = div.ownerDocument.characterSet.toLowerCase();
-  if (charset != 'utf-8') {
+  if (charset != "utf-8") {
     console.warn(`Document encoding should be set to utf-8, not "${charset}";` +
-                 ` Add <meta charset='utf-8'/> to your HTML <head> to fix.`);
+                 " Add <meta charset='utf-8'/> to your HTML <head> to fix.");
   }
 
   this.div_ = div;
-  this.div_.style.borderStyle = 'solid';
+  this.div_.style.borderStyle = "solid";
   this.div_.style.borderWidth = 0;
-  this.div_.style.boxSizing = 'border-box';
+  this.div_.style.boxSizing = "border-box";
 
   this.accessibilityReader_ = new hterm.AccessibilityReader(div);
 
@@ -1729,23 +1729,23 @@ hterm.Terminal.prototype.decorate = function(div) {
  */
 hterm.Terminal.prototype.setupScrollPort_ = function() {
   this.scrollPort_.setBackgroundImage(
-      this.prefs_.getString('background-image'));
-  this.scrollPort_.setBackgroundSize(this.prefs_.getString('background-size'));
+      this.prefs_.getString("background-image"));
+  this.scrollPort_.setBackgroundSize(this.prefs_.getString("background-size"));
   this.scrollPort_.setBackgroundPosition(
-      this.prefs_.getString('background-position'));
-  this.scrollPort_.setUserCssUrl(this.prefs_.getString('user-css'));
-  this.scrollPort_.setUserCssText(this.prefs_.getString('user-css-text'));
+      this.prefs_.getString("background-position"));
+  this.scrollPort_.setUserCssUrl(this.prefs_.getString("user-css"));
+  this.scrollPort_.setUserCssText(this.prefs_.getString("user-css-text"));
   this.scrollPort_.setAccessibilityReader(
       lib.notNull(this.accessibilityReader_));
 
   this.div_.focus = this.focus.bind(this);
 
-  this.setFontSize(this.prefs_.getNumber('font-size'));
+  this.setFontSize(this.prefs_.getNumber("font-size"));
   this.syncFontFamily();
 
-  this.setScrollbarVisible(this.prefs_.getBoolean('scrollbar-visible'));
+  this.setScrollbarVisible(this.prefs_.getBoolean("scrollbar-visible"));
   this.setScrollWheelMoveMultipler(
-      this.prefs_.getNumber('scroll-wheel-move-multiplier'));
+      this.prefs_.getNumber("scroll-wheel-move-multiplier"));
 
   this.document_ = this.scrollPort_.getDocument();
   this.accessibilityReader_.decorate(this.document_);
@@ -1759,29 +1759,29 @@ hterm.Terminal.prototype.setupScrollPort_ = function() {
   const onMouse = this.onMouse_.bind(this);
   const screenNode = this.scrollPort_.getScreenNode();
   screenNode.addEventListener(
-      'mousedown', /** @type {!EventListener} */ (onMouse));
+      "mousedown", /** @type {!EventListener} */ (onMouse));
   screenNode.addEventListener(
-      'mouseup', /** @type {!EventListener} */ (onMouse));
+      "mouseup", /** @type {!EventListener} */ (onMouse));
   screenNode.addEventListener(
-      'mousemove', /** @type {!EventListener} */ (onMouse));
+      "mousemove", /** @type {!EventListener} */ (onMouse));
   this.scrollPort_.onScrollWheel = onMouse;
 
   screenNode.addEventListener(
-      'keydown',
+      "keydown",
       /** @type {!EventListener} */ (this.onKeyboardActivity_.bind(this)));
 
   screenNode.addEventListener(
-      'focus', this.onFocusChange_.bind(this, true));
+      "focus", this.onFocusChange_.bind(this, true));
   // Listen for mousedown events on the screenNode as in FF the focus
   // events don't bubble.
-  screenNode.addEventListener('mousedown', function() {
+  screenNode.addEventListener("mousedown", function() {
     setTimeout(this.onFocusChange_.bind(this, true));
   }.bind(this));
 
   screenNode.addEventListener(
-      'blur', this.onFocusChange_.bind(this, false));
+      "blur", this.onFocusChange_.bind(this, false));
 
-  const style = this.document_.createElement('style');
+  const style = this.document_.createElement("style");
   style.textContent = `
 .cursor-node[focus="false"] {
   box-sizing: border-box;
@@ -1848,8 +1848,8 @@ menuitem:hover {
   --hterm-screen-padding-size: 0;
 
 ${lib.colors.stockPalette.map((c, i) => `
-  --hterm-color-${i}: ${lib.colors.crackRGB(c).slice(0, 3).join(',')};
-`).join('')}
+  --hterm-color-${i}: ${lib.colors.crackRGB(c).slice(0, 3).join(",")};
+`).join("")}
 }
 .uri-node:hover {
   text-decoration: underline;
@@ -1873,16 +1873,16 @@ ${lib.colors.stockPalette.map((c, i) => `
   // way to split the sheet up to before & after the user-css settings.
   this.document_.head.insertBefore(style, this.document_.head.firstChild);
 
-  this.cursorNode_ = this.document_.createElement('div');
-  this.cursorNode_.id = 'hterm:terminal-cursor';
-  this.cursorNode_.className = 'cursor-node';
+  this.cursorNode_ = this.document_.createElement("div");
+  this.cursorNode_.id = "hterm:terminal-cursor";
+  this.cursorNode_.className = "cursor-node";
   this.cursorNode_.style.cssText = `
 position: absolute;
 left: calc(var(--hterm-screen-padding-size) +
     var(--hterm-charsize-width) * var(--hterm-cursor-offset-col));
 top: calc(var(--hterm-screen-padding-size) +
     var(--hterm-charsize-height) * var(--hterm-cursor-offset-row));
-display: ${this.options_.cursorVisible ? '' : 'none'};
+display: ${this.options_.cursorVisible ? "" : "none"};
 width: var(--hterm-charsize-width);
 height: var(--hterm-charsize-height);
 background-color: var(--hterm-cursor-color);
@@ -1890,7 +1890,7 @@ border-color: var(--hterm-cursor-color);
 transition: opacity, background-color 100ms linear;`;
 
   this.setCursorColor();
-  this.setCursorBlink(!!this.prefs_.get('cursor-blink'));
+  this.setCursorBlink(!!this.prefs_.get("cursor-blink"));
   this.restyleCursor_();
 
   this.document_.body.appendChild(this.cursorNode_);
@@ -1902,19 +1902,19 @@ transition: opacity, background-color 100ms linear;`;
   // events do not cause the scrollport to scroll.
   //
   // It's a hack, but it's the cleanest way I could find.
-  this.scrollBlockerNode_ = this.document_.createElement('div');
-  this.scrollBlockerNode_.id = 'hterm:mouse-drag-scroll-blocker';
-  this.scrollBlockerNode_.setAttribute('aria-hidden', 'true');
+  this.scrollBlockerNode_ = this.document_.createElement("div");
+  this.scrollBlockerNode_.id = "hterm:mouse-drag-scroll-blocker";
+  this.scrollBlockerNode_.setAttribute("aria-hidden", "true");
   this.scrollBlockerNode_.style.cssText =
-      ('position: absolute;' +
-       'top: -99px;' +
-       'display: block;' +
-       'width: 10px;' +
-       'height: 10px;');
+      ("position: absolute;" +
+       "top: -99px;" +
+       "display: block;" +
+       "width: 10px;" +
+       "height: 10px;");
   this.document_.body.appendChild(this.scrollBlockerNode_);
 
   this.scrollPort_.onScrollWheel = onMouse;
-  ['mousedown', 'mouseup', 'mousemove', 'click', 'dblclick',
+  ["mousedown", "mouseup", "mousemove", "click", "dblclick",
    ].forEach(function(event) {
        this.scrollBlockerNode_.addEventListener(event, onMouse);
        this.cursorNode_.addEventListener(
@@ -1923,7 +1923,7 @@ transition: opacity, background-color 100ms linear;`;
            event, /** @type {!EventListener} */ (onMouse));
      }.bind(this));
 
-  this.cursorNode_.addEventListener('mousedown', function() {
+  this.cursorNode_.addEventListener("mousedown", function() {
       setTimeout(this.focus.bind(this));
     }.bind(this));
 
@@ -1931,7 +1931,7 @@ transition: opacity, background-color 100ms linear;`;
 
   // Re-sync fonts whenever a web font loads.
   this.document_.fonts.addEventListener(
-      'loadingdone', () => this.syncFontFamily());
+      "loadingdone", () => this.syncFontFamily());
 
   this.scrollPort_.focus();
   this.scrollPort_.scheduleRedraw();
@@ -2004,12 +2004,12 @@ hterm.Terminal.prototype.getRowsText = function(start, end) {
   for (let i = start; i < end; i++) {
     const node = this.getRowNode(i);
     ary.push(node.textContent);
-    if (i < end - 1 && !node.getAttribute('line-overflow')) {
-      ary.push('\n');
+    if (i < end - 1 && !node.getAttribute("line-overflow")) {
+      ary.push("\n");
     }
   }
 
-  return ary.join('');
+  return ary.join("");
 };
 
 /**
@@ -2063,8 +2063,8 @@ hterm.Terminal.prototype.appendRows_ = function(count) {
   let cursorRow = this.screen_.rowsArray.length;
   const offset = this.scrollbackRows_.length + cursorRow;
   for (let i = 0; i < count; i++) {
-    const row = this.document_.createElement('x-row');
-    row.appendChild(this.document_.createTextNode(''));
+    const row = this.document_.createElement("x-row");
+    row.appendChild(this.document_.createTextNode(""));
     row.rowIndex = offset + i;
     this.screen_.pushRow(row);
   }
@@ -2094,8 +2094,8 @@ hterm.Terminal.prototype.appendRows_ = function(count) {
  * The cursor will be positioned at column 0.
  */
 hterm.Terminal.prototype.insertRow_ = function() {
-  const row = this.document_.createElement('x-row');
-  row.appendChild(this.document_.createTextNode(''));
+  const row = this.document_.createElement("x-row");
+  row.appendChild(this.document_.createTextNode(""));
 
   this.scrollbackRows_.push(this.screen_.shiftRow());
 
@@ -2392,7 +2392,7 @@ hterm.Terminal.prototype.eraseToLeft = function() {
   const cursor = this.saveCursor();
   this.setCursorColumn(0);
   const count = cursor.column + 1;
-  this.screen_.overwriteString(' '.repeat(count), count);
+  this.screen_.overwriteString(" ".repeat(count), count);
     this.findBar.scheduleNotifyChanges(
         this.scrollbackRows_.length + this.screen_.cursorPosition.row);
   this.restoreCursor(cursor);
@@ -2438,7 +2438,7 @@ hterm.Terminal.prototype.eraseToRight = function(count = undefined) {
   }
 
   const cursor = this.saveCursor();
-  this.screen_.overwriteString(' '.repeat(count), count);
+  this.screen_.overwriteString(" ".repeat(count), count);
   this.restoreCursor(cursor);
   this.clearCursorOverflow();
 };
@@ -2633,7 +2633,7 @@ hterm.Terminal.prototype.deleteLines = function(count) {
 hterm.Terminal.prototype.insertSpace = function(count) {
   const cursor = this.saveCursor();
 
-  const ws = ' '.repeat(count || 1);
+  const ws = " ".repeat(count || 1);
   this.screen_.insertString(ws, ws.length);
   this.screen_.maybeClipCurrentRow();
   this.findBar.scheduleNotifyChanges(
@@ -2654,7 +2654,7 @@ hterm.Terminal.prototype.deleteChars = function(count) {
   if (deleted && !this.screen_.textAttributes.isDefault()) {
     const cursor = this.saveCursor();
     this.setCursorColumn(this.screenSize.width - deleted);
-    this.screen_.insertString(' '.repeat(deleted));
+    this.screen_.insertString(" ".repeat(deleted));
     this.restoreCursor(cursor);
   }
 
@@ -2944,11 +2944,11 @@ hterm.Terminal.prototype.cursorRight = function(count) {
 hterm.Terminal.prototype.setReverseVideo = function(state) {
   this.options_.reverseVideo = state;
   if (state) {
-    this.setRgbColorCssVar('foreground-color', this.backgroundColor_);
-    this.setRgbColorCssVar('background-color', this.foregroundColor_);
+    this.setRgbColorCssVar("foreground-color", this.backgroundColor_);
+    this.setRgbColorCssVar("background-color", this.foregroundColor_);
   } else {
-    this.setRgbColorCssVar('foreground-color', this.foregroundColor_);
-    this.setRgbColorCssVar('background-color', this.backgroundColor_);
+    this.setRgbColorCssVar("foreground-color", this.foregroundColor_);
+    this.setRgbColorCssVar("background-color", this.backgroundColor_);
   }
 };
 
@@ -2958,16 +2958,16 @@ hterm.Terminal.prototype.setReverseVideo = function(state) {
  * This will not play the bell audio more than once per second.
  */
 hterm.Terminal.prototype.ringBell = function() {
-  this.cursorNode_.setAttribute('bell', 'true');
+  this.cursorNode_.setAttribute("bell", "true");
 
-  setTimeout(() => this.cursorNode_.removeAttribute('bell'), 200);
+  setTimeout(() => this.cursorNode_.removeAttribute("bell"), 200);
 
   // bellSquelchTimeout_ affects both audio and notification bells.
   if (this.bellSquelchTimeout_) {
     return;
   }
 
-  if (this.bellAudio_.getAttribute('src')) {
+  if (this.bellAudio_.getAttribute("src")) {
     this.bellAudio_.play();
     this.bellSequelchTimeout_ = setTimeout(() => {
         this.bellSquelchTimeout_ = null;
@@ -3156,13 +3156,13 @@ hterm.Terminal.prototype.setCursorVisible = function(state) {
       clearTimeout(this.timeouts_.cursorBlink);
       delete this.timeouts_.cursorBlink;
     }
-    this.cursorNode_.setAttribute('visible', 'false');
+    this.cursorNode_.setAttribute("visible", "false");
     return;
   }
 
   this.syncCursorPosition_();
 
-  this.cursorNode_.setAttribute('visible', 'true');
+  this.cursorNode_.setAttribute("visible", "true");
 
   if (this.options_.cursorBlink) {
     if (this.timeouts_.cursorBlink) {
@@ -3236,29 +3236,29 @@ hterm.Terminal.prototype.syncCursorPosition_ = function() {
   if (cursorRowIndex > bottomRowIndex) {
     // Cursor is scrolled off screen, hide it.
     this.cursorOffScreen_ = true;
-    this.cursorNode_.style.display = 'none';
+    this.cursorNode_.style.display = "none";
     return false;
   }
 
-  if (this.cursorNode_.style.display == 'none') {
+  if (this.cursorNode_.style.display == "none") {
     // Re-display the terminal cursor if it was hidden.
     this.cursorOffScreen_ = false;
-    this.cursorNode_.style.display = '';
+    this.cursorNode_.style.display = "";
   }
 
   // Position the cursor using CSS variable math.  If we do the math in JS,
   // the float math will end up being more precise than the CSS which will
   // cause the cursor tracking to be off.
   this.setCssVar(
-      'cursor-offset-row',
+      "cursor-offset-row",
       `${cursorRowIndex - topRowIndex} + ` +
       `${this.scrollPort_.visibleRowTopMargin}px`);
-  this.setCssVar('cursor-offset-col', this.screen_.cursorPosition.column);
+  this.setCssVar("cursor-offset-col", this.screen_.cursorPosition.column);
 
-  this.cursorNode_.setAttribute('title',
-                                '(' + this.screen_.cursorPosition.column +
-                                ', ' + this.screen_.cursorPosition.row +
-                                ')');
+  this.cursorNode_.setAttribute("title",
+                                "(" + this.screen_.cursorPosition.column +
+                                ", " + this.screen_.cursorPosition.row +
+                                ")");
 
   // Update the caret for a11y purposes unless FindBar has focus which it should
   // keep.
@@ -3278,12 +3278,12 @@ hterm.Terminal.prototype.syncCursorPosition_ = function() {
 hterm.Terminal.prototype.restyleCursor_ = function() {
   let shape = this.cursorShape_;
 
-  if (this.cursorNode_.getAttribute('focus') == 'false') {
+  if (this.cursorNode_.getAttribute("focus") == "false") {
     // Always show a block cursor when unfocused.
     shape = hterm.Terminal.cursorShape.BLOCK;
   }
 
-  this.cursorNode_.setAttribute('shape', shape.toLowerCase());
+  this.cursorNode_.setAttribute("shape", shape.toLowerCase());
 };
 
 /**
@@ -3360,7 +3360,7 @@ hterm.Terminal.prototype.paste = function() {
   } else {
     // Legacy pasting.
     try {
-      return this.document_.execCommand('paste');
+      return this.document_.execCommand("paste");
     } catch (firefoxException) {
       // Ignore this.  FF 40 and older would incorrectly throw an exception if
       // there was an error instead of returning false.
@@ -3377,13 +3377,13 @@ hterm.Terminal.prototype.paste = function() {
  * @param {string} str The string to copy.
  */
 hterm.Terminal.prototype.copyStringToClipboard = function(str) {
-  if (this.prefs_.get('enable-clipboard-notice')) {
+  if (this.prefs_.get("enable-clipboard-notice")) {
     if (!this.clipboardNotice_) {
-      this.clipboardNotice_ = this.document_.createElement('div');
-      this.clipboardNotice_.style.textAlign = 'center';
+      this.clipboardNotice_ = this.document_.createElement("div");
+      this.clipboardNotice_.style.textAlign = "center";
       const copyImage = hterm.resources.IMG_COPY;
       this.clipboardNotice_.innerHTML = hterm.sanitizeHtml(
-          `${copyImage}<div>${hterm.msg('NOTIFY_COPY')}</div>`);
+          `${copyImage}<div>${hterm.msg("NOTIFY_COPY")}</div>`);
     }
     setTimeout(() => this.showOverlay(this.clipboardNotice_, 500), 200);
   }
@@ -3432,19 +3432,19 @@ hterm.Terminal.prototype.displayImage = function(options, onLoad, onError) {
 
   // Set up the defaults to simplify code below.
   if (!options.name) {
-    options.name = '';
+    options.name = "";
   }
 
   // See if the mime type is available.  If not, guess from the filename.
   // We don't list all possible mime types because the browser can usually
   // guess it correctly.  So list the ones that need a bit more help.
   if (!options.type) {
-    const ary = options.name.split('.');
+    const ary = options.name.split(".");
     const ext = ary[ary.length - 1].trim();
     switch (ext) {
-      case 'svg':
-      case 'svgz':
-        options.type = 'image/svg+xml';
+      case "svg":
+      case "svgz":
+        options.type = "image/svg+xml";
         break;
     }
   }
@@ -3452,47 +3452,47 @@ hterm.Terminal.prototype.displayImage = function(options, onLoad, onError) {
   // Has the user approved image display yet?
   if (this.allowImagesInline !== true) {
     if (this.allowImagesInline === false) {
-      this.showOverlay(hterm.msg('POPUP_INLINE_IMAGE_DISABLED', [],
-                       'Inline Images Disabled'));
+      this.showOverlay(hterm.msg("POPUP_INLINE_IMAGE_DISABLED", [],
+                       "Inline Images Disabled"));
       return;
     }
 
     // Show a prompt.
     let button;
-    const span = this.document_.createElement('span');
+    const span = this.document_.createElement("span");
 
-    const label = this.document_.createElement('p');
-    label.innerText = hterm.msg('POPUP_INLINE_IMAGE', [], 'Inline Images');
-    label.style.textAlign = 'center';
+    const label = this.document_.createElement("p");
+    label.innerText = hterm.msg("POPUP_INLINE_IMAGE", [], "Inline Images");
+    label.style.textAlign = "center";
     span.appendChild(label);
 
-    button = this.document_.createElement('input');
-    button.type = 'button';
-    button.value = hterm.msg('BUTTON_BLOCK', [], 'block');
-    button.addEventListener('click', () => {
-      this.prefs_.set('allow-images-inline', false);
+    button = this.document_.createElement("input");
+    button.type = "button";
+    button.value = hterm.msg("BUTTON_BLOCK", [], "block");
+    button.addEventListener("click", () => {
+      this.prefs_.set("allow-images-inline", false);
       this.hideOverlay();
     });
     span.appendChild(button);
 
-    span.appendChild(new Text(' '));
+    span.appendChild(new Text(" "));
 
-    button = this.document_.createElement('input');
-    button.type = 'button';
-    button.value = hterm.msg('BUTTON_ALLOW_SESSION', [], 'allow this session');
-    button.addEventListener('click', () => {
+    button = this.document_.createElement("input");
+    button.type = "button";
+    button.value = hterm.msg("BUTTON_ALLOW_SESSION", [], "allow this session");
+    button.addEventListener("click", () => {
       this.allowImagesInline = true;
       this.hideOverlay();
     });
     span.appendChild(button);
 
-    span.appendChild(new Text(' '));
+    span.appendChild(new Text(" "));
 
-    button = this.document_.createElement('input');
-    button.type = 'button';
-    button.value = hterm.msg('BUTTON_ALLOW_ALWAYS', [], 'always allow');
-    button.addEventListener('click', () => {
-      this.prefs_.set('allow-images-inline', true);
+    button = this.document_.createElement("input");
+    button.type = "button";
+    button.value = hterm.msg("BUTTON_ALLOW_ALWAYS", [], "always allow");
+    button.addEventListener("click", () => {
+      this.prefs_.set("allow-images-inline", true);
       this.hideOverlay();
     });
     span.appendChild(button);
@@ -3504,14 +3504,14 @@ hterm.Terminal.prototype.displayImage = function(options, onLoad, onError) {
   // See if we should show this object directly, or download it.
   if (options.inline) {
     const io = this.io.push();
-    io.showOverlay(hterm.msg('LOADING_RESOURCE_START', [options.name],
-                             'Loading $1 ...'));
+    io.showOverlay(hterm.msg("LOADING_RESOURCE_START", [options.name],
+                             "Loading $1 ..."));
 
     // While we're loading the image, eat all the user's input.
     io.onVTKeystroke = io.sendString = () => {};
 
     // Initialize this new image.
-    const img = this.document_.createElement('img');
+    const img = this.document_.createElement("img");
     if (options.uri !== undefined) {
       img.src = options.uri;
     } else if (options.buffer !== undefined) {
@@ -3533,33 +3533,33 @@ hterm.Terminal.prototype.displayImage = function(options, onLoad, onError) {
     img.onload = () => {
       // Now that we have the image dimensions, figure out how to show it.
       const screenSize = this.scrollPort_.getScreenSize();
-      img.style.objectFit = options.preserveAspectRatio ? 'scale-down' : 'fill';
+      img.style.objectFit = options.preserveAspectRatio ? "scale-down" : "fill";
       img.style.maxWidth = `${screenSize.width}px`;
       img.style.maxHeight = `${screenSize.height}px`;
 
       // Parse a width/height specification.
       const parseDim = (dim, maxDim, cssVar) => {
-        if (!dim || dim == 'auto') {
-          return '';
+        if (!dim || dim == "auto") {
+          return "";
         }
 
         const ary = dim.match(/^([0-9]+)(px|%)?$/);
         if (ary) {
-          if (ary[2] == '%') {
-            return Math.floor(maxDim * ary[1] / 100) + 'px';
-          } else if (ary[2] == 'px') {
+          if (ary[2] == "%") {
+            return Math.floor(maxDim * ary[1] / 100) + "px";
+          } else if (ary[2] == "px") {
             return dim;
           } else {
             return `calc(${dim} * var(${cssVar}))`;
           }
         }
 
-        return '';
+        return "";
       };
       img.style.width = parseDim(
-          options.width, screenSize.width, '--hterm-charsize-width');
+          options.width, screenSize.width, "--hterm-charsize-width");
       img.style.height = parseDim(
-          options.height, screenSize.height, '--hterm-charsize-height');
+          options.height, screenSize.height, "--hterm-charsize-height");
 
       // Figure out how many rows the image occupies, then add that many.
       // Note: This count will be inaccurate if the font size changes on us.
@@ -3578,11 +3578,11 @@ hterm.Terminal.prototype.displayImage = function(options, onLoad, onError) {
       this.document_.body.removeChild(img);
       // Create a wrapper node so we can do an absolute in a relative position.
       // This helps with rounding errors between JS & CSS counts.
-      const div = this.document_.createElement('div');
-      div.style.position = 'relative';
-      div.style.textAlign = options.align || '';
-      img.style.position = 'absolute';
-      img.style.bottom = 'calc(0px - var(--hterm-charsize-height))';
+      const div = this.document_.createElement("div");
+      div.style.position = "relative";
+      div.style.textAlign = options.align || "";
+      img.style.position = "absolute";
+      img.style.bottom = "calc(0px - var(--hterm-charsize-height))";
       div.appendChild(img);
       const row = this.getRowNode(this.scrollbackRows_.length +
                                   this.getCursorRow() - 1);
@@ -3604,8 +3604,8 @@ hterm.Terminal.prototype.displayImage = function(options, onLoad, onError) {
     // If we got a malformed image, give up.
     img.onerror = (e) => {
       this.document_.body.removeChild(img);
-      io.showOverlay(hterm.msg('LOADING_RESOURCE_FAILED', [options.name],
-                               'Loading $1 failed'));
+      io.showOverlay(hterm.msg("LOADING_RESOURCE_FAILED", [options.name],
+                               "Loading $1 failed"));
       io.pop();
 
       if (onError) {
@@ -3615,7 +3615,7 @@ hterm.Terminal.prototype.displayImage = function(options, onLoad, onError) {
   } else {
     // We can't use chrome.downloads.download as that requires "downloads"
     // permissions, and that works only in extensions, not apps.
-    const a = this.document_.createElement('a');
+    const a = this.document_.createElement("a");
     if (options.uri !== undefined) {
       a.href = options.uri;
     } else if (options.buffer !== undefined) {
@@ -3656,12 +3656,12 @@ hterm.Terminal.prototype.getSelectionText = function() {
     return null;
   }
 
-  if (node.nodeName != 'X-ROW') {
+  if (node.nodeName != "X-ROW") {
     // If the selection doesn't start on an x-row node, then it must be
     // somewhere inside the x-row.  Add any characters from previous siblings
     // into the start offset.
 
-    if (node.nodeName == '#text' && node.parentNode.nodeName == 'SPAN') {
+    if (node.nodeName == "#text" && node.parentNode.nodeName == "SPAN") {
       // If node is the text node in a styled span, move up to the span node.
       node = node.parentNode;
     }
@@ -3678,12 +3678,12 @@ hterm.Terminal.prototype.getSelectionText = function() {
       selection.endOffset;
   node = selection.endNode;
 
-  if (node.nodeName != 'X-ROW') {
+  if (node.nodeName != "X-ROW") {
     // If the selection doesn't end on an x-row node, then it must be
     // somewhere inside the x-row.  Add any characters from following siblings
     // into the end offset.
 
-    if (node.nodeName == '#text' && node.parentNode.nodeName == 'SPAN') {
+    if (node.nodeName == "#text" && node.parentNode.nodeName == "SPAN") {
       // If node is the text node in a styled span, move up to the span node.
       node = node.parentNode;
     }
@@ -3714,7 +3714,7 @@ hterm.Terminal.prototype.copySelectionToClipboard = function() {
  * Show overlay with current terminal size.
  */
 hterm.Terminal.prototype.overlaySize = function() {
-  if (this.prefs_.get('enable-resize-status')) {
+  if (this.prefs_.get("enable-resize-status")) {
     this.showOverlay(`${this.screenSize.width} × ${this.screenSize.height}`);
   }
 };
@@ -3758,14 +3758,14 @@ hterm.Terminal.prototype.openSelectedUrl_ = function() {
 
   // If the URI isn't anchored, it'll open relative to the extension.
   // We have no way of knowing the correct schema, so assume http.
-  if (str.search('^[a-zA-Z][a-zA-Z0-9+.-]*://') < 0) {
+  if (str.search("^[a-zA-Z][a-zA-Z0-9+.-]*://") < 0) {
     // We have to allow a few protocols that lack authorities and thus
     // never use the //.  Like mailto.
-    switch (str.split(':', 1)[0]) {
-      case 'mailto':
+    switch (str.split(":", 1)[0]) {
+      case "mailto":
         break;
       default:
-        str = 'http://' + str;
+        str = "http://" + str;
         break;
     }
   }
@@ -3782,7 +3782,7 @@ hterm.Terminal.prototype.setAutomaticMouseHiding = function(v = null) {
   // Since ChromeOS & macOS do this by default everywhere, we don't need to.
   // Linux & Windows seem to leave this to specific applications to manage.
   if (v === null) {
-    v = (hterm.os != 'cros' && hterm.os != 'mac');
+    v = (hterm.os != "cros" && hterm.os != "mac");
   }
 
   this.mouseHideWhileTyping_ = !!v;
@@ -3799,7 +3799,7 @@ hterm.Terminal.prototype.setAutomaticMouseHiding = function(v = null) {
 hterm.Terminal.prototype.onKeyboardActivity_ = function(e) {
   // When the user starts typing, hide the mouse cursor.
   if (this.mouseHideWhileTyping_ && !this.mouseHideDelay_) {
-    this.setCssVar('mouse-cursor-style', 'none');
+    this.setCssVar("mouse-cursor-style", "none");
   }
 };
 
@@ -3860,7 +3860,7 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
   e.terminalColumn = lib.f.clamp(e.terminalColumn, 1, this.screenSize.width);
 
   // Ignore mousedown in the scrollbar area.
-  if (e.type == 'mousedown' && e.clientX >= this.scrollPort_.getScrollbarX()) {
+  if (e.type == "mousedown" && e.clientX >= this.scrollPort_.getScrollbarX()) {
     return;
   }
 
@@ -3872,13 +3872,13 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
     // with local text selection.
     if (e.terminalRow - 1 == this.screen_.cursorPosition.row &&
         e.terminalColumn - 1 == this.screen_.cursorPosition.column) {
-      this.cursorNode_.style.display = 'none';
-    } else if (this.cursorNode_.style.display == 'none') {
-      this.cursorNode_.style.display = '';
+      this.cursorNode_.style.display = "none";
+    } else if (this.cursorNode_.style.display == "none") {
+      this.cursorNode_.style.display = "";
     }
   }
 
-  if (e.type == 'mousedown') {
+  if (e.type == "mousedown") {
     this.contextMenu.hide();
 
     if (e.altKey || !reportMouseEvents) {
@@ -3901,7 +3901,7 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
   }
 
   if (!reportMouseEvents) {
-    if (e.type == 'dblclick') {
+    if (e.type == "dblclick") {
       this.screen_.expandSelection(this.document_.getSelection());
       if (this.copyOnSelect) {
         this.copySelectionToClipboard();
@@ -3909,10 +3909,10 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
     }
 
     // Handle clicks to open links automatically.
-    if (e.type == 'click' && !e.shiftKey && (e.ctrlKey || e.metaKey)) {
+    if (e.type == "click" && !e.shiftKey && (e.ctrlKey || e.metaKey)) {
       // Ignore links created using OSC-8 as those will open by themselves, and
       // the visible text is most likely not the URI they want anyways.
-      if (e.target.className === 'uri-node') {
+      if (e.target.className === "uri-node") {
         return;
       }
 
@@ -3925,46 +3925,46 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
       return;
     }
 
-    if (e.type == 'mousedown') {
+    if (e.type == "mousedown") {
       if (e.ctrlKey && e.button == 2 /* right button */) {
         e.preventDefault();
         this.contextMenu.show(e, this);
       } else if (e.button == this.mousePasteButton ||
           (this.mouseRightClickPaste && e.button == 2 /* right button */)) {
         if (this.paste() === false) {
-          console.warn('Could not paste manually due to web restrictions');
+          console.warn("Could not paste manually due to web restrictions");
         }
       }
     }
 
-    if (e.type == 'mouseup' && e.button == 0 && this.copyOnSelect &&
+    if (e.type == "mouseup" && e.button == 0 && this.copyOnSelect &&
         !this.document_.getSelection().isCollapsed) {
       this.copySelectionToClipboard();
     }
 
-    if ((e.type == 'mousemove' || e.type == 'mouseup') &&
+    if ((e.type == "mousemove" || e.type == "mouseup") &&
         this.scrollBlockerNode_.engaged) {
       // Disengage the scroll-blocker after one of these events.
       this.scrollBlockerNode_.engaged = false;
-      this.scrollBlockerNode_.style.top = '-99px';
+      this.scrollBlockerNode_.style.top = "-99px";
     }
 
     // Emulate arrow key presses via scroll wheel events.
     if (this.scrollWheelArrowKeys_ && !e.shiftKey &&
         this.keyboard.applicationCursor && !this.isPrimaryScreen()) {
-      if (e.type == 'wheel') {
+      if (e.type == "wheel") {
         const delta =
             this.scrollPort_.scrollWheelDelta(/** @type {!WheelEvent} */ (e));
 
         // Helper to turn a wheel event delta into a series of key presses.
         const deltaToArrows = (distance, charSize, arrowPos, arrowNeg) => {
           if (distance == 0) {
-            return '';
+            return "";
           }
 
           // Convert the scroll distance into a number of rows/cols.
           const cells = lib.f.smartFloorDivide(Math.abs(distance), charSize);
-          const data = '\x1bO' + (distance < 0 ? arrowNeg : arrowPos);
+          const data = "\x1bO" + (distance < 0 ? arrowNeg : arrowPos);
           return data.repeat(cells);
         };
 
@@ -3972,10 +3972,10 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
         this.io.sendString(
             // Up/down arrow keys.
             deltaToArrows(delta.y, this.scrollPort_.characterSize.height,
-                          'A', 'B') +
+                          "A", "B") +
             // Left/right arrow keys.
             deltaToArrows(delta.x, this.scrollPort_.characterSize.width,
-                          'C', 'D'),
+                          "C", "D"),
         );
 
         e.preventDefault();
@@ -3983,13 +3983,13 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
     }
   } else /* if (this.reportMouseEvents) */ {
     if (!this.scrollBlockerNode_.engaged) {
-      if (e.type == 'mousedown') {
+      if (e.type == "mousedown") {
         // Move the scroll-blocker into place if we want to keep the scrollport
         // from scrolling.
         this.scrollBlockerNode_.engaged = true;
-        this.scrollBlockerNode_.style.top = (e.clientY - 5) + 'px';
-        this.scrollBlockerNode_.style.left = (e.clientX - 5) + 'px';
-      } else if (e.type == 'mousemove') {
+        this.scrollBlockerNode_.style.top = (e.clientY - 5) + "px";
+        this.scrollBlockerNode_.style.left = (e.clientX - 5) + "px";
+      } else if (e.type == "mousemove") {
         // Oh.  This means that drag-scroll was disabled AFTER the mouse down,
         // in which case it's too late to engage the scroll-blocker.
         this.document_.getSelection().collapseToEnd();
@@ -4000,7 +4000,7 @@ hterm.Terminal.prototype.onMouse_ = function(e) {
     this.onMouse(e);
   }
 
-  if (e.type == 'mouseup') {
+  if (e.type == "mouseup") {
     if (this.document_.getSelection().isCollapsed) {
       // Restore this on mouseup in case it was temporarily defeated with a
       // alt-mousedown.  Only do this when the selection is empty so that
@@ -4031,11 +4031,11 @@ hterm.Terminal.prototype.onMouse = function(e) { };
  * @param {boolean} focused True if focused, false otherwise.
  */
 hterm.Terminal.prototype.onFocusChange_ = function(focused) {
-  this.cursorNode_.setAttribute('focus', focused);
+  this.cursorNode_.setAttribute("focus", focused);
   this.restyleCursor_();
 
   if (this.reportFocus) {
-    this.io.sendString(focused === true ? '\x1b[I' : '\x1b[O');
+    this.io.sendString(focused === true ? "\x1b[I" : "\x1b[O");
   }
 
   if (focused === true) {
@@ -4065,15 +4065,15 @@ hterm.Terminal.prototype.onPaste_ = function(e) {
  * @param {string} data The pasted data.
  */
 hterm.Terminal.prototype.onPasteData_ = function(data) {
-  data = data.replace(/\n/mg, '\r');
+  data = data.replace(/\n/mg, "\r");
   if (this.options_.bracketedPaste) {
     // We strip out most escape sequences as they can cause issues (like
     // inserting an \x1b[201~ midstream).  We pass through whitespace
     // though: 0x08:\b 0x09:\t 0x0a:\n 0x0d:\r.
     // This matches xterm behavior.
     // eslint-disable-next-line no-control-regex
-    const filter = (data) => data.replace(/[\x00-\x07\x0b-\x0c\x0e-\x1f]/g, '');
-    data = '\x1b[200~' + filter(data) + '\x1b[201~';
+    const filter = (data) => data.replace(/[\x00-\x07\x0b-\x0c\x0e-\x1f]/g, "");
+    data = "\x1b[200~" + filter(data) + "\x1b[201~";
   }
 
   this.io.sendString(data);
@@ -4145,14 +4145,14 @@ hterm.Terminal.prototype.onCursorBlink_ = function() {
     return;
   }
 
-  if (this.cursorNode_.getAttribute('focus') == 'false' ||
-      this.cursorNode_.getAttribute('visible') == 'false' ||
+  if (this.cursorNode_.getAttribute("focus") == "false" ||
+      this.cursorNode_.getAttribute("visible") == "false" ||
       this.cursorBlinkPause_) {
-    this.cursorNode_.setAttribute('visible', 'true');
+    this.cursorNode_.setAttribute("visible", "true");
     this.timeouts_.cursorBlink = setTimeout(this.myOnCursorBlink_,
                                             this.cursorBlinkCycle_[0]);
   } else {
-    this.cursorNode_.setAttribute('visible', 'false');
+    this.cursorNode_.setAttribute("visible", "false");
     this.timeouts_.cursorBlink = setTimeout(this.myOnCursorBlink_,
                                             this.cursorBlinkCycle_[1]);
   }
@@ -4224,8 +4224,8 @@ hterm.Terminal.prototype.onOpenOptionsPage_ = function() {
  * Clients can override this to change how new sessions are created.
  */
 hterm.Terminal.prototype.onOpenNewSession = function() {
-  lib.f.openWindow(globalThis.location.href, '',
-                   'chrome=no,close=yes,resize=yes,scrollbars=yes,' +
+  lib.f.openWindow(globalThis.location.href, "",
+                   "chrome=no,close=yes,resize=yes,scrollbars=yes," +
                    `minimizable=yes,width=${globalThis.outerWidth}` +
                    `,height=${globalThis.outerHeight}`);
 };

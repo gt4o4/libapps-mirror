@@ -6,7 +6,7 @@
  * @fileoverview Random utility functions with no real home.
  */
 
-import * as ERRNO from './wasi/errno.js';
+import * as ERRNO from "./wasi/errno.js";
 
 // eslint-disable-next-line jsdoc/require-returns-check
 /**
@@ -57,7 +57,7 @@ export class CompletedProcessError extends Error {
     } else if (this.signal !== undefined) {
       ret = `Process exited due to signal ${this.signal}`;
     } else {
-      ret = 'Process exited for unknown reasons';
+      ret = "Process exited for unknown reasons";
     }
     if (this.message_) {
       ret += `: ${this.message_}`;
@@ -79,7 +79,7 @@ export class ApiViolation extends Error {}
  */
 export function strerror(errno) {
   for (const [key, val] of Object.entries(ERRNO)) {
-    if (key[0] == 'E' && val == errno) {
+    if (key[0] == "E" && val == errno) {
       return key;
     }
   }

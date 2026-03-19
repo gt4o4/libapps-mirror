@@ -6,9 +6,9 @@
  * @fileoverview Tests for passing back exit status.
  */
 
-import {Process, SyscallEntry, SyscallHandler, WASI} from '../index.js';
+import {Process, SyscallEntry, SyscallHandler, WASI} from "../index.js";
 
-describe('exit.js', () => {
+describe("exit.js", () => {
 
 /**
  * A handler just to capture output.
@@ -16,8 +16,8 @@ describe('exit.js', () => {
 class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
   constructor(...args) {
     super(...args);
-    this.stdout = '';
-    this.stderr = '';
+    this.stdout = "";
+    this.stderr = "";
     this.td = new TextDecoder();
   }
 
@@ -54,7 +54,7 @@ async function run(prog, argv) {
   const sys_handlers = [handler];
   const proc = new Process.Foreground({
     executable: prog,
-    argv: ['exit.wasm', ...argv],
+    argv: ["exit.wasm", ...argv],
     sys_handlers: sys_handlers,
     sys_entries: [
       new SyscallEntry.WasiPreview1({sys_handlers}),
@@ -74,32 +74,32 @@ async function run(prog, argv) {
  */
 before(async function() {
   // Fetch & read the body once to speed up the tests.
-  this.prog = await fetch('exit.wasm')
+  this.prog = await fetch("exit.wasm")
     .then((response) => response.arrayBuffer());
 });
 
-describe('return', () => {
+describe("return", () => {
   for (const status of [0, 1, 126, 127, 255]) {
     it(`${status}`, async function() {
-      const result = await run(this.prog, ['ret', `${status}`]);
+      const result = await run(this.prog, ["ret", `${status}`]);
       assert.equal(result.returncode, status);
       assert.isFalse(result.aborted);
     });
   }
 });
 
-describe('exit', () => {
+describe("exit", () => {
   for (const status of [0, 1, 126, 127, 255]) {
     it(`${status}`, async function() {
-      const result = await run(this.prog, ['exit', `${status}`]);
+      const result = await run(this.prog, ["exit", `${status}`]);
       assert.equal(result.returncode, status);
       assert.isFalse(result.aborted);
     });
   }
 });
 
-it('abort', async function() {
-  const result = await run(this.prog, ['abort']);
+it("abort", async function() {
+  const result = await run(this.prog, ["abort"]);
   assert.equal(result.returncode, 134);
   assert.isTrue(result.aborted);
 });

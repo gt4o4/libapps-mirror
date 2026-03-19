@@ -6,11 +6,11 @@
  * @fileoverview Stream for connecting to a ssh server via a Corp relay.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {base64ToBase64Url, base64UrlToBase64, localize} from './nassh.js';
-import {newBuffer} from './nassh_buffer.js';
-import {Stream} from './nassh_stream.js';
+import {base64ToBase64Url, base64UrlToBase64, localize} from "./nassh.js";
+import {newBuffer} from "./nassh_buffer.js";
+import {Stream} from "./nassh_stream.js";
 
 /**
  * Base class of XHR or WebSocket backed streams.
@@ -79,7 +79,7 @@ export class RelayCorpStream extends Stream {
     const sessionRequest = new XMLHttpRequest();
 
     const onError = () => {
-      console.error('Failed to get session id:', sessionRequest);
+      console.error("Failed to get session id:", sessionRequest);
       reject(`${sessionRequest.status}: ${sessionRequest.statusText}`);
     };
 
@@ -98,7 +98,7 @@ export class RelayCorpStream extends Stream {
     };
 
     sessionRequest.open(
-        'GET',
+        "GET",
         `${this.relayServer_}proxy?host=${this.host_}&port=${this.port_}`,
         true);
     // We need to see cookies for /proxy.
@@ -193,16 +193,16 @@ export class RelayCorpStream extends Stream {
       }
     }
 
-    const requestType = isRead ? 'read' : 'write';
-    console.log('Error during ' + requestType +
-                ', backing off: ' + this.backoffMS_ + 'ms');
+    const requestType = isRead ? "read" : "write";
+    console.log("Error during " + requestType +
+                ", backing off: " + this.backoffMS_ + "ms");
 
     if (this.backoffMS_ >= 1000) {
       // Browser timeouts tend to have a wide margin for error.  We want to
       // reduce the risk that a failed retry will redisplay this message just as
       // its fading away.  So we show the retry message for a little longer than
       // we expect to back off.
-      this.io_.showOverlay(localize('RELAY_RETRY'), this.backoffMS_ + 500);
+      this.io_.showOverlay(localize("RELAY_RETRY"), this.backoffMS_ + 500);
     }
 
     this.backoffTimeout_ =
@@ -245,12 +245,12 @@ export class RelayCorpXhrStream extends RelayCorpStream {
     }
 
     if (this.backoffTimeout_) {
-      console.warn('Attempt to read while backing off.');
+      console.warn("Attempt to read while backing off.");
       return;
     }
 
     this.readRequest_.open(
-        'GET',
+        "GET",
         `${this.relayServer_}read?sid=${this.sessionID_}` +
         `&rcnt=${this.readCount_}`,
         true);
@@ -270,7 +270,7 @@ export class RelayCorpXhrStream extends RelayCorpStream {
     }
 
     if (this.backoffTimeout_) {
-      console.warn('Attempt to write while backing off.');
+      console.warn("Attempt to write while backing off.");
       return;
     }
 
@@ -278,7 +278,7 @@ export class RelayCorpXhrStream extends RelayCorpStream {
     const data = base64ToBase64Url(btoa(
         lib.codec.codeUnitArrayToString(dataBuffer)));
     this.writeRequest_.open(
-        'GET',
+        "GET",
         `${this.relayServer_}write?sid=${this.sessionID_}&wcnt=${
             this.writeCount_}&data=${data}`,
         true);
@@ -409,7 +409,7 @@ export class RelayCorpWsStream extends RelayCorpStream {
    */
   resumeRead_() {
     if (this.backoffTimeout_) {
-      console.warn('Attempt to read while backing off.');
+      console.warn("Attempt to read while backing off.");
       return;
     }
 
@@ -417,10 +417,10 @@ export class RelayCorpWsStream extends RelayCorpStream {
       let uri = `${this.relayServerSocket_}connect?sid=${this.sessionID_}&ack=${
           this.readCount_ & 0xffffff}&pos=${this.writeCount_ & 0xffffff}`;
       if (this.reportConnectAttempts_) {
-        uri += '&try=' + ++this.connectCount_;
+        uri += "&try=" + ++this.connectCount_;
       }
       this.socket_ = new WebSocket(uri);
-      this.socket_.binaryType = 'arraybuffer';
+      this.socket_.binaryType = "arraybuffer";
       this.socket_.onopen = this.onSocketOpen_.bind(this);
       this.socket_.onmessage = this.onSocketData_.bind(this);
       this.socket_.onclose = this.socket_.onerror =
@@ -456,7 +456,7 @@ export class RelayCorpWsStream extends RelayCorpStream {
       if (this.reportAckLatency_) {
         // Report observed average to relay.
         // Send this meta-data as string vs. the normal binary payloads.
-        const msg = 'A:' + Math.round(average);
+        const msg = "A:" + Math.round(average);
         this.socket_.send(msg);
       }
     }
@@ -533,7 +533,7 @@ export class RelayCorpWsStream extends RelayCorpStream {
     }
 
     if (this.backoffTimeout_) {
-      console.warn('Attempt to write while backing off.');
+      console.warn("Attempt to write while backing off.");
       return;
     }
 

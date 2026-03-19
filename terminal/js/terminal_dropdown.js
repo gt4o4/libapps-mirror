@@ -8,10 +8,10 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, classMap, css, html, ifDefined, when} from './lit.js';
-import {ICON_CANCEL} from './terminal_icons.js';
+import {LitElement, classMap, css, html, ifDefined, when} from "./lit.js";
+import {ICON_CANCEL} from "./terminal_icons.js";
 
 /**
  * If |label| is nullish, |value| is used as the label.
@@ -192,13 +192,13 @@ export class TerminalDropdownElement extends LitElement {
             class="${classMap({
               // Use "taller" style if there is an deletable item so that the
               // height is consistent.
-              'taller': hasDeletable,
-              'allow-hover-effect': !option.disabled &&
+              "taller": hasDeletable,
+              "allow-hover-effect": !option.disabled &&
                   !this.hoverDeleteButton_,
             })}"
             role="option"
             aria-selected="${index === selectedIndex}"
-            style="${option.style ?? ''}"
+            style="${option.style ?? ""}"
             ?disabled="${option.disabled}"
             @click="${this.onItemClickedHandler_(index)}">
           <span>${option.label ?? option.value}</span>
@@ -253,7 +253,7 @@ export class TerminalDropdownElement extends LitElement {
         <mwc-icon-button
             tabindex="-1"
             aria-label="${hterm.messageManager.get(
-                'TERMINAL_DROPDOWN_DELETE_ITEM_TEXT')}"
+                "TERMINAL_DROPDOWN_DELETE_ITEM_TEXT")}"
             @click=${this.onDeleteClickHandler_(index)}
             @mouseenter=${(e) => this.hoverDeleteButton_ = true}
             @mouseleave=${(e) => this.hoverDeleteButton_ = false}>
@@ -267,14 +267,14 @@ export class TerminalDropdownElement extends LitElement {
    * @override
    */
   updated(changedProperties) {
-    if (changedProperties.has('expanded') && this.expanded) {
+    if (changedProperties.has("expanded") && this.expanded) {
       // Focus the <ul> when it is expaned. We use `setTimeout()` here.
       // Otherwise mousedown on the button does not expand the dropdown because
       // of some race condition.
-      setTimeout(() => this.shadowRoot.querySelector('ul').focus());
+      setTimeout(() => this.shadowRoot.querySelector("ul").focus());
     }
-    if (changedProperties.has('value')) {
-      this.dispatchEvent(new CustomEvent('change',
+    if (changedProperties.has("value")) {
+      this.dispatchEvent(new CustomEvent("change",
           {detail: {value: this.value}}));
     }
   }
@@ -329,18 +329,18 @@ export class TerminalDropdownElement extends LitElement {
   /** @param {!Event} event */
   onButtonKeyDown_(event) {
     switch (event.code) {
-      case 'Enter':
-      case 'Space':
+      case "Enter":
+      case "Space":
         this.expanded = !this.expanded;
         break;
-      case 'PageUp':
-      case 'Home':
-      case 'PageDown':
-      case 'End':
-      case 'ArrowLeft':
-      case 'ArrowUp':
-      case 'ArrowRight':
-      case 'ArrowDown':
+      case "PageUp":
+      case "Home":
+      case "PageDown":
+      case "End":
+      case "ArrowLeft":
+      case "ArrowUp":
+      case "ArrowRight":
+      case "ArrowDown":
         this.expanded = true;
         this.onUlKeyDown_(event);
         break;
@@ -351,30 +351,30 @@ export class TerminalDropdownElement extends LitElement {
   onUlKeyDown_(event) {
     let preventDefault = false;
     switch (event.code) {
-      case 'Enter':
-      case 'Space':
-      case 'Escape':
+      case "Enter":
+      case "Space":
+      case "Escape":
         this.expanded = false;
-        this.shadowRoot.querySelector('button').focus();
+        this.shadowRoot.querySelector("button").focus();
         break;
-      case 'Delete':
+      case "Delete":
         this.maybeDispatchDeleteItemEvent_(this.findSelectedIndex_());
         break;
-      case 'PageUp':
-      case 'Home':
+      case "PageUp":
+      case "Home":
         preventDefault = this.selectFirstEnabled_(this.options);
         break;
-      case 'PageDown':
-      case 'End':
+      case "PageDown":
+      case "End":
         preventDefault = this.selectFirstEnabled_(
             this.options.slice().reverse());
         break;
-      case 'ArrowLeft':
-      case 'ArrowUp':
+      case "ArrowLeft":
+      case "ArrowUp":
         preventDefault = this.selectPrevious_();
         break;
-      case 'ArrowRight':
-      case 'ArrowDown':
+      case "ArrowRight":
+      case "ArrowDown":
         preventDefault = this.selectNext_();
         break;
     }
@@ -395,7 +395,7 @@ export class TerminalDropdownElement extends LitElement {
       if (option.disabled !== true) {
         this.value = option.value;
         this.expanded = false;
-        this.shadowRoot.querySelector('button').focus();
+        this.shadowRoot.querySelector("button").focus();
       }
       event.stopPropagation();
     };
@@ -423,7 +423,7 @@ export class TerminalDropdownElement extends LitElement {
     }
     const option = this.options[index];
     if (option.deletable) {
-      this.dispatchEvent(new CustomEvent('delete-item', {
+      this.dispatchEvent(new CustomEvent("delete-item", {
         detail: {
           index,
           option,
@@ -449,7 +449,7 @@ export class TerminalDropdownElement extends LitElement {
   }
 }
 
-customElements.define('terminal-dropdown', TerminalDropdownElement);
+customElements.define("terminal-dropdown", TerminalDropdownElement);
 
 
 // TODO: The logic here is pretty much a duplicate of `TerminalSettingsElement`,
@@ -473,7 +473,7 @@ export class TerminalSettingsDropdownElement extends TerminalDropdownElement {
     super();
 
     /** @public {string} */
-    this.preference = '';
+    this.preference = "";
 
     this.onPrefChanged_ = (value) => this.value = value;
   }
@@ -505,11 +505,11 @@ export class TerminalSettingsDropdownElement extends TerminalDropdownElement {
   updated(changedProperties) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('value')) {
+    if (changedProperties.has("value")) {
       window.preferenceManager.set(this.preference, this.value);
     }
   }
 }
 
-customElements.define('terminal-settings-dropdown',
+customElements.define("terminal-settings-dropdown",
     TerminalSettingsDropdownElement);

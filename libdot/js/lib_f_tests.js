@@ -6,60 +6,60 @@
  * @fileoverview Utility functions test suite.
  */
 
-import {lib} from '../index.js';
+import {lib} from "../index.js";
 
-it('replaceVars', () => {
+it("replaceVars", () => {
   let input;
 
-  input = 'l/i%20b d&ot+';
+  input = "l/i%20b d&ot+";
   assert.equal(
-    lib.f.replaceVars('blah %encodeURI(name) blah', {name: input}),
-    'blah ' + encodeURI(input) + ' blah');
+    lib.f.replaceVars("blah %encodeURI(name) blah", {name: input}),
+    "blah " + encodeURI(input) + " blah");
 
-  input = 'l/i%20b d&ot+';
+  input = "l/i%20b d&ot+";
   assert.equal(
-    lib.f.replaceVars('blah %encodeURIComponent(name) blah', {name: input}),
-    'blah ' + encodeURIComponent(input) + ' blah');
+    lib.f.replaceVars("blah %encodeURIComponent(name) blah", {name: input}),
+    "blah " + encodeURIComponent(input) + " blah");
 
-  input = '<lib&dot> text';
+  input = "<lib&dot> text";
   assert.equal(
-    lib.f.replaceVars('blah %escapeHTML(name) blah', {name: input}),
-    'blah &lt;lib&amp;dot&gt; text blah');
+    lib.f.replaceVars("blah %escapeHTML(name) blah", {name: input}),
+    "blah &lt;lib&amp;dot&gt; text blah");
 });
 
-it('getURL', () => {
+it("getURL", () => {
   if (lib.f.getURL.chromeSupported()) {
-    assert.equal(lib.f.getURL('/foo'), chrome.runtime.getURL('/foo'));
-    assert.equal(lib.f.getURL('foo'), chrome.runtime.getURL('foo'));
+    assert.equal(lib.f.getURL("/foo"), chrome.runtime.getURL("/foo"));
+    assert.equal(lib.f.getURL("foo"), chrome.runtime.getURL("foo"));
   } else {
     // We don't have a chrome.runtime and such, absolute path should use current
     // location origin, else pass through.
-    assert.equal(lib.f.getURL('/foo'), globalThis.location.origin + '/foo');
-    assert.equal(lib.f.getURL('foo'), 'foo');
+    assert.equal(lib.f.getURL("/foo"), globalThis.location.origin + "/foo");
+    assert.equal(lib.f.getURL("foo"), "foo");
   }
 });
 
-it('clamp', () => {
+it("clamp", () => {
   assert.equal(lib.f.clamp(0, -1, 1), 0);
   assert.equal(lib.f.clamp(0, 10, 100), 10);
   assert.equal(lib.f.clamp(0, -100, -3), -3);
 });
 
-it('zpad', () => {
-  assert.equal(lib.f.zpad(0, 0), '0');
-  assert.equal(lib.f.zpad(0, 5), '00000');
-  assert.equal(lib.f.zpad(123, 5), '00123');
+it("zpad", () => {
+  assert.equal(lib.f.zpad(0, 0), "0");
+  assert.equal(lib.f.zpad(0, 5), "00000");
+  assert.equal(lib.f.zpad(123, 5), "00123");
 });
 
 /**
  * Check longestCommonPrefix behavior.
  */
-it('longestCommonPrefix', () => {
+it("longestCommonPrefix", () => {
   assert.equal(lib.f.longestCommonPrefix([]), 0);
-  assert.equal(lib.f.longestCommonPrefix(['a']), 1);
-  assert.equal(lib.f.longestCommonPrefix(['abcdef']), 6);
+  assert.equal(lib.f.longestCommonPrefix(["a"]), 1);
+  assert.equal(lib.f.longestCommonPrefix(["abcdef"]), 6);
 
-  const elements = ['test.c', 'test.cc', 'test.py'];
+  const elements = ["test.c", "test.cc", "test.py"];
   assert.equal(lib.f.longestCommonPrefix(elements), 5);
   assert.equal(lib.f.longestCommonPrefix(elements, 1), 5);
   assert.equal(lib.f.longestCommonPrefix(elements, 60), 60);
@@ -68,7 +68,7 @@ it('longestCommonPrefix', () => {
 /**
  * Check basic getStack behavior.
  */
-it('getStack', () => {
+it("getStack", () => {
   // Set up some actual functions to check.
   let stack;
   const f1 = (...args) => lib.f.getStack(...args);
@@ -81,22 +81,22 @@ it('getStack', () => {
   assert.equal(1, f3(0, 1).length);
 
   stack = f3();
-  assert.notEqual(stack[0].indexOf('f1'), -1);
-  assert.notEqual(stack[1].indexOf('f2'), -1);
-  assert.notEqual(stack[2].indexOf('f3'), -1);
+  assert.notEqual(stack[0].indexOf("f1"), -1);
+  assert.notEqual(stack[1].indexOf("f2"), -1);
+  assert.notEqual(stack[2].indexOf("f3"), -1);
   assert.isAbove(stack.length, 3);
 
   stack = f3(1);
-  assert.notEqual(stack[0].indexOf('f2'), -1);
-  assert.notEqual(stack[1].indexOf('f3'), -1);
+  assert.notEqual(stack[0].indexOf("f2"), -1);
+  assert.notEqual(stack[1].indexOf("f3"), -1);
   assert.isAbove(stack.length, 2);
 
   stack = f3(2, 1);
   assert.equal(stack.length, 1);
-  assert.notEqual(stack[0].indexOf('f3'), -1);
+  assert.notEqual(stack[0].indexOf("f3"), -1);
 });
 
-it('randomInt', () => {
+it("randomInt", () => {
   // How many extra samples to grab.  It's random, so hope for the best.
   const maxSamples = 1000;
   let ret;
@@ -117,7 +117,7 @@ it('randomInt', () => {
  * Simple smoke test.  Relies on a lot on current runtime as we don't mock
  * out all the runtime APIs that this code uses.
  */
-it('getOs', () => {
+it("getOs", () => {
   return lib.f.getOs().then((os) => {
     assert.isAbove(os.length, 0);
   });
@@ -126,7 +126,7 @@ it('getOs', () => {
 /**
  * Simple smoke test.
  */
-it('getChromeMilestone', () => {
+it("getChromeMilestone", () => {
   const milestone = lib.f.getChromeMilestone();
   if (globalThis.chrome) {
     assert.isAbove(milestone, 30);
@@ -139,7 +139,7 @@ it('getChromeMilestone', () => {
  * Simple smoke test.  It gets set by async funcs, so it's not trivial to
  * trigger and then test for it.
  */
-it('lastError', () => {
+it("lastError", () => {
   // Initially there should be no errors.
   assert.isNull(lib.f.lastError());
 });
@@ -147,10 +147,10 @@ it('lastError', () => {
 /**
  * Check various good URLs.
  */
-describe('isValidURL -> true', () => {
+describe("isValidURL -> true", () => {
   [
-    'http://localhost',
-    '/foo.html',
+    "http://localhost",
+    "/foo.html",
   ].forEach((url) => {
     it(`${url}`, () => {
       assert.isTrue(lib.f.isValidUrl(url));
@@ -161,11 +161,11 @@ describe('isValidURL -> true', () => {
 /**
  * Check various bad URLs.
  */
-describe('isValidURL -> false', () => {
+describe("isValidURL -> false", () => {
   [
     undefined,
     null,
-    'http://%',
+    "http://%",
   ].forEach((url) => {
     it(`${url}`, () => {
       assert.isFalse(lib.f.isValidUrl(url));
@@ -178,7 +178,7 @@ describe('isValidURL -> false', () => {
  * (probably because the code wasn't triggered by user interaction), so we can't
  * actually test too much behavior here :/.
  */
-it('openWindow', () => {
+it("openWindow", () => {
   const win = lib.f.openWindow();
   if (win !== null) {
     assert.isNull(win.opener);

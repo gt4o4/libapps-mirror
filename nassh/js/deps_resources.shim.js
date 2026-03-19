@@ -6,12 +6,12 @@
  * @fileoverview Shim to export package/build information.
  */
 
-import IMG_VISIBILITY_URI from '../images/visibility.svg';
-import IMG_VISIBILITY_OFF_URI from '../images/visibility_off.svg';
+import IMG_VISIBILITY_URI from "../images/visibility.svg";
+import IMG_VISIBILITY_OFF_URI from "../images/visibility_off.svg";
 
-import {notes, last_version} from '../release-highlights.yaml';
+import {notes, last_version} from "../release-highlights.yaml";
 
-import {gitCommitHash, gitDate} from '../package.json';
+import {gitCommitHash, gitDate} from "../package.json";
 
 export {
   IMG_VISIBILITY_URI,

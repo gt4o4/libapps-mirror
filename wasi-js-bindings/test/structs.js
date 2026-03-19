@@ -7,9 +7,9 @@
  */
 
 import {Process, SyscallEntry, SyscallHandler, WASI,
-        WasiView} from '../index.js';
+        WasiView} from "../index.js";
 
-describe('structs.js', () => {
+describe("structs.js", () => {
 
 /**
  * A handler just to capture output.
@@ -17,8 +17,8 @@ describe('structs.js', () => {
 class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
   constructor(...args) {
     super(...args);
-    this.stdout = '';
-    this.stderr = '';
+    this.stdout = "";
+    this.stderr = "";
     this.td = new TextDecoder();
   }
 
@@ -51,7 +51,7 @@ class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
 async function run() {
   const handler = new TestSyscallHandler();
   const sys_handlers = [handler];
-  const prog = 'structs.wasm';
+  const prog = "structs.wasm";
   const proc = new Process.Foreground({
     executable: prog,
     sys_handlers: sys_handlers,
@@ -94,7 +94,7 @@ async function getWasiStruct(name) {
  */
 function checkStruct(structName) {
   const size = (type) => {
-    if (type === 'EventFdReadWrite') {
+    if (type === "EventFdReadWrite") {
       return WasiView.event_fd_readwrite_t.struct_size;
     } else if (WasiView.typedefs.Uint8.indexOf(type) !== -1) {
       return 1;
@@ -111,7 +111,7 @@ function checkStruct(structName) {
   const jsStruct = WasiView[structName];
 
   describe(structName, () => {
-    it('common', async () => {
+    it("common", async () => {
       const wasiStruct = await getWasiStruct(structName);
       assert.equal(wasiStruct.struct_size, jsStruct.struct_size);
     });
@@ -126,14 +126,14 @@ function checkStruct(structName) {
   });
 }
 
-checkStruct('ciovec_t');
-checkStruct('dirent_t');
-checkStruct('event_t');
-checkStruct('event_fd_readwrite_t');
-checkStruct('fdstat_t');
-checkStruct('filestat_t');
-checkStruct('iovec_t');
-checkStruct('subscription_clock_t');
-checkStruct('subscription_fd_readwrite_t');
+checkStruct("ciovec_t");
+checkStruct("dirent_t");
+checkStruct("event_t");
+checkStruct("event_fd_readwrite_t");
+checkStruct("fdstat_t");
+checkStruct("filestat_t");
+checkStruct("iovec_t");
+checkStruct("subscription_clock_t");
+checkStruct("subscription_fd_readwrite_t");
 
 });

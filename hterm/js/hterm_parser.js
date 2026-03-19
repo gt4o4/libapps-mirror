@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Parses the key definition syntax used for user keyboard customizations.
@@ -13,7 +13,7 @@ hterm.Parser = function() {
   /**
    * @type {string} The source string.
    */
-  this.source = '';
+  this.source = "";
 
   /**
    * @type {number} The current position.
@@ -31,7 +31,7 @@ hterm.Parser = function() {
  * @return {!Error}
  */
 hterm.Parser.prototype.error = function(message) {
-  return new Error('Parse error at ' + this.pos + ': ' + message);
+  return new Error("Parse error at " + this.pos + ": " + message);
 };
 
 /** @return {boolean} */
@@ -88,16 +88,16 @@ hterm.Parser.prototype.parseKeySequence = function() {
     this.skipSpace();
 
     const token = this.parseToken();
-    if (token.type == 'integer') {
+    if (token.type == "integer") {
       rv.keyCode = token.value;
 
-    } else if (token.type == 'identifier') {
+    } else if (token.type == "identifier") {
       const ucValue = token.value.toUpperCase();
       if (ucValue in hterm.Parser.identifiers.modifierKeys &&
           hterm.Parser.identifiers.modifierKeys.hasOwnProperty(ucValue)) {
         const mod = hterm.Parser.identifiers.modifierKeys[ucValue];
-        if (rv[mod] && rv[mod] != '*') {
-          throw this.error('Duplicate modifier: ' + token.value);
+        if (rv[mod] && rv[mod] != "*") {
+          throw this.error("Duplicate modifier: " + token.value);
         }
         rv[mod] = true;
 
@@ -106,39 +106,39 @@ hterm.Parser.prototype.parseKeySequence = function() {
         rv.keyCode = hterm.Parser.identifiers.keyCodes[ucValue];
 
       } else {
-        throw this.error('Unknown key: ' + token.value);
+        throw this.error("Unknown key: " + token.value);
       }
 
-    } else if (token.type == 'symbol') {
-      if (token.value == '*') {
+    } else if (token.type == "symbol") {
+      if (token.value == "*") {
         for (const id in hterm.Parser.identifiers.modifierKeys) {
           const p = hterm.Parser.identifiers.modifierKeys[id];
           if (!rv[p]) {
-            rv[p] = '*';
+            rv[p] = "*";
           }
         }
       } else {
-        throw this.error('Unexpected symbol: ' + token.value);
+        throw this.error("Unexpected symbol: " + token.value);
       }
     } else {
-      throw this.error('Expected integer or identifier');
+      throw this.error("Expected integer or identifier");
     }
 
     this.skipSpace();
 
-    if (this.ch !== '-' && this.ch !== '+') {
+    if (this.ch !== "-" && this.ch !== "+") {
       break;
     }
 
     if (rv.keyCode != null) {
-      throw this.error('Extra definition after target key');
+      throw this.error("Extra definition after target key");
     }
 
     this.advance(1);
   }
 
   if (rv.keyCode == null) {
-    throw this.error('Missing target key');
+    throw this.error("Missing target key");
   }
 
   return rv;
@@ -150,26 +150,26 @@ hterm.Parser.prototype.parseKeyAction = function() {
 
   const token = this.parseToken();
 
-  if (token.type == 'string') {
+  if (token.type == "string") {
     return token.value;
   }
 
-  if (token.type == 'identifier') {
+  if (token.type == "identifier") {
     if (token.value in hterm.Parser.identifiers.actions &&
         hterm.Parser.identifiers.actions.hasOwnProperty(token.value)) {
       return hterm.Parser.identifiers.actions[token.value];
     }
 
-    throw this.error('Unknown key action: ' + token.value);
+    throw this.error("Unknown key action: " + token.value);
   }
 
-  throw this.error('Expected string or identifier');
+  throw this.error("Expected string or identifier");
 
 };
 
 /** @return {boolean} */
 hterm.Parser.prototype.peekString = function() {
-  return this.ch == '\'' || this.ch == '"';
+  return this.ch == "'" || this.ch == '"';
 };
 
 /** @return {boolean} */
@@ -184,31 +184,31 @@ hterm.Parser.prototype.peekInteger = function() {
 
 /** @return {!Object} */
 hterm.Parser.prototype.parseToken = function() {
-  if (this.ch == '*') {
-    const rv = {type: 'symbol', value: this.ch};
+  if (this.ch == "*") {
+    const rv = {type: "symbol", value: this.ch};
     this.advance(1);
     return rv;
   }
 
   if (this.peekIdentifier()) {
-    return {type: 'identifier', value: this.parseIdentifier()};
+    return {type: "identifier", value: this.parseIdentifier()};
   }
 
   if (this.peekString()) {
-    return {type: 'string', value: this.parseString()};
+    return {type: "string", value: this.parseString()};
   }
 
   if (this.peekInteger()) {
-    return {type: 'integer', value: this.parseInteger()};
+    return {type: "integer", value: this.parseInteger()};
   }
 
-  throw this.error('Unexpected token');
+  throw this.error("Unexpected token");
 };
 
 /** @return {string} */
 hterm.Parser.prototype.parseIdentifier = function() {
   if (!this.peekIdentifier()) {
-    throw this.error('Expected identifier');
+    throw this.error("Expected identifier");
   }
 
   return this.parsePattern(/[a-z0-9_]+/ig);
@@ -216,9 +216,9 @@ hterm.Parser.prototype.parseIdentifier = function() {
 
 /** @return {number} */
 hterm.Parser.prototype.parseInteger = function() {
-  if (this.ch == '0' && this.pos < this.source.length - 1 &&
-      this.source.substr(this.pos + 1, 1) == 'x') {
-    /* eslint-disable radix */
+  if (this.ch == "0" && this.pos < this.source.length - 1 &&
+      this.source.substr(this.pos + 1, 1) == "x") {
+     
     return parseInt(this.parsePattern(/0x[0-9a-f]+/gi), undefined);
   }
 
@@ -236,34 +236,34 @@ hterm.Parser.prototype.parseInteger = function() {
  * @return {string}
  */
 hterm.Parser.prototype.parseString = function() {
-  let result = '';
+  let result = "";
 
   const quote = this.ch;
-  if (quote != '"' && quote != '\'') {
-    throw this.error('String expected');
+  if (quote != '"' && quote != "'") {
+    throw this.error("String expected");
   }
 
   this.advance(1);
 
-  const re = new RegExp('[\\\\' + quote + ']', 'g');
+  const re = new RegExp("[\\\\" + quote + "]", "g");
 
   while (this.pos < this.source.length) {
     re.lastIndex = this.pos;
     if (!re.exec(this.source)) {
-      throw this.error('Unterminated string literal');
+      throw this.error("Unterminated string literal");
     }
 
     result += this.source.substring(this.pos, re.lastIndex - 1);
 
     this.advance(re.lastIndex - this.pos - 1);
 
-    if (quote == '"' && this.ch == '\\') {
+    if (quote == '"' && this.ch == "\\") {
       this.advance(1);
       result += this.parseEscape();
       continue;
     }
 
-    if (quote == '\'' && this.ch == '\\') {
+    if (quote == "'" && this.ch == "\\") {
       result += this.ch;
       this.advance(1);
       continue;
@@ -275,7 +275,7 @@ hterm.Parser.prototype.parseString = function() {
     }
   }
 
-  throw this.error('Unterminated string literal');
+  throw this.error("Unterminated string literal");
 };
 
 
@@ -288,34 +288,34 @@ hterm.Parser.prototype.parseString = function() {
 hterm.Parser.prototype.parseEscape = function() {
   const map = {
     '"': '"',
-    '\'': '\'',
-    '\\': '\\',
-    'a': '\x07',
-    'b': '\x08',
-    'e': '\x1b',
-    'f': '\x0c',
-    'n': '\x0a',
-    'r': '\x0d',
-    't': '\x09',
-    'v': '\x0b',
-    'x': function() {
+    "'": "'",
+    "\\": "\\",
+    "a": "\x07",
+    "b": "\x08",
+    "e": "\x1b",
+    "f": "\x0c",
+    "n": "\x0a",
+    "r": "\x0d",
+    "t": "\x09",
+    "v": "\x0b",
+    "x": function() {
       const value = this.parsePattern(/[a-z0-9]{2}/ig);
       return String.fromCharCode(parseInt(value, 16));
     },
-    'u': function() {
+    "u": function() {
       const value = this.parsePattern(/[a-z0-9]{4}/ig);
       return String.fromCharCode(parseInt(value, 16));
     },
   };
 
   if (!(this.ch in map && map.hasOwnProperty(this.ch))) {
-    throw this.error('Unknown escape: ' + this.ch);
+    throw this.error("Unknown escape: " + this.ch);
   }
 
   let value = map[this.ch];
   this.advance(1);
 
-  if (typeof value == 'function') {
+  if (typeof value == "function") {
     value = value.call(this);
   }
 
@@ -331,14 +331,14 @@ hterm.Parser.prototype.parseEscape = function() {
  */
 hterm.Parser.prototype.parsePattern = function(pattern) {
   if (!pattern.global) {
-    throw this.error('Internal error: Span patterns must be global');
+    throw this.error("Internal error: Span patterns must be global");
   }
 
   pattern.lastIndex = this.pos;
   const ary = pattern.exec(this.source);
 
   if (!ary || pattern.lastIndex - ary[0].length != this.pos) {
-    throw this.error('Expected match for: ' + pattern);
+    throw this.error("Expected match for: " + pattern);
   }
 
   this.pos = pattern.lastIndex - 1;

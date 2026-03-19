@@ -12,7 +12,7 @@
  * @suppress {moduleLoad}
  */
 
-import {lit} from './deps_lit.rollup.js';
+import {lit} from "./deps_lit.rollup.js";
 
 /** @suppress {undefinedVars} */
 export const {LitElement, classMap, createRef, css, html, ifDefined, live, ref,

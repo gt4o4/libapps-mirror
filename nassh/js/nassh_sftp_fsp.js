@@ -8,13 +8,13 @@
  *                handled by their respective SFTP clients.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {Client as sftpClient} from './nassh_sftp_client.js';
+import {Client as sftpClient} from "./nassh_sftp_client.js";
 import {
   File, FileAttrs, OpenFlags, StatusCodes,
-} from './nassh_sftp_packet_types.js';
-import {StatusError} from './nassh_sftp_status.js';
+} from "./nassh_sftp_packet_types.js";
+import {StatusError} from "./nassh_sftp_status.js";
 
 /**
  * Sanitizes the provided file's metadata to the requirements specified in
@@ -42,9 +42,9 @@ export function sanitizeMetadata(file, options) {
     if (file.filename) {
       metadata.name = file.filename;
     } else if (options.directoryPath) {
-      metadata.name = options.directoryPath.split('/').pop();
+      metadata.name = options.directoryPath.split("/").pop();
     } else {
-      metadata.name = options.entryPath.split('/').pop();
+      metadata.name = options.entryPath.split("/").pop();
     }
   }
   if (options.isDirectory) {
@@ -86,7 +86,7 @@ function copyFile(sourcePath, targetPath, size, client) {
       targetHandle = handle;
 
       // If the server can do the copy, let it do it directly.
-      if (client.protocolServerExtensions['copy-data'] !== undefined) {
+      if (client.protocolServerExtensions["copy-data"] !== undefined) {
         return client.copyData(sourceHandle, targetHandle, size);
       }
 
@@ -135,7 +135,7 @@ function copyDirectory(sourcePath, targetPath, client) {
     .then(() => {
       return client.scanDirectory(sourceHandle, (entry) => {
         // Skip over the entry if it's '.' or '..'.
-        return entry.filename != '.' && entry.filename != '..';
+        return entry.filename != "." && entry.filename != "..";
       });
     })
     .then((entries) => {
@@ -240,7 +240,7 @@ export class SftpFsp {
     }
 
     const client = sftp.sftpClient;
-    const path = '.' + options.entryPath; // relative path
+    const path = "." + options.entryPath; // relative path
     client.fileStatus(path)
       .then((metadata) => sanitizeMetadata(metadata, options))
       .then(onSuccess)
@@ -251,7 +251,7 @@ export class SftpFsp {
           onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
           return;
         }
-        console.warn(response.name + ': ' + response.message);
+        console.warn(response.name + ": " + response.message);
         onError(chrome.fileSystemProvider.ProviderError.FAILED);
       });
   }
@@ -274,13 +274,13 @@ export class SftpFsp {
 
     const client = sftp.sftpClient;
     let directoryHandle;
-    const path = '.' + options.directoryPath; // relative path
+    const path = "." + options.directoryPath; // relative path
     client.openDirectory(path)
       .then((handle) => { directoryHandle = handle; })
       .then(() => {
         return client.scanDirectory(directoryHandle, (entry) => {
           // Skip over the file if it's '.' or '..' pseudo paths.
-          if (entry.filename == '.' || entry.filename == '..') {
+          if (entry.filename == "." || entry.filename == "..") {
             return false;
           }
 
@@ -307,7 +307,7 @@ export class SftpFsp {
       })
       .then((entries) => { onSuccess(entries, false); })
       .catch((response) => {
-        console.warn(response.name + ': ' + response.message);
+        console.warn(response.name + ": " + response.message);
         onError(chrome.fileSystemProvider.ProviderError.FAILED);
       })
       .finally(() => {
@@ -349,7 +349,7 @@ export class SftpFsp {
     }
 
     Promise.all(writePromises).then(onSuccess).catch((response) => {
-      console.warn(response.name + ': ' + response.message);
+      console.warn(response.name + ": " + response.message);
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
     });
   }
@@ -369,20 +369,20 @@ export class SftpFsp {
 
     const client = sftp.sftpClient;
     let pflags = 0;
-    if (options.mode == 'READ') {
+    if (options.mode == "READ") {
       pflags |= OpenFlags.READ;
-    } else if (options.mode == 'WRITE') {
+    } else if (options.mode == "WRITE") {
       pflags |= OpenFlags.WRITE;
     }
 
-    const path = '.' + options.filePath;  // relative path
+    const path = "." + options.filePath;  // relative path
     client.openFile(path, pflags)
         .then((handle) => {
           client.openedFiles[options.requestId] = handle;
         })
         .then(onSuccess)
         .catch((response) => {
-          console.warn(response.name + ': ' + response.message);
+          console.warn(response.name + ": " + response.message);
           onError(chrome.fileSystemProvider.ProviderError.FAILED);
         });
   }
@@ -404,14 +404,14 @@ export class SftpFsp {
     const client = sftp.sftpClient;
     const pflags = OpenFlags.CREAT | OpenFlags.EXCL;
 
-    const path = '.' + options.filePath;  // relative path
+    const path = "." + options.filePath;  // relative path
     client.openFile(path, pflags)
         .then((handle) => {
           client.openedFiles[options.requestId] = handle;
         })
         .then(onSuccess)
         .catch((response) => {
-          console.warn(response.name + ': ' + response.message);
+          console.warn(response.name + ": " + response.message);
           onError(chrome.fileSystemProvider.ProviderError.FAILED);
         });
   }
@@ -433,12 +433,12 @@ export class SftpFsp {
     const client = sftp.sftpClient;
     const pflags = OpenFlags.CREAT | OpenFlags.TRUNC;
 
-    const path = '.' + options.filePath;  // relative path
+    const path = "." + options.filePath;  // relative path
     client.openFile(path, pflags)
         .then((handle) => client.closeFile(handle))
         .then(onSuccess)
         .catch((response) => {
-          console.warn(response.name + ': ' + response.message);
+          console.warn(response.name + ": " + response.message);
           onError(chrome.fileSystemProvider.ProviderError.FAILED);
         });
   }
@@ -459,7 +459,7 @@ export class SftpFsp {
     }
 
     const client = sftp.sftpClient;
-    const path = '.' + options.entryPath;  // relative path
+    const path = "." + options.entryPath;  // relative path
 
     let ret;
     if (options.recursive) {
@@ -483,7 +483,7 @@ export class SftpFsp {
         onError(chrome.fileSystemProvider.ProviderError.NOT_FOUND);
         return;
       }
-      console.warn(response.name + ': ' + response.message);
+      console.warn(response.name + ": " + response.message);
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
     });
   }
@@ -504,7 +504,7 @@ export class SftpFsp {
 
     const client = sftp.sftpClient;
     if (!client.openedFiles[options.openRequestId]) {
-      console.warn('File handle not found');
+      console.warn("File handle not found");
       onError(chrome.fileSystemProvider.ProviderError.INVALID_OPERATION);
       return;
     }
@@ -515,7 +515,7 @@ export class SftpFsp {
         })
         .then(onSuccess)
         .catch((response) => {
-          console.warn(response.name + ': ' + response.message);
+          console.warn(response.name + ": " + response.message);
           onError(chrome.fileSystemProvider.ProviderError.FAILED);
         });
   }
@@ -540,9 +540,9 @@ export class SftpFsp {
       return;
     }
 
-    const path = '.' + options.directoryPath;  // relative path
+    const path = "." + options.directoryPath;  // relative path
     client.makeDirectory(path).then(onSuccess).catch((response) => {
-      console.warn(response.name + ': ' + response.message);
+      console.warn(response.name + ": " + response.message);
       onError(chrome.fileSystemProvider.ProviderError.FAILED);
     });
   }
@@ -562,12 +562,12 @@ export class SftpFsp {
     }
 
     const client = sftp.sftpClient;
-    const sourcePath = '.' + options.sourcePath;  // relative path
-    const targetPath = '.' + options.targetPath;  // relative path
+    const sourcePath = "." + options.sourcePath;  // relative path
+    const targetPath = "." + options.targetPath;  // relative path
     client.renameFile(sourcePath, targetPath)
         .then(onSuccess)
         .catch((response) => {
-          console.warn(response.name + ': ' + response.message);
+          console.warn(response.name + ": " + response.message);
           onError(chrome.fileSystemProvider.ProviderError.FAILED);
         });
   }
@@ -600,7 +600,7 @@ export class SftpFsp {
             options.length)
         .then(() => onSuccess(new ArrayBuffer(0), false))
         .catch((response) => {
-          console.warn(response.name + ': ' + response.message);
+          console.warn(response.name + ": " + response.message);
           onError(chrome.fileSystemProvider.ProviderError.FAILED);
         });
   }
@@ -621,8 +621,8 @@ export class SftpFsp {
     }
 
     const client = sftp.sftpClient;
-    const sourcePath = '.' + options.sourcePath;  // relative path
-    const targetPath = '.' + options.targetPath;  // relative path
+    const sourcePath = "." + options.sourcePath;  // relative path
+    const targetPath = "." + options.targetPath;  // relative path
     return client.linkStatus(sourcePath)
         .then((metadata) => {
           if (metadata.isLink) {
@@ -641,7 +641,7 @@ export class SftpFsp {
         })
         .then(onSuccess)
         .catch((response) => {
-          console.warn(response.name + ': ' + response.message);
+          console.warn(response.name + ": " + response.message);
           onError(chrome.fileSystemProvider.ProviderError.FAILED);
         });
   }
@@ -657,7 +657,7 @@ export class SftpFsp {
    * @param {function(!chrome.fileSystemProvider.ProviderError)} onError
    */
   onMountRequested(onSuccess, onError) {
-    lib.f.openWindow('/html/nassh_connect_dialog.html');
+    lib.f.openWindow("/html/nassh_connect_dialog.html");
     onSuccess();
   }
 
@@ -710,11 +710,11 @@ export class SftpFsp {
     }
 
     lib.f.openWindow(
-        `/html/nassh_sftp_fsp_config_dialog.html` +
+        "/html/nassh_sftp_fsp_config_dialog.html" +
             `?profile-id=${options.fileSystemId}`,
-        '',
-        'chrome=no,close=yes,resize=yes,scrollbars=yes,minimizable=yes,' +
-            'width=600,height=400');
+        "",
+        "chrome=no,close=yes,resize=yes,scrollbars=yes,minimizable=yes," +
+            "width=600,height=400");
     onSuccess();
   }
 

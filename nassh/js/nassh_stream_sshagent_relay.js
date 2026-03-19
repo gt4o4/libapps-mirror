@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {newBuffer} from './nassh_buffer.js';
-import {Stream} from './nassh_stream.js';
+import {newBuffer} from "./nassh_buffer.js";
+import {Stream} from "./nassh_stream.js";
 
 /**
  * Relay ssh-agent messages to another app.
@@ -91,7 +91,7 @@ export class SshAgentRelayStream extends Stream {
 
     this.port_.onMessage.addListener(initialOnMessage);
     this.port_.onDisconnect.addListener(initialDisconnect);
-    this.port_.postMessage({'type': 'auth-agent@openssh.com', 'data': [0]});
+    this.port_.postMessage({"type": "auth-agent@openssh.com", "data": [0]});
   }
 
   /** @override */
@@ -133,8 +133,8 @@ export class SshAgentRelayStream extends Stream {
     // The postMessage API only accepts JavaScript Arrays, so convert it.
     try {
       this.port_.postMessage({
-        'type': 'auth-agent@openssh.com',
-        'data': Array.from(data),
+        "type": "auth-agent@openssh.com",
+        "data": Array.from(data),
       });
     } catch (e) {
       this.close();

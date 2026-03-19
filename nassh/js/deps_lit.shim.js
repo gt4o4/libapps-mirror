@@ -13,14 +13,14 @@
  * accomplish this though, as the terminal app currently does not manage its
  * own dependencies, but instead includes nassh's.
  */
-import {LitElement, html, css, unsafeCSS} from 'lit';
-import {classMap} from 'lit/directives/class-map.js';
-import {ifDefined} from 'lit/directives/if-defined.js';
-import {live} from 'lit/directives/live.js';
-import {createRef, ref} from 'lit/directives/ref.js';
-import {when} from 'lit/directives/when.js';
+import {LitElement, html, css, unsafeCSS} from "lit";
+import {classMap} from "lit/directives/class-map.js";
+import {ifDefined} from "lit/directives/if-defined.js";
+import {live} from "lit/directives/live.js";
+import {createRef, ref} from "lit/directives/ref.js";
+import {when} from "lit/directives/when.js";
 const lit = {LitElement, classMap, css, createRef, html, ifDefined, live, ref,
   unsafeCSS, when};
 export {lit};
 
-import '@material/mwc-icon-button';
+import "@material/mwc-icon-button";

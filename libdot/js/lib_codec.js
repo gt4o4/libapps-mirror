@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /** @const */
 lib.codec = {};
@@ -27,7 +27,7 @@ lib.codec.codeUnitArrayToString = function(array) {
   // and with smaller array sizes (like <32K).  But it's a recursive call so
   // larger arrays will blow the stack and fail.  We also seem to be faster
   // (or at least more constant time) when called frequently.
-  let ret = '';
+  let ret = "";
   for (let i = 0; i < array.length; ++i) {
     ret += String.fromCharCode(array[i]);
   }

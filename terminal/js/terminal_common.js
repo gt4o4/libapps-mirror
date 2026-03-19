@@ -6,38 +6,38 @@
  * @fileoverview Common code for terminal and it settings page.
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
 // Fonts which are installed in ChromeOS.
 /** @type {!Array<string>} */
 const LOCAL_FONTS = [
-  'Noto Sans Mono',
-  'Cousine',
+  "Noto Sans Mono",
+  "Cousine",
 ];
 // Fonts available as web fonts from fonts.google.com.
 /** @type {!Array<string>} */
 export const SUPPORTED_FONT_FAMILIES = [
-  'Anonymous Pro',
-  'Courier Prime',
-  'Cousine',
-  'Cutive Mono',
-  'Fira Code',
-  'Fira Mono',
-  'IBM Plex Mono',
-  'Inconsolata',
-  'JetBrains Mono',
-  'Nanum Gothic Coding',
-  'Noto Sans Mono',
-  'PT Mono',
-  'Roboto Mono',
-  'Share Tech Mono',
-  'Source Code Pro',
-  'Space Mono',
-  'Ubuntu Mono',
+  "Anonymous Pro",
+  "Courier Prime",
+  "Cousine",
+  "Cutive Mono",
+  "Fira Code",
+  "Fira Mono",
+  "IBM Plex Mono",
+  "Inconsolata",
+  "JetBrains Mono",
+  "Nanum Gothic Coding",
+  "Noto Sans Mono",
+  "PT Mono",
+  "Roboto Mono",
+  "Share Tech Mono",
+  "Source Code Pro",
+  "Space Mono",
+  "Ubuntu Mono",
 ];
 // 'Noto Sans Mono' is the default local font.
-export const DEFAULT_FONT_FAMILY = 'Noto Sans Mono';
+export const DEFAULT_FONT_FAMILY = "Noto Sans Mono";
 export const SUPPORTED_FONT_SIZES = [10, 11, 12, 13, 14, 15, 16, 18, 20];
 export const SUPPORTED_LINE_HEIGHT = [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8,
   1.9, 2];
@@ -53,39 +53,39 @@ export const CHROME_VERSION = (function() {
 
 /** @type {!Array<string>} */
 export const DEFAULT_ANSI_COLORS = [
-  '#3C4043',
-  '#F28B82',
-  '#137356',
-  '#E37400',
-  '#8AB4F8',
-  '#EE5FFA',
-  '#03BFC8',
-  '#FFFFFF',
-  '#9AA0A6',
-  '#F6AEA9',
-  '#87FFC5',
-  '#FDD663',
-  '#AECBFA',
-  '#F4B5FB',
-  '#80F9F9',
-  '#F8F9FA',
+  "#3C4043",
+  "#F28B82",
+  "#137356",
+  "#E37400",
+  "#8AB4F8",
+  "#EE5FFA",
+  "#03BFC8",
+  "#FFFFFF",
+  "#9AA0A6",
+  "#F6AEA9",
+  "#87FFC5",
+  "#FDD663",
+  "#AECBFA",
+  "#F4B5FB",
+  "#80F9F9",
+  "#F8F9FA",
 ];
-export const DEFAULT_BACKGROUND_COLOR = '#202124';
-export const DEFAULT_BACKGROUND_SIZE = '100% 100%';
-export const DEFAULT_FOREGROUND_COLOR = '#FFFFFF';
-export const DEFAULT_CURSOR_COLOR = '#669DF680';
+export const DEFAULT_BACKGROUND_COLOR = "#202124";
+export const DEFAULT_BACKGROUND_SIZE = "100% 100%";
+export const DEFAULT_FOREGROUND_COLOR = "#FFFFFF";
+export const DEFAULT_CURSOR_COLOR = "#669DF680";
 export const DEFAULT_FONT_SIZE = 13;
 export const DEFAULT_SCREEN_PADDING_SIZE = 8;
-export const DEFAULT_THEME = 'dark';
+export const DEFAULT_THEME = "dark";
 
-export const DEFAULT_VM_NAME = 'termina';
-export const DEFAULT_CONTAINER_NAME = 'penguin';
+export const DEFAULT_VM_NAME = "termina";
+export const DEFAULT_CONTAINER_NAME = "penguin";
 
-export const PARAM_NAME_MOUNT_PATH = 'mount_path';
-export const PARAM_NAME_MOUNT = 'mount';
-export const PARAM_NAME_SETTINGS_PROFILE = 'settings_profile';
-export const PARAM_NAME_SFTP = 'sftp';
-export const PARAM_NAME_TMUX = 'tmux';
+export const PARAM_NAME_MOUNT_PATH = "mount_path";
+export const PARAM_NAME_MOUNT = "mount";
+export const PARAM_NAME_SETTINGS_PROFILE = "settings_profile";
+export const PARAM_NAME_SFTP = "sftp";
+export const PARAM_NAME_TMUX = "tmux";
 
 // Cache the url at the first opportunity. The url normally should not change,
 // so this is being defensive.
@@ -99,7 +99,7 @@ export const ORIGINAL_URL = new URL(globalThis.location.href);
  */
 export function fontFamilyToCSS(fontFamily) {
   const fallback =
-      fontFamily === DEFAULT_FONT_FAMILY ? '' : `, '${DEFAULT_FONT_FAMILY}'`;
+      fontFamily === DEFAULT_FONT_FAMILY ? "" : `, '${DEFAULT_FONT_FAMILY}'`;
   return `'${fontFamily}'${fallback}`;
 }
 
@@ -111,7 +111,7 @@ export function fontFamilyToCSS(fontFamily) {
  * @return {string} The normalized font.
  */
 export function normalizeCSSFontFamily(cssFontFamily) {
-  for (let fontFamily of cssFontFamily.split(',')) {
+  for (let fontFamily of cssFontFamily.split(",")) {
     // The regex can never fail, so it is safe to just use the result.
     fontFamily = fontFamily.match(/^\s*['"]?(.*?)['"]?\s*$/)[1];
     if (SUPPORTED_FONT_FAMILIES.includes(fontFamily)) {
@@ -129,7 +129,7 @@ export function normalizeCSSFontFamily(cssFontFamily) {
  */
 export function backgroundImageLocalStorageKey(prefs) {
   return backgroundImageLocalStorageKeyForProfileId(
-    prefs.prefix.split('/')[3]);
+    prefs.prefix.split("/")[3]);
 }
 
 /**
@@ -139,7 +139,7 @@ export function backgroundImageLocalStorageKey(prefs) {
  * @return {string}
  */
 export function backgroundImageLocalStorageKeyForProfileId(profileId) {
-  return 'background-image-' + profileId;
+  return "background-image-" + profileId;
 }
 
 /**
@@ -151,30 +151,30 @@ export function backgroundImageLocalStorageKeyForProfileId(profileId) {
  */
 export function definePrefs(prefs) {
   // Set terminal default overrides from hterm.
-  prefs.definePreference('audible-bell-sound', '');
-  prefs.definePreference('background-color', DEFAULT_BACKGROUND_COLOR);
-  prefs.definePreference('background-size', DEFAULT_BACKGROUND_SIZE);
-  prefs.definePreference('cursor-color', DEFAULT_CURSOR_COLOR);
-  prefs.definePreference('color-palette-overrides', DEFAULT_ANSI_COLORS);
-  prefs.definePreference('font-family', fontFamilyToCSS(DEFAULT_FONT_FAMILY));
-  prefs.definePreference('font-size', DEFAULT_FONT_SIZE);
-  prefs.definePreference('foreground-color', DEFAULT_FOREGROUND_COLOR);
-  prefs.definePreference('pass-alt-number', false);
-  prefs.definePreference('pass-ctrl-number', false);
-  prefs.definePreference('pass-ctrl-tab', true);
-  prefs.definePreference('screen-padding-size', DEFAULT_SCREEN_PADDING_SIZE);
+  prefs.definePreference("audible-bell-sound", "");
+  prefs.definePreference("background-color", DEFAULT_BACKGROUND_COLOR);
+  prefs.definePreference("background-size", DEFAULT_BACKGROUND_SIZE);
+  prefs.definePreference("cursor-color", DEFAULT_CURSOR_COLOR);
+  prefs.definePreference("color-palette-overrides", DEFAULT_ANSI_COLORS);
+  prefs.definePreference("font-family", fontFamilyToCSS(DEFAULT_FONT_FAMILY));
+  prefs.definePreference("font-size", DEFAULT_FONT_SIZE);
+  prefs.definePreference("foreground-color", DEFAULT_FOREGROUND_COLOR);
+  prefs.definePreference("pass-alt-number", false);
+  prefs.definePreference("pass-ctrl-number", false);
+  prefs.definePreference("pass-ctrl-tab", true);
+  prefs.definePreference("screen-padding-size", DEFAULT_SCREEN_PADDING_SIZE);
 
   // Add new prefs.
-  prefs.definePreference('theme', DEFAULT_THEME);
-  prefs.definePreference('theme-variations', {});
-  prefs.definePreference('line-height', 1);
+  prefs.definePreference("theme", DEFAULT_THEME);
+  prefs.definePreference("theme-variations", {});
+  prefs.definePreference("line-height", 1);
   // Negative value means "unlimited".
-  prefs.definePreference('scrollback-limit', 10000);
+  prefs.definePreference("scrollback-limit", 10000);
 
   // Background image multi-profile migration.
   // TODO(joelhockey): Remove after M120.
-  const oldKey = 'background-image';
-  const newKey = 'background-image-default';
+  const oldKey = "background-image";
+  const newKey = "background-image-default";
   const img = window.localStorage.getItem(oldKey);
   if (img) {
     window.localStorage.setItem(newKey, img);
@@ -190,14 +190,14 @@ export function definePrefs(prefs) {
 export function normalizePrefsInPlace(prefs) {
   // Remove alpha from background-color.
   const backgroundColor = lib.colors.normalizeCSS(
-      /** @type {string} */(prefs.get('background-color')));
+      /** @type {string} */(prefs.get("background-color")));
   if (!backgroundColor) {
     // The color value is invalid.
-    prefs.reset('background-color');
+    prefs.reset("background-color");
   } else {
     // Store uppercase hex to help detect when a value is set to default.
     const rgb = lib.colors.setAlpha(backgroundColor, 1);
-    prefs.set('background-color', lib.colors.rgbToHex(rgb).toUpperCase());
+    prefs.set("background-color", lib.colors.rgbToHex(rgb).toUpperCase());
   }
 }
 
@@ -220,12 +220,12 @@ export function watchColors(prefs) {
             stroke="${esc(fg)}"/>
       </svg>`;
   };
-  prefs.addObserver('foreground-color', (color) => {
-    updateFavicon(color, prefs.get('background-color'));
+  prefs.addObserver("foreground-color", (color) => {
+    updateFavicon(color, prefs.get("background-color"));
   });
-  prefs.addObserver('background-color', (color) => {
+  prefs.addObserver("background-color", (color) => {
     document.body.style.backgroundColor = /** @type {string} */ (color);
-    updateFavicon(prefs.get('foreground-color'), color);
+    updateFavicon(prefs.get("foreground-color"), color);
   });
 }
 
@@ -262,13 +262,13 @@ export class FontManager {
     let promise = this.loadFontsPromises_.get(fontFamily);
     if (!promise) {
       promise = this.loadFontImpl_(fontFamily).catch((error) => {
-        /* eslint-disable-next-line no-new */
+         
         new Notification(
-            hterm.messageManager.get('TERMINAL_FONT_UNAVAILABLE', [fontFamily]),
+            hterm.messageManager.get("TERMINAL_FONT_UNAVAILABLE", [fontFamily]),
             {
               body: hterm.messageManager.get(
-                  'TERMINAL_TRY_AGAIN_WITH_INTERNET'),
-              tag: 'TERMINAL_FONT_UNAVAILABLE',
+                  "TERMINAL_TRY_AGAIN_WITH_INTERNET"),
+              tag: "TERMINAL_FONT_UNAVAILABLE",
             },
         );
 
@@ -289,12 +289,12 @@ export class FontManager {
    * @return {!Promise<void>}
    */
   async loadFontImpl_(fontFamily) {
-    await this.insertStyleSheet_(`https://fonts.googleapis.com/css2?family=` +
+    await this.insertStyleSheet_("https://fonts.googleapis.com/css2?family=" +
         `${encodeURIComponent(fontFamily)}&display=swap`);
     // 'X' is the character from which hterm measures the size. For the font
     // size, the default one is used because it probably does not matter.
     const fonts = await this.document_.fonts.load(
-        `${DEFAULT_FONT_SIZE}px "${fontFamily}"`, 'X');
+        `${DEFAULT_FONT_SIZE}px "${fontFamily}"`, "X");
     if (fonts.length === 0) {
       throw new Error(`Unable to load fonts ${fontFamily}`);
     }
@@ -305,12 +305,12 @@ export class FontManager {
    * @return {!Promise<void>}
    */
   async insertStyleSheet_(url) {
-    const link = this.document_.createElement('link');
+    const link = this.document_.createElement("link");
     link.href = url;
-    link.rel = 'stylesheet';
+    link.rel = "stylesheet";
     return new Promise((resolve, reject) => {
-      link.addEventListener('load', () => resolve());
-      link.addEventListener('error',
+      link.addEventListener("load", () => resolve());
+      link.addEventListener("error",
           () => reject(new Error(`Unable to insert style sheet for ${url}`)));
       this.document_.head.appendChild(link);
     });
@@ -369,7 +369,7 @@ export async function init() {
       hterm.initPromise.then(() => {
         hterm.messageManager.useCrlf = true;
         return hterm.messageManager.findAndLoadMessages(
-                   lib.f.getURL('/_locales/$1/messages.json'));
+                   lib.f.getURL("/_locales/$1/messages.json"));
       }),
       prefetchOSInfo(),
       // Load hterm.messageManager from /_locales/<lang>/messages.json.
@@ -383,7 +383,7 @@ export async function init() {
  */
 export function getOSInfo() {
   if (!OS_INFO) {
-    throw new Error('OS_INFO is not initialized');
+    throw new Error("OS_INFO is not initialized");
   }
   return OS_INFO;
 }
@@ -399,11 +399,11 @@ export function getOSInfo() {
 export function composeTmuxUrl(
     {windowChannelName, driverChannelName, settingsProfileId}) {
   const url = new URL(ORIGINAL_URL.origin);
-  url.pathname = '/html/terminal.html';
+  url.pathname = "/html/terminal.html";
 
   const paramValue = JSON.stringify({windowChannelName, driverChannelName});
   const settingsProfileParam = settingsProfileId ?
-      `&${PARAM_NAME_SETTINGS_PROFILE}=${settingsProfileId}` : '';
+      `&${PARAM_NAME_SETTINGS_PROFILE}=${settingsProfileId}` : "";
   url.search = `?${PARAM_NAME_TMUX}=${paramValue}${settingsProfileParam}`;
 
   return url.toString();
@@ -421,7 +421,7 @@ export function composeTmuxUrl(
  */
 export function composeSshUrl(params) {
   const url = new URL(ORIGINAL_URL.origin);
-  url.pathname = '/html/terminal_ssh.html';
+  url.pathname = "/html/terminal_ssh.html";
   if (params.hash) {
     url.hash = params.hash;
   }
@@ -431,10 +431,10 @@ export function composeSshUrl(params) {
         PARAM_NAME_SETTINGS_PROFILE, params.settingsProfileId);
   }
   if (params.isSftp) {
-    url.searchParams.append(PARAM_NAME_SFTP, 'true');
+    url.searchParams.append(PARAM_NAME_SFTP, "true");
   }
   if (params.isMount) {
-    url.searchParams.append(PARAM_NAME_MOUNT, 'true');
+    url.searchParams.append(PARAM_NAME_MOUNT, "true");
   }
   if (params.mountPath) {
     url.searchParams.append(PARAM_NAME_MOUNT_PATH, params.mountPath);

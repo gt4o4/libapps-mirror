@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /**
  * window.localStorage based class with an async interface that is
@@ -19,7 +19,7 @@ lib.Storage.Local = class extends lib.Storage {
     this.storage_ = storage ? storage : lib.notNull(globalThis.localStorage);
     // Closure thinks all addEventListener calls take Events.
     globalThis.addEventListener(
-        'storage',
+        "storage",
         /** @type {function(!Event)} */ (this.onStorage_.bind(this)));
   }
 
@@ -71,7 +71,7 @@ lib.Storage.Local = class extends lib.Storage {
 
     for (const key of keys) {
       const value = this.storage_.getItem(key);
-      if (typeof value == 'string') {
+      if (typeof value == "string") {
         rv[key] = parseJson_(value);
       }
     }

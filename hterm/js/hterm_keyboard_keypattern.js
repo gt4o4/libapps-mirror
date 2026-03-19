@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * A record of modifier bits and keycode used to define a key binding.
@@ -21,7 +21,7 @@ hterm.Keyboard.KeyPattern = function(spec) {
 
   hterm.Keyboard.KeyPattern.modifiers.forEach(function(mod) {
     this[mod] = spec[mod] || false;
-    if (this[mod] == '*') {
+    if (this[mod] == "*") {
       this.wildcardCount++;
     }
   }.bind(this));
@@ -31,7 +31,7 @@ hterm.Keyboard.KeyPattern = function(spec) {
  * Valid modifier names.
  */
 hterm.Keyboard.KeyPattern.modifiers = [
-  'shift', 'ctrl', 'alt', 'meta',
+  "shift", "ctrl", "alt", "meta",
 ];
 
 /**
@@ -76,7 +76,7 @@ hterm.Keyboard.KeyPattern.prototype.match_ = function(obj, exactMatch) {
 
   hterm.Keyboard.KeyPattern.modifiers.forEach(function(mod) {
     const modValue = (mod in obj) ? obj[mod] : false;
-    if (!rv || (!exactMatch && this[mod] == '*') || this[mod] == modValue) {
+    if (!rv || (!exactMatch && this[mod] == "*") || this[mod] == modValue) {
       return;
     }
 

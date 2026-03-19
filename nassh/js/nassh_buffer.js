@@ -6,14 +6,14 @@
  * @fileoverview Core buffer related logic.
  */
 
-import {ConcatBuffer} from './nassh_buffer_concat.js';
-import {BufferInterface} from './nassh_buffer_interface.js';
-import {ScatGatBuffer} from './nassh_buffer_scatgat.js';
+import {ConcatBuffer} from "./nassh_buffer_concat.js";
+import {BufferInterface} from "./nassh_buffer_interface.js";
+import {ScatGatBuffer} from "./nassh_buffer_scatgat.js";
 
 /**
  * The buffer backend to use.
  */
-let defaultBackend = 'scatgat';
+let defaultBackend = "scatgat";
 
 /**
  * Set default backend for all buffer users.
@@ -36,13 +36,13 @@ export function setDefaultBackend(backend) {
  */
 export function newBuffer(...args) {
   switch (defaultBackend) {
-    case 'concat':
+    case "concat":
       return new ConcatBuffer(...args);
 
     default:
       console.warn(`Unknown buffer type '${defaultBackend}'; ` +
-                   `using 'scatgat' instead.`);
-    case 'scatgat':
+                   "using 'scatgat' instead.");
+    case "scatgat":
       return new ScatGatBuffer(...args);
   }
 }

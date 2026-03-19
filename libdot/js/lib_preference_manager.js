@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /**
  * Constructor for lib.PreferenceManager objects.
@@ -32,9 +32,9 @@ lib.PreferenceManager = class {
    *         in independent storage keys.  With coarse preferences, all settings
    *         are condensed into a single storage key.
    */
-  constructor(storage, prefix = '/', {finegrain = true} = {}) {
-    if (!prefix.endsWith('/')) {
-      prefix += '/';
+  constructor(storage, prefix = "/", {finegrain = true} = {}) {
+    if (!prefix.endsWith("/")) {
+      prefix += "/";
     }
     this.prefix = prefix;
 
@@ -84,8 +84,8 @@ lib.PreferenceManager = class {
    * return {!Promise<void>} When prefix has finished updating.
    */
   async setPrefix(prefix) {
-    if (!prefix.endsWith('/')) {
-      prefix += '/';
+    if (!prefix.endsWith("/")) {
+      prefix += "/";
     }
     if (prefix === this.prefix) {
       return;
@@ -251,8 +251,8 @@ lib.PreferenceManager = class {
    *     you don't need any.
    */
   addObservers(global, map) {
-    if (global && typeof global != 'function') {
-      throw new Error('Invalid param: globals');
+    if (global && typeof global != "function") {
+      throw new Error("Invalid param: globals");
     }
 
     if (global) {
@@ -666,7 +666,7 @@ lib.PreferenceManager = class {
    */
   getBoolean(name) {
     const result = this.get(name);
-    lib.assert(typeof result == 'boolean');
+    lib.assert(typeof result == "boolean");
     return result;
   }
 
@@ -678,7 +678,7 @@ lib.PreferenceManager = class {
    */
   getNumber(name) {
     const result = this.get(name);
-    lib.assert(typeof result == 'number');
+    lib.assert(typeof result == "number");
     return result;
   }
 
@@ -690,7 +690,7 @@ lib.PreferenceManager = class {
    */
   getString(name) {
     const result = this.get(name);
-    lib.assert(typeof result == 'string');
+    lib.assert(typeof result == "string");
     return result;
   }
 
@@ -808,7 +808,7 @@ lib.PreferenceManager = class {
       }
 
       if (this.diff(currentValue, newValue)) {
-        if (typeof newValue == 'undefined' || newValue === null) {
+        if (typeof newValue == "undefined" || newValue === null) {
           record.currentValue = record.DEFAULT_VALUE;
         } else {
           record.currentValue = newValue;
@@ -850,7 +850,7 @@ lib.PreferenceManager.newRandomId = function(
  *
  * @type {symbol}
  */
-lib.PreferenceManager.prototype.DEFAULT_VALUE = Symbol('DEFAULT_VALUE');
+lib.PreferenceManager.prototype.DEFAULT_VALUE = Symbol("DEFAULT_VALUE");
 
 /**
  * An individual preference.
@@ -879,7 +879,7 @@ class Record {
     const result = this.currentValue === this.DEFAULT_VALUE ?
         this.defaultValue : this.currentValue;
 
-    if (typeof this.defaultValue === 'object') {
+    if (typeof this.defaultValue === "object") {
       // We want to return a COPY of the value so that users can
       // modify the array or object without changing the value.
       return JSON.parse(JSON.stringify(result));

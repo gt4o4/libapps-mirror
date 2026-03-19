@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * AccessibilityReader responsible for rendering command output for AT.
@@ -24,8 +24,8 @@ hterm.AccessibilityReader = function(div) {
   this.document_ = div.ownerDocument;
 
   // The live region element to add text to.
-  const liveRegion = this.document_.createElement('div');
-  liveRegion.id = 'hterm:accessibility-live-region';
+  const liveRegion = this.document_.createElement("div");
+  liveRegion.id = "hterm:accessibility-live-region";
   liveRegion.style.cssText = `position: absolute;
                               width: 0; height: 0;
                               overflow: hidden;
@@ -37,15 +37,15 @@ hterm.AccessibilityReader = function(div) {
   this.accessibilityEnabled = false;
 
   // This live element is used for command output.
-  this.liveElement_ = this.document_.createElement('p');
-  this.liveElement_.setAttribute('aria-live', 'polite');
+  this.liveElement_ = this.document_.createElement("p");
+  this.liveElement_.setAttribute("aria-live", "polite");
   liveRegion.appendChild(this.liveElement_);
 
   // This live element is used for speaking out the current screen when
   // navigating through the scrollback buffer. It will interrupt existing
   // announcements.
-  this.assertiveLiveElement_ = this.document_.createElement('p');
-  this.assertiveLiveElement_.setAttribute('aria-live', 'assertive');
+  this.assertiveLiveElement_ = this.document_.createElement("p");
+  this.assertiveLiveElement_.setAttribute("aria-live", "assertive");
   liveRegion.appendChild(this.assertiveLiveElement_);
 
   // A queue of updates to announce.
@@ -115,7 +115,7 @@ hterm.AccessibilityReader.prototype.setAccessibilityEnabled =
  * @param {!Document} doc The document where the <x-screen> resides.
  */
 hterm.AccessibilityReader.prototype.decorate = function(doc) {
-  const handlers = ['keydown', 'keypress', 'keyup', 'textInput'];
+  const handlers = ["keydown", "keypress", "keyup", "textInput"];
   handlers.forEach((handler) => {
     doc.addEventListener(handler, () => { this.hasUserGesture = true; });
   });
@@ -211,8 +211,8 @@ hterm.AccessibilityReader.prototype.announce = function(str) {
 
   // Don't append newlines to the queue if the queue is empty. It won't have any
   // impact.
-  if (str == '\n' && this.queue_.length > 0) {
-    this.queue_.push('');
+  if (str == "\n" && this.queue_.length > 0) {
+    this.queue_.push("");
     // We don't need to trigger an announcement on newlines because they won't
     // change the existing content that's output.
     return;
@@ -224,9 +224,9 @@ hterm.AccessibilityReader.prototype.announce = function(str) {
     // We put a space between strings that appear on the same line.
     // TODO(raymes): We should check the location on the row and not add a space
     // if the strings are joined together.
-    let padding = '';
+    let padding = "";
     if (this.queue_[this.queue_.length - 1].length != 0) {
-      padding = ' ';
+      padding = " ";
     }
     this.queue_[this.queue_.length - 1] += padding + str;
   }
@@ -245,7 +245,7 @@ hterm.AccessibilityReader.prototype.announce = function(str) {
                                      hterm.AccessibilityReader.DELAY);
   } else {
     throw new Error(
-        'Expected only one item in queue_ or nextReadTimer_ to be running.');
+        "Expected only one item in queue_ or nextReadTimer_ to be running.");
   }
 };
 
@@ -255,8 +255,8 @@ hterm.AccessibilityReader.prototype.announce = function(str) {
  * @param {string} str The string to announce using a live region.
  */
 hterm.AccessibilityReader.prototype.assertiveAnnounce = function(str) {
-  if (this.hasUserGesture && str == ' ') {
-    str = hterm.msg('SPACE_CHARACTER', [], 'Space');
+  if (this.hasUserGesture && str == " ") {
+    str = hterm.msg("SPACE_CHARACTER", [], "Space");
   }
 
   // If the same string is announced twice, an attribute change won't be
@@ -265,7 +265,7 @@ hterm.AccessibilityReader.prototype.assertiveAnnounce = function(str) {
   // registered.
   str = str.trim();
   if (str == this.assertiveLiveElement_.innerText) {
-    str = '\n' + str;
+    str = "\n" + str;
   }
 
   this.clear();
@@ -276,15 +276,15 @@ hterm.AccessibilityReader.prototype.assertiveAnnounce = function(str) {
  * Add a newline to the text that will be announced to the live region.
  */
 hterm.AccessibilityReader.prototype.newLine = function() {
-  this.announce('\n');
+  this.announce("\n");
 };
 
 /**
  * Clear the live region and any in-flight announcements.
  */
 hterm.AccessibilityReader.prototype.clear = function() {
-  this.liveElement_.innerText = '';
-  this.assertiveLiveElement_.innerText = '';
+  this.liveElement_.innerText = "";
+  this.assertiveLiveElement_.innerText = "";
   clearTimeout(this.nextReadTimer_);
   this.nextReadTimer_ = null;
   this.queue_ = [];
@@ -330,7 +330,7 @@ hterm.AccessibilityReader.prototype.announceAction_ =
     // have been queued. If they have, it may not just be a cursor movement and
     // it may be better to read those out.
     if (lib.notNull(this.lastCursorColumn_) !== cursorColumn &&
-        this.cursorChangeQueue_.join('').trim() == '') {
+        this.cursorChangeQueue_.join("").trim() == "") {
       // Announce the text between the old cursor position and the new one.
       const start = Math.min(this.lastCursorColumn_, cursorColumn);
       const len = Math.abs(cursorColumn - this.lastCursorColumn_);
@@ -346,10 +346,10 @@ hterm.AccessibilityReader.prototype.announceAction_ =
     // Spacebar. We manually announce this character since the screen reader may
     // not announce the whitespace in a live region.
     if (this.lastCursorColumn_ + 1 == cursorColumn) {
-      if (hterm.wc.substr(cursorRowString, cursorColumn - 1, 1) == ' ' &&
+      if (hterm.wc.substr(cursorRowString, cursorColumn - 1, 1) == " " &&
           this.cursorChangeQueue_.length > 0 &&
-          this.cursorChangeQueue_[0] == ' ') {
-        this.assertiveAnnounce(' ');
+          this.cursorChangeQueue_[0] == " ") {
+        this.assertiveAnnounce(" ");
         return true;
       }
     }
@@ -371,7 +371,7 @@ hterm.AccessibilityReader.prototype.announceAction_ =
       for (; lengthOfCurrentRow > 0; --lengthOfCurrentRow) {
         if (lengthOfCurrentRow == cursorDeleted ||
             hterm.wc.substr(cursorRowString, lengthOfCurrentRow - 1, 1)
-            != ' ') {
+            != " ") {
           break;
         }
       }
@@ -389,7 +389,7 @@ hterm.AccessibilityReader.prototype.announceAction_ =
       if (endOfLastRowString == endOfCurrentRowString) {
         const deleted = hterm.wc.substr(
             this.lastCursorRowString_, cursorDeleted, numCharsDeleted);
-        if (deleted != '') {
+        if (deleted != "") {
           this.assertiveAnnounce(deleted);
           return true;
         }
@@ -408,14 +408,14 @@ hterm.AccessibilityReader.prototype.announceAction_ =
 hterm.AccessibilityReader.prototype.addToLiveRegion_ = function() {
   this.nextReadTimer_ = null;
 
-  let str = this.queue_.join('\n').trim();
+  let str = this.queue_.join("\n").trim();
 
   // If the same string is announced twice, an attribute change won't be
   // registered and the screen reader won't know that the string has changed.
   // So we slightly change the string to ensure that the attribute change gets
   // registered.
   if (str == this.liveElement_.innerText) {
-    str = '\n' + str;
+    str = "\n" + str;
   }
 
   this.liveElement_.innerText = str;

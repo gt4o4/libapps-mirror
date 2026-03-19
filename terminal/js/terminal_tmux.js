@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import * as tmux from './tmux.js';
+import * as tmux from "./tmux.js";
 
 /**
  * @fileoverview Tmux integration for hterm. It also provides the
@@ -37,7 +37,7 @@ export class PseudoTmuxCommand {
   constructor(term, controller) {
     this.term_ = term;
     this.controller_ = controller;
-    this.buffer_ = '';
+    this.buffer_ = "";
   }
 
   /**
@@ -45,7 +45,7 @@ export class PseudoTmuxCommand {
    */
   run() {
     this.term_.print(
-        hterm.messageManager.get('TERMINAL_TMUX_INTEGRATION_ACTIVATED'));
+        hterm.messageManager.get("TERMINAL_TMUX_INTEGRATION_ACTIVATED"));
     this.term_.newLine();
     this.prompt_();
   }
@@ -54,7 +54,7 @@ export class PseudoTmuxCommand {
    * Print a prompt.
    */
   prompt_() {
-    this.term_.print('>>> ');
+    this.term_.print(">>> ");
   }
 
   /**
@@ -66,25 +66,25 @@ export class PseudoTmuxCommand {
     for (const c of string) {
       switch (c) {
         // Ctrl-C & Ctrl-D
-        case '\x03':
-        case '\x04':
+        case "\x03":
+        case "\x04":
           this.controller_.detach();
           this.term_.newLine();
           return;
         // Backspace.
-        case '\x7f':
+        case "\x7f":
           if (this.buffer_) {
             this.buffer_ = this.buffer_.slice(0, -1);
             this.term_.cursorLeft(1);
-            this.term_.print(' ');
+            this.term_.print(" ");
             this.term_.cursorLeft(1);
           } else {
             this.term_.ringBell();
           }
           break;
-        case '\r': {
+        case "\r": {
           const command = this.buffer_.trim();
-          this.buffer_ = '';
+          this.buffer_ = "";
 
           this.term_.newLine();
           if (!command) {
@@ -102,7 +102,7 @@ export class PseudoTmuxCommand {
         }
         default:
           // Only handle printable ASCII character for now.
-          if (c >= ' ' && c <= '~') {
+          if (c >= " " && c <= "~") {
             this.buffer_ += c;
             this.term_.print(c);
             break;
@@ -167,7 +167,7 @@ export class DriverChannel {
       setTimeout(() => {
         // This is fine because first resolve/reject wins. See
         // https://262.ecma-international.org/6.0/#sec-promise-reject-functions
-        reject(new Error('timeout'));
+        reject(new Error("timeout"));
       }, 5 * 1000);
 
       driverChannel.postMessage({id});
@@ -278,7 +278,7 @@ export class TmuxControllerDriver {
   onStart_() {
     this.active_ = true;
 
-    window.addEventListener('unload', this.onUnload_);
+    window.addEventListener("unload", this.onUnload_);
 
     const io = this.term_.io;
 
@@ -293,8 +293,8 @@ export class TmuxControllerDriver {
       },
       onError: (msg) => {
         printLines(this.term_, [
-          hterm.messageManager.get('TERMINAL_TMUX_CONTROLLER_ENCOUNTER_ERROR'),
-          ...msg.trim().split('\n'),
+          hterm.messageManager.get("TERMINAL_TMUX_CONTROLLER_ENCOUNTER_ERROR"),
+          ...msg.trim().split("\n"),
         ]);
       },
     });
@@ -303,7 +303,7 @@ export class TmuxControllerDriver {
     // our pseudo tmux command to handle user input on the current terminal.
     // Note that we cannot do `io.push()` instead, since it causes buffering of
     // tmux process output.
-    for (const name of ['onVTKeystroke', 'sendString']) {
+    for (const name of ["onVTKeystroke", "sendString"]) {
       this.ioPropertyBackup_[name] = io[name];
       io[name] = this.onUserInput_;
     }
@@ -320,7 +320,7 @@ export class TmuxControllerDriver {
       return;
     }
     console.warn(
-        'unhandled user input when the controller hasn\'t started: ', str);
+        "unhandled user input when the controller hasn't started: ", str);
   }
 
   /**
@@ -357,8 +357,8 @@ export class TmuxControllerDriver {
   onStop_() {
     this.active_ = false;
 
-    window.removeEventListener('unload', this.onUnload_);
-    this.cleanUpPendingOpenWindowRequests_('controller has stopped');
+    window.removeEventListener("unload", this.onUnload_);
+    this.cleanUpPendingOpenWindowRequests_("controller has stopped");
 
     this.controller_ = null;
     this.pseudoTmuxCommand_ = null;
@@ -371,7 +371,7 @@ export class TmuxControllerDriver {
       // The controller should have received an "%exit" notification and closed
       // all the windows.
       console.warn(
-          'serverWindows_ is not empty when the tmux process has stopped');
+          "serverWindows_ is not empty when the tmux process has stopped");
       for (const serverWindow of Array.from(this.serverWindows_)) {
         serverWindow.onClose();
       }
@@ -385,7 +385,7 @@ export class TmuxControllerDriver {
     for (const serverWindow of Array.from(this.serverWindows_)) {
       serverWindow.onClose();
     }
-    this.cleanUpPendingOpenWindowRequests_('driver\'s page is unloading');
+    this.cleanUpPendingOpenWindowRequests_("driver's page is unloading");
   }
 
   /**
@@ -406,7 +406,7 @@ export class TmuxControllerDriver {
     if (!this.controller_) {
       console.warn(
           `controller does not exist. Rejecting open window request ${id}`);
-      this.driverChannel_.resolve(id, undefined, 'controller does not exist');
+      this.driverChannel_.resolve(id, undefined, "controller does not exist");
       return;
     }
 
@@ -515,9 +515,9 @@ class ServerChannel {
     const sessionId = ev.data[0];
     const payload = ev.data[1];
 
-    if (sessionId === 'CONNECT') {
+    if (sessionId === "CONNECT") {
       ++this.sessionId_;
-      this.channel_.postMessage(['CONNECTED', {
+      this.channel_.postMessage(["CONNECTED", {
         sessionId: this.sessionId_,
         requestId: payload.requestId,
       }]);
@@ -526,7 +526,7 @@ class ServerChannel {
     }
 
     if (!sessionId || sessionId !== this.sessionId_) {
-      console.warn('unknown or invalid session id. Discard message');
+      console.warn("unknown or invalid session id. Discard message");
       return;
     }
 
@@ -546,10 +546,10 @@ class ClientChannel {
     this.sessionId_ = null;
 
     const requestId = uniqueId();
-    this.channel_.postMessage(['CONNECT', {requestId}]);
+    this.channel_.postMessage(["CONNECT", {requestId}]);
     this.channel_.onmessage = (ev) => {
-      if (ev.data[0] !== 'CONNECTED' || ev.data[1].requestId != requestId) {
-        throw new Error('unable to connect');
+      if (ev.data[0] !== "CONNECTED" || ev.data[1].requestId != requestId) {
+        throw new Error("unable to connect");
       }
       this.sessionId_ = ev.data[1].sessionId;
       this.channel_.onmessage = this.onMessage_.bind(this);
@@ -575,7 +575,7 @@ class ClientChannel {
     if (ev.data[0] !== this.sessionId_) {
       this.channel_.close();
       this.channel_ = null;
-      throw new Error('unmatched session id');
+      throw new Error("unmatched session id");
     }
     this.onData_(ev.data[1]);
   }
@@ -618,8 +618,8 @@ class ServerWindow extends tmux.Window {
 
     // TODO(1252271): We should be able to use something like Proxy to avoid
     // spelling out the methods.
-    for (const method of ['onLayoutUpdate', 'onPaneOutput',
-        'onPaneSyncStart']) {
+    for (const method of ["onLayoutUpdate", "onPaneOutput",
+        "onPaneSyncStart"]) {
       this[method] = this.clientWindowRpc_[method];
     }
   }
@@ -734,14 +734,14 @@ export class ClientWindow {
     this.io_.onTerminalResize = this.reconcileTmuxWindowSize_.bind(this);
 
 
-    window.addEventListener('beforeunload', (e) => {
+    window.addEventListener("beforeunload", (e) => {
       if (!this.closed_) {
         // Display a warning before closing.
-        e.returnValue = '';
+        e.returnValue = "";
       }
     });
 
-    window.addEventListener('unload', () => {
+    window.addEventListener("unload", () => {
       // If we have already received a `onClose()` from the server side, there
       // is no need to kill the window.
       if (!this.closed_) {
@@ -764,10 +764,10 @@ export class ClientWindow {
    * @throws {!Error}
    */
   static async open({driverChannelName, term}) {
-    console.log('requesting server window from: ', driverChannelName);
+    console.log("requesting server window from: ", driverChannelName);
     const channelName = await DriverChannel.requestOpenWindow(
         driverChannelName);
-    console.log('got channelName: ', channelName);
+    console.log("got channelName: ", channelName);
     return new ClientWindow({
       channelName: channelName,
       term,
@@ -816,7 +816,7 @@ export class ClientWindow {
       console.error(`Unexpected paneId ${paneId}`);
       return;
     }
-    console.log('pane sync started');
+    console.log("pane sync started");
     this.paneSyncStarted_ = true;
   }
 
@@ -834,7 +834,7 @@ export class ClientWindow {
         this.layout_ = null;
         this.term_.wipeContents();
       }
-      this.error_('multi-pane windows are not supported yet');
+      this.error_("multi-pane windows are not supported yet");
       return;
     }
 
@@ -872,7 +872,7 @@ export class ClientWindow {
    */
   sendString_(text) {
     if (this.layout_ === null) {
-      console.warn('ignore data since pane id has not been initialized');
+      console.warn("ignore data since pane id has not been initialized");
       return;
     }
     this.reconcileTmuxWindowSize_();

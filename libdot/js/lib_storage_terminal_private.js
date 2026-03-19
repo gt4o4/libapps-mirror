@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /**
  * Storage implementation using chrome.terminalPrivate.
@@ -18,7 +18,7 @@ lib.Storage.TerminalPrivate = class extends lib.Storage {
    * }=} storage
    */
   constructor(
-      prefPath = 'crostini.terminal_settings',
+      prefPath = "crostini.terminal_settings",
       storage = chrome.terminalPrivate) {
     super();
 
@@ -89,7 +89,7 @@ lib.Storage.TerminalPrivate = class extends lib.Storage {
    */
   onPrefChanged_(prefs) {
     const pref = /** @type {?Object<string, *>} */(prefs[this.prefPath_]);
-    if (!pref || typeof pref !== 'object') {
+    if (!pref || typeof pref !== "object") {
       return;
     }
     // Check what is deleted.

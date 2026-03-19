@@ -6,15 +6,15 @@
  * @fileoverview Implementation for the ssh-fe@google.com proxy.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {getGoogleSshAgentExtension} from './nassh_google.js';
-import {LocalPreferenceManager} from './nassh_preference_manager.js';
-import {Relay} from './nassh_relay.js';
-import {Stream} from './nassh_stream.js';
-import {RelaySshfeWsStream} from './nassh_stream_relay_sshfe.js';
+import {getGoogleSshAgentExtension} from "./nassh_google.js";
+import {LocalPreferenceManager} from "./nassh_preference_manager.js";
+import {Relay} from "./nassh_relay.js";
+import {Stream} from "./nassh_stream.js";
+import {RelaySshfeWsStream} from "./nassh_stream_relay_sshfe.js";
 
 /**
  * SSH-FE relay implementation.
@@ -30,14 +30,14 @@ export class Sshfe extends Relay {
    */
   constructor(io, options, location, storage, localPrefs) {
     super(io, options, location, storage, localPrefs);
-    this.sshAgent_ = options['--ssh-agent'] || getGoogleSshAgentExtension();
+    this.sshAgent_ = options["--ssh-agent"] || getGoogleSshAgentExtension();
     this.relayServer = `wss://${this.proxyHost}:${this.proxyPort}`;
   }
 
   /** @override */
   redirect() {
     // This shouldn't be called in the first place.
-    throw new Error('ssh-fe does not redirect');
+    throw new Error("ssh-fe does not redirect");
   }
 
   /**

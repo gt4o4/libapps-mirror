@@ -6,11 +6,11 @@
  * @fileoverview Bundle up for release.
  */
 
-import terser from '@rollup/plugin-terser';
-import gitInfo from 'rollup-plugin-git-info';
+import terser from "@rollup/plugin-terser";
+import gitInfo from "rollup-plugin-git-info";
 
 const plugins = [];
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === "production") {
   plugins.push(terser());
 }
 
@@ -18,7 +18,7 @@ if (process.env.NODE_ENV === 'production') {
 const output = {
   // This only disables the '__esModule' symbol hack.
   esModule: false,
-  format: 'es',
+  format: "es",
   indent: false,
   preferConst: true,
 };
@@ -27,10 +27,10 @@ const output = {
 let targets = [
   // Resources.
   {
-    input: 'js/deps_resources.shim.js',
+    input: "js/deps_resources.shim.js",
     output: {
       ...output,
-      file: 'dist/js/libdot_resources.js',
+      file: "dist/js/libdot_resources.js",
     },
     plugins: [
       ...plugins,
@@ -42,10 +42,10 @@ let targets = [
 
   // Main lib.
   {
-    input: 'index.js',
+    input: "index.js",
     output: {
       ...output,
-      file: 'dist/js/libdot.js',
+      file: "dist/js/libdot.js",
     },
     plugins,
   },

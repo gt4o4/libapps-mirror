@@ -7,9 +7,9 @@
  *
  * @suppress {moduleLoad}
  */
-import {LitElement, createRef, css, html, ifDefined, live, ref} from './lit.js';
-import {redispatchEvent} from './terminal_common.js';
-import './terminal_label.js';
+import {LitElement, createRef, css, html, ifDefined, live, ref} from "./lit.js";
+import {redispatchEvent} from "./terminal_common.js";
+import "./terminal_label.js";
 
 export class TerminalTextfieldElement extends LitElement {
   /**
@@ -180,9 +180,9 @@ export class TerminalTextfieldElement extends LitElement {
 
     this.label = undefined;
     this.ariaLabel = undefined;
-    this.placeholder = '';
-    this.title = '';
-    this.value = '';
+    this.placeholder = "";
+    this.title = "";
+    this.value = "";
     this.blendIn = false;
     this.fitContent = false;
     /** @type {string|undefined} */
@@ -194,8 +194,8 @@ export class TerminalTextfieldElement extends LitElement {
     this.rulerRef_ = createRef();
     this.inputRef_ = createRef();
 
-    this.addEventListener('focus', () => this.focused_ = true);
-    this.addEventListener('blur', () => this.focused_ = false);
+    this.addEventListener("focus", () => this.focused_ = true);
+    this.addEventListener("blur", () => this.focused_ = false);
   }
 
   /**
@@ -204,7 +204,7 @@ export class TerminalTextfieldElement extends LitElement {
    * @override
    */
   shouldUpdate(changedProperties) {
-    if (changedProperties.size === 1 && changedProperties.has('value')) {
+    if (changedProperties.size === 1 && changedProperties.has("value")) {
       return this.value !== this.inputRef_.value?.value;
     }
     return true;
@@ -240,7 +240,7 @@ export class TerminalTextfieldElement extends LitElement {
         <div id="container">
           <div id="input-container">
             <slot name="inline-prefix"></slot>
-            <input ${ref(this.inputRef_)} type="${this.inputType || 'text'}"
+            <input ${ref(this.inputRef_)} type="${this.inputType || "text"}"
                 .placeholder="${this.placeholder}"
                 .value="${live(this.value)}"
                 .title="${this.title}"
@@ -252,7 +252,7 @@ export class TerminalTextfieldElement extends LitElement {
                 aria-errormessage="error"
             />
           </div>
-          ${this.blendIn ? '' :
+          ${this.blendIn ? "" :
             html`<div id="underline" ?invalid="${this.error}"></div>`}
         </div>
         ${error}
@@ -265,7 +265,7 @@ export class TerminalTextfieldElement extends LitElement {
    * @override
    */
   updated(changedProperties) {
-    if (changedProperties.has('value')) {
+    if (changedProperties.has("value")) {
       this.maybeFitContent_();
     }
   }
@@ -281,7 +281,7 @@ export class TerminalTextfieldElement extends LitElement {
       return;
     }
     const ruler = this.rulerRef_.value;
-    const newContent = this.inputRef_.value.value + 'XXX';
+    const newContent = this.inputRef_.value.value + "XXX";
     if (ruler.textContent !== newContent) {
       ruler.textContent = newContent;
       this.updateFitContentWidth();
@@ -312,4 +312,4 @@ export class TerminalTextfieldElement extends LitElement {
   }
 }
 
-customElements.define('terminal-textfield', TerminalTextfieldElement);
+customElements.define("terminal-textfield", TerminalTextfieldElement);

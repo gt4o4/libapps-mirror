@@ -95,9 +95,9 @@ class Terminal$$module$js$xterm {
     /** @type {IParser} */
     this.parser;
     this.unicode = {
-      activeVersion: '',
+      activeVersion: "",
     };
-    this.modes = {mouseTrackingMode: ''};
+    this.modes = {mouseTrackingMode: ""};
   }
 
   /**

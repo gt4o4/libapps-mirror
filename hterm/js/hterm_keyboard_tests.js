@@ -8,7 +8,7 @@
  * Test that KeyDefActions are resolved correctly.
  */
 
-import {hterm} from '../index.js';
+import {hterm} from "../index.js";
 
 /**
  * Mock terminal, set up keyMap.
@@ -25,9 +25,9 @@ beforeEach(function() {
 });
 
 /** Verify user bindings override. */
-it('user-bindings-override-defaults', function() {
+it("user-bindings-override-defaults", function() {
   const ctrlShiftK = new KeyboardEvent(
-      'keydown', {keyCode: 'K'.charCodeAt(0), ctrlKey: true, shiftKey: true});
+      "keydown", {keyCode: "K".charCodeAt(0), ctrlKey: true, shiftKey: true});
 
   // Without user bindings, terminal.wipeContents() is called.
   this.keyboard.onKeyDown_(ctrlShiftK);
@@ -36,8 +36,8 @@ it('user-bindings-override-defaults', function() {
 
   // With a user binding, terminal.wipeContents() is not called.
   this.terminal.wipeContentsCalled = false;
-  this.keyboard.bindings.addBindings({'Ctrl+Shift+K': '"x"'});
+  this.keyboard.bindings.addBindings({"Ctrl+Shift+K": '"x"'});
   this.keyboard.onKeyDown_(ctrlShiftK);
   assert.isFalse(this.terminal.wipeContentsCalled);
-  assert.equal('x', this.terminal.key);
+  assert.equal("x", this.terminal.key);
 });

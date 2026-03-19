@@ -8,7 +8,7 @@
  * Arguably some of these functions should be l10n, but oh well.
  */
 
-import {lib} from './lib.js';
+import {lib} from "./lib.js";
 
 /** @const */
 lib.i18n = {};
@@ -52,7 +52,7 @@ lib.i18n.getAcceptLanguages = function() {
  * @param {string=} fallback Translation if the message wasn't found.
  * @return {string} The translated message.
  */
-lib.i18n.getMessage = function(msgname, substitutions = [], fallback = '') {
+lib.i18n.getMessage = function(msgname, substitutions = [], fallback = "") {
   // First let the native browser APIs handle everything for us.
   if (browser_) {
     const message = browser_.getMessage(msgname, substitutions);
@@ -86,7 +86,7 @@ lib.i18n.replaceReferences = function(msg, args = []) {
   }
 
   return msg.replace(/\$(\d+)/g, (m, index) => {
-    return index <= args.length ? args[index - 1] : '';
+    return index <= args.length ? args[index - 1] : "";
   });
 };
 
@@ -104,43 +104,43 @@ lib.i18n.resolveLanguage = function(language) {
 
   // Map es-RR other than es-ES to es-419 (Chrome's Latin American
   // Spanish locale).
-  if (lang == 'es') {
-    if ([undefined, 'es'].includes(region)) {
-      return ['es'];
+  if (lang == "es") {
+    if ([undefined, "es"].includes(region)) {
+      return ["es"];
     }
-    return ['es_419'];
+    return ["es_419"];
   }
 
   // Map pt-RR other than pt-BR to pt-PT. Note that "pt" by itself maps to
   // pt-BR (logic below).
-  if (lang == 'pt') {
-    if ([undefined, 'br'].includes(region)) {
-      return ['pt_BR'];
+  if (lang == "pt") {
+    if ([undefined, "br"].includes(region)) {
+      return ["pt_BR"];
     }
-    return ['pt_PT'];
+    return ["pt_PT"];
   }
 
   // Map zh-HK and zh-MO to zh-TW. Otherwise, zh-FOO is mapped to zh-CN.
-  if (lang == 'zh') {
-    if (['tw', 'hk', 'mo'].includes(region)) {
-      return ['zh_TW'];
+  if (lang == "zh") {
+    if (["tw", "hk", "mo"].includes(region)) {
+      return ["zh_TW"];
     }
-    return ['zh_CN'];
+    return ["zh_CN"];
   }
 
   // Map Liberian and Filipino English to US English, and everything else to
   // British English.
-  if (lang == 'en') {
-    if ([undefined, 'us', 'lr', 'ph'].includes(region)) {
-      return ['en'];
+  if (lang == "en") {
+    if ([undefined, "us", "lr", "ph"].includes(region)) {
+      return ["en"];
     }
 
     // Our GB translation is not complete, so need to add 'en' as a fallback.
-    return ['en_GB', 'en'];
+    return ["en_GB", "en"];
   }
 
   if (region) {
-    return [language.replace(/-/g, '_'), lang];
+    return [language.replace(/-/g, "_"), lang];
   } else {
     return [lang];
   }

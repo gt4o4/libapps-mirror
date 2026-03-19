@@ -6,7 +6,7 @@
  * @fileoverview Export an element: terminal-label
  */
 
-import {LitElement, css, html} from './lit.js';
+import {LitElement, css, html} from "./lit.js";
 
 /**
  * A label element. Set attribute 'focused' on the element to get the focused
@@ -49,4 +49,4 @@ export class TerminalLabelElement extends LitElement {
   }
 }
 
-customElements.define('terminal-label', TerminalLabelElement);
+customElements.define("terminal-label", TerminalLabelElement);

@@ -6,19 +6,19 @@
  * @fileoverview hterm.Terminal unit tests.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../index.js';
-import {MockNotification} from './hterm_mock_notification.js';
-import {MockTerminalMouseEvent} from './hterm_mock_terminal_mouseevent.js';
+import {hterm} from "../index.js";
+import {MockNotification} from "./hterm_mock_notification.js";
+import {MockTerminalMouseEvent} from "./hterm_mock_terminal_mouseevent.js";
 
 before(function() {
   this.visibleColumnCount = 80;
   this.visibleRowCount = 24;
 
   // This is a 16px x 8px gif.
-  this.imageBase64 = 'R0lGODdhCAAQAIAAAP///wAAACwAAAAACAAQAAACFkSAhpfMC1uMT1' +
-                     'mabHWZy6t1U/htQAEAOw==';
+  this.imageBase64 = "R0lGODdhCAAQAIAAAP///wAAACwAAAAACAAQAAACFkSAhpfMC1uMT1" +
+                     "mabHWZy6t1U/htQAEAOw==";
   this.imageArrayBuffer = lib.codec.stringToCodeUnitArray(
       atob(this.imageBase64)).buffer;
   this.imageBlob = new Blob([this.imageArrayBuffer]);
@@ -33,10 +33,10 @@ before(function() {
 beforeEach(function(done) {
   const document = globalThis.document;
 
-  const div = this.div = document.createElement('div');
-  div.style.position = 'absolute';
-  div.style.height = '100%';
-  div.style.width = '100%';
+  const div = this.div = document.createElement("div");
+  div.style.position = "absolute";
+  div.style.height = "100%";
+  div.style.width = "100%";
 
   document.body.appendChild(div);
 
@@ -47,9 +47,9 @@ beforeEach(function(done) {
   // likely to reveal bugs.
   // Update default value for prefs, and set initial value to be used prior
   // to prefs loading.
-  this.terminal.getPrefs().definePreference('screen-padding-size', 20);
+  this.terminal.getPrefs().definePreference("screen-padding-size", 20);
   this.terminal.setScreenPaddingSize(20);
-  this.terminal.getPrefs().definePreference('screen-border-size', 13);
+  this.terminal.getPrefs().definePreference("screen-border-size", 13);
   this.terminal.setScreenBorderSize(13);
   this.terminal.setHeight(this.visibleRowCount);
   this.terminal.setWidth(this.visibleColumnCount);
@@ -84,7 +84,7 @@ const DISPLAY_IMAGE_TIMEOUT = 5000;
  * Checks that the dimensions of the scrollport match the dimensions of the
  * values that the Terminal was constructed with.
  */
-it('dimensions', function() {
+it("dimensions", function() {
   const divSize = this.div.getBoundingClientRect();
   const scrollPort = this.terminal.scrollPort_;
   const rightPadding = Math.max(
@@ -114,11 +114,11 @@ it('dimensions', function() {
  * Fill the screen with 'X' characters one character at a time, in a way
  * that should stress the cursor positioning code.
  */
-it('plaintext-stress-cursor-ltr', function() {
+it("plaintext-stress-cursor-ltr", function() {
   for (let col = 0; col < this.visibleColumnCount; col++) {
     for (let row = 0; row < this.visibleRowCount; row++) {
       this.terminal.screen_.setCursorPosition(row, col);
-      this.terminal.screen_.insertString('X');
+      this.terminal.screen_.insertString("X");
     }
   }
 });
@@ -128,11 +128,11 @@ it('plaintext-stress-cursor-ltr', function() {
  * that should stress the cursor positioning code and the overwriteString()
  * code.
  */
-it('plaintext-stress-cursor-rtl', function() {
+it("plaintext-stress-cursor-rtl", function() {
   for (let col = this.visibleColumnCount - 1; col >= 0; col--) {
     for (let row = 0; row < this.visibleRowCount; row++) {
       this.terminal.screen_.setCursorPosition(row, col);
-      this.terminal.screen_.overwriteString('X');
+      this.terminal.screen_.overwriteString("X");
     }
   }
 });
@@ -143,7 +143,7 @@ it('plaintext-stress-cursor-rtl', function() {
  * This test doesn't actually assert anything, but the timing data in the test
  * log is useful.
  */
-it('plaintext-stress-insert', function(done) {
+it("plaintext-stress-insert", function(done) {
   const chunkSize = 1000;
   const testCount = 10;
 
@@ -153,7 +153,7 @@ it('plaintext-stress-insert', function(done) {
         this.terminal.newLine();
       }
       this.terminal.screen_.insertString(
-          'line ' + i + ': All work and no play makes jack a dull boy.');
+          "line " + i + ": All work and no play makes jack a dull boy.");
     }
 
     if (count + 1 >= testCount) {
@@ -170,7 +170,7 @@ it('plaintext-stress-insert', function(done) {
  * Test that accounting of desktop notifications works, and that they are
  * closed under the right circumstances.
  */
-it('desktop-notification-bell-test', function() {
+it("desktop-notification-bell-test", function() {
   this.terminal.desktopNotificationBell_ = true;
 
   // If we have focus, then no notifications should show.
@@ -215,28 +215,28 @@ it('desktop-notification-bell-test', function() {
 /**
  * Verify showing an overlay will also announce the message.
  */
-it('show-overlay-announce', function() {
+it("show-overlay-announce", function() {
   const liveElement = this.terminal.accessibilityReader_.assertiveLiveElement_;
 
-  this.terminal.showOverlay('test');
-  assert.equal('test', liveElement.innerText);
+  this.terminal.showOverlay("test");
+  assert.equal("test", liveElement.innerText);
 
-  this.terminal.showOverlay('hello');
-  assert.equal('hello', liveElement.innerText);
+  this.terminal.showOverlay("hello");
+  assert.equal("hello", liveElement.innerText);
 });
 
 /**
  * Selection should be sync'd to the cursor when the selection is collapsed.
  */
-it('sync-collapsed-selection', function(done) {
-  this.terminal.print('foo');
+it("sync-collapsed-selection", function(done) {
+  this.terminal.print("foo");
   this.terminal.newLine();
-  this.terminal.print('bar');
+  this.terminal.print("bar");
 
   // Wait for selection to sync to the caret.
   setTimeout(() => {
     const selection = this.terminal.document_.getSelection();
-    assert.equal('bar', selection.anchorNode.textContent);
+    assert.equal("bar", selection.anchorNode.textContent);
     assert.equal(3, selection.anchorOffset);
     done();
   });
@@ -246,21 +246,21 @@ it('sync-collapsed-selection', function(done) {
  * Selection should not be sync'd to the cursor when the selection is not
  * collapsed. This avoids clearing selection that has been set by the user.
  */
-it('sync-uncollapsed-selection', function(done) {
-  this.terminal.print('foo');
+it("sync-uncollapsed-selection", function(done) {
+  this.terminal.print("foo");
   this.terminal.newLine();
   // Select the text 'foo'
   const firstRow = this.terminal.getRowNode(0).firstChild;
   this.terminal.document_.getSelection().setBaseAndExtent(
       firstRow, 0, firstRow, 3);
-  this.terminal.print('bar');
+  this.terminal.print("bar");
 
   // Wait for selection to sync to the caret.
   setTimeout(() => {
     const selection = this.terminal.document_.getSelection();
-    assert.equal('foo', selection.anchorNode.textContent);
+    assert.equal("foo", selection.anchorNode.textContent);
     assert.equal(0, selection.anchorOffset);
-    assert.equal('foo', selection.focusNode.textContent);
+    assert.equal("foo", selection.focusNode.textContent);
     assert.equal(3, selection.focusOffset);
     done();
   });
@@ -270,22 +270,22 @@ it('sync-uncollapsed-selection', function(done) {
  * With accessibility enabled, selection should be sync'd to the cursor even
  * when the selection is not collapsed, as long as there is a user gesture.
  */
-it('sync-uncollapsed-selection-a11y', function(done) {
+it("sync-uncollapsed-selection-a11y", function(done) {
   this.terminal.setAccessibilityEnabled(true);
   this.terminal.accessibilityReader_.hasUserGesture = true;
 
-  this.terminal.print('foo');
+  this.terminal.print("foo");
   this.terminal.newLine();
   // Select the text 'foo'
   const firstRow = this.terminal.getRowNode(0).firstChild;
   this.terminal.document_.getSelection().setBaseAndExtent(
       firstRow, 0, firstRow, 3);
-  this.terminal.print('bar');
+  this.terminal.print("bar");
 
   // Wait for selection to sync to the caret.
   setTimeout(() => {
     const selection = this.terminal.document_.getSelection();
-    assert.equal('bar', selection.anchorNode.textContent);
+    assert.equal("bar", selection.anchorNode.textContent);
     assert.equal(3, selection.anchorOffset);
     done();
   });
@@ -295,10 +295,10 @@ it('sync-uncollapsed-selection-a11y', function(done) {
  * Ensure that focussing the scrollPort will cause the selection to sync to the
  * caret.
  */
-it('scrollport-focus-cursor', function(done) {
-  this.terminal.print('foo');
+it("scrollport-focus-cursor", function(done) {
+  this.terminal.print("foo");
   this.terminal.newLine();
-  this.terminal.print('bar');
+  this.terminal.print("bar");
 
   // Wait for selection to sync to the caret.
   setTimeout(() => {
@@ -308,7 +308,7 @@ it('scrollport-focus-cursor', function(done) {
     this.terminal.scrollPort_.focus();
     setTimeout(() => {
       const selection = this.terminal.document_.getSelection();
-      assert.equal('bar', selection.anchorNode.textContent);
+      assert.equal("bar", selection.anchorNode.textContent);
       assert.equal(3, selection.anchorOffset);
       done();
     });
@@ -319,30 +319,30 @@ it('scrollport-focus-cursor', function(done) {
  * Test that focus sequences are passed as expected when focus reporting is
  * turned on, and nothing is passed when reporting is off.
  */
-it('focus-reporting', function() {
-  let resultString = '';
+it("focus-reporting", function() {
+  let resultString = "";
   this.terminal.io.sendString = (str) => resultString = str;
 
-  this.terminal.interpret('\x1b[?1004h');
+  this.terminal.interpret("\x1b[?1004h");
 
   this.terminal.onFocusChange_(false);
-  assert.equal(resultString, '\x1b[O');
+  assert.equal(resultString, "\x1b[O");
   this.terminal.onFocusChange_(true);
-  assert.equal(resultString, '\x1b[I');
+  assert.equal(resultString, "\x1b[I");
 
-  resultString = '';
-  this.terminal.interpret('\x1b[?1004l');
+  resultString = "";
+  this.terminal.interpret("\x1b[?1004l");
 
   this.terminal.onFocusChange_(false);
-  assert.equal(resultString, '');
+  assert.equal(resultString, "");
   this.terminal.onFocusChange_(true);
-  assert.equal(resultString, '');
+  assert.equal(resultString, "");
 });
 
 /**
  * Verify saved cursors have per-screen state.
  */
-it('per-screen-cursor-state', function() {
+it("per-screen-cursor-state", function() {
   const terminal = this.terminal;
   const vt = terminal.vt;
 
@@ -352,11 +352,11 @@ it('per-screen-cursor-state', function() {
   terminal.restoreCursorAndState();
   assert.equal(0, terminal.getCursorRow());
   assert.equal(0, terminal.getCursorColumn());
-  assert.equal('G0', vt.GL);
-  assert.equal('G0', vt.GR);
+  assert.equal("G0", vt.GL);
+  assert.equal("G0", vt.GR);
   // Change the primary cursor a bit and save it.
-  vt.GL = 'G1';
-  vt.GR = 'G2';
+  vt.GL = "G1";
+  vt.GR = "G2";
   terminal.setAbsoluteCursorPosition(3, 4);
   assert.equal(3, terminal.getCursorRow());
   assert.equal(4, terminal.getCursorColumn());
@@ -367,17 +367,17 @@ it('per-screen-cursor-state', function() {
   // Cursor state should not be changed.
   assert.equal(3, terminal.getCursorRow());
   assert.equal(4, terminal.getCursorColumn());
-  assert.equal('G1', vt.GL);
-  assert.equal('G2', vt.GR);
+  assert.equal("G1", vt.GL);
+  assert.equal("G2", vt.GR);
   // This should be the default cursor state.
   terminal.restoreCursorAndState();
   assert.equal(0, terminal.getCursorRow());
   assert.equal(0, terminal.getCursorColumn());
-  assert.equal('G0', vt.GL);
-  assert.equal('G0', vt.GR);
+  assert.equal("G0", vt.GL);
+  assert.equal("G0", vt.GR);
   // Change the alternate cursor a bit and save it.
-  vt.GL = 'G2';
-  vt.GR = 'G3';
+  vt.GL = "G2";
+  vt.GR = "G3";
   terminal.setAbsoluteCursorPosition(7, 8);
   assert.equal(7, terminal.getCursorRow());
   assert.equal(8, terminal.getCursorColumn());
@@ -388,48 +388,48 @@ it('per-screen-cursor-state', function() {
   // Cursor state should not be changed.
   assert.equal(7, terminal.getCursorRow());
   assert.equal(8, terminal.getCursorColumn());
-  assert.equal('G2', vt.GL);
-  assert.equal('G3', vt.GR);
+  assert.equal("G2", vt.GL);
+  assert.equal("G3", vt.GR);
   // This should be the primary cursor state we set up earlier.
   terminal.restoreCursorAndState();
   assert.equal(3, terminal.getCursorRow());
   assert.equal(4, terminal.getCursorColumn());
-  assert.equal('G1', vt.GL);
-  assert.equal('G2', vt.GR);
+  assert.equal("G1", vt.GL);
+  assert.equal("G2", vt.GR);
 
   // Finally back to the alternate scren.
   terminal.setAlternateMode(true);
   // Cursor state should not be changed.
   assert.equal(3, terminal.getCursorRow());
   assert.equal(4, terminal.getCursorColumn());
-  assert.equal('G1', vt.GL);
-  assert.equal('G2', vt.GR);
+  assert.equal("G1", vt.GL);
+  assert.equal("G2", vt.GR);
   // This should be the alternate cursor state we set up earlier.
   terminal.restoreCursorAndState();
   assert.equal(7, terminal.getCursorRow());
   assert.equal(8, terminal.getCursorColumn());
-  assert.equal('G2', vt.GL);
-  assert.equal('G3', vt.GR);
+  assert.equal("G2", vt.GL);
+  assert.equal("G3", vt.GR);
 });
 
 /**
  * Check image display handling when disabled.
  */
-it('display-img-disabled', function() {
+it("display-img-disabled", function() {
   this.terminal.allowImagesInline = false;
 
   let notification;
   this.terminal.showOverlay = (msg) => {
     notification = msg;
   };
-  this.terminal.displayImage({uri: ''});
-  assert.equal('Inline Images Disabled', notification);
+  this.terminal.displayImage({uri: ""});
+  assert.equal("Inline Images Disabled", notification);
 });
 
 /**
  * Check image display handling when not yet decided.
  */
-it('display-img-prompt', function() {
+it("display-img-prompt", function() {
   this.terminal.allowImagesInline = null;
 
   // Make sure the notification has some buttons.  Don't probe too deeply so we
@@ -438,15 +438,15 @@ it('display-img-prompt', function() {
   this.terminal.showOverlay = (msg) => {
     notification = msg;
   };
-  this.terminal.displayImage({uri: ''});
-  const buttons = notification.querySelectorAll('input');
+  this.terminal.displayImage({uri: ""});
+  const buttons = notification.querySelectorAll("input");
   assert.isAtLeast(buttons.length, 3);
 });
 
 /**
  * Check simple image display handling.
  */
-it('display-img-normal', function(done) {
+it("display-img-normal", function(done) {
   this.timeout(DISPLAY_IMAGE_TIMEOUT);
   this.terminal.allowImagesInline = true;
 
@@ -457,7 +457,7 @@ it('display-img-normal', function(done) {
     const container = row.childNodes[1];
     const img = container.childNodes[0];
 
-    assert.equal('center', container.style.textAlign);
+    assert.equal("center", container.style.textAlign);
     assert.equal(2, img.clientHeight);
 
     done();
@@ -465,9 +465,9 @@ it('display-img-normal', function(done) {
 
   // Display an image that only takes up one row.
   this.terminal.displayImage({
-    height: '2px',
+    height: "2px",
     inline: true,
-    align: 'center',
+    align: "center",
     uri: `data:application/octet-stream;base64,${this.imageBase64}`,
   }, onLoad, assert.fail);
 });
@@ -475,7 +475,7 @@ it('display-img-normal', function(done) {
 /**
  * Check simple image display handling via ArrayBuffer.
  */
-it('display-img-array-buffer', function(done) {
+it("display-img-array-buffer", function(done) {
   this.timeout(DISPLAY_IMAGE_TIMEOUT);
   this.terminal.allowImagesInline = true;
 
@@ -486,7 +486,7 @@ it('display-img-array-buffer', function(done) {
     const container = row.childNodes[1];
     const img = container.childNodes[0];
 
-    assert.equal('center', container.style.textAlign);
+    assert.equal("center", container.style.textAlign);
     assert.equal(2, img.clientHeight);
 
     done();
@@ -494,9 +494,9 @@ it('display-img-array-buffer', function(done) {
 
   // Display an image that only takes up one row.
   this.terminal.displayImage({
-    height: '2px',
+    height: "2px",
     inline: true,
-    align: 'center',
+    align: "center",
     buffer: this.imageArrayBuffer,
   }, onLoad, assert.fail);
 });
@@ -504,7 +504,7 @@ it('display-img-array-buffer', function(done) {
 /**
  * Check simple image display handling via Blob.
  */
-it('display-img-blob', function(done) {
+it("display-img-blob", function(done) {
   this.timeout(DISPLAY_IMAGE_TIMEOUT);
   this.terminal.allowImagesInline = true;
 
@@ -515,7 +515,7 @@ it('display-img-blob', function(done) {
     const container = row.childNodes[1];
     const img = container.childNodes[0];
 
-    assert.equal('center', container.style.textAlign);
+    assert.equal("center", container.style.textAlign);
     assert.equal(2, img.clientHeight);
 
     done();
@@ -523,9 +523,9 @@ it('display-img-blob', function(done) {
 
   // Display an image that only takes up one row.
   this.terminal.displayImage({
-    height: '2px',
+    height: "2px",
     inline: true,
-    align: 'center',
+    align: "center",
     buffer: this.imageBlob,
   }, onLoad, assert.fail);
 });
@@ -533,7 +533,7 @@ it('display-img-blob', function(done) {
 /**
  * Check handling of image dimensions.
  */
-it('display-img-dimensions', function(done) {
+it("display-img-dimensions", function(done) {
   this.timeout(DISPLAY_IMAGE_TIMEOUT);
   this.terminal.allowImagesInline = true;
 
@@ -558,8 +558,8 @@ it('display-img-dimensions', function(done) {
 
   // Display an image that only takes up one row.
   this.terminal.displayImage({
-    height: '4',
-    width: '75%',
+    height: "4",
+    width: "75%",
     inline: true,
     uri: `data:application/octet-stream;base64,${this.imageBase64}`,
   }, onLoad, assert.fail);
@@ -568,7 +568,7 @@ it('display-img-dimensions', function(done) {
 /**
  * Check handling of max image dimensions.
  */
-it('display-img-max-dimensions', function(done) {
+it("display-img-max-dimensions", function(done) {
   this.timeout(DISPLAY_IMAGE_TIMEOUT);
   this.terminal.allowImagesInline = true;
 
@@ -590,8 +590,8 @@ it('display-img-max-dimensions', function(done) {
 
   // Display an image that only takes up one row.
   this.terminal.displayImage({
-    height: '4000px',
-    width: '1000',
+    height: "4000px",
+    width: "1000",
     inline: true,
     uri: `data:application/octet-stream;base64,${this.imageBase64}`,
   }, onLoad, assert.fail);
@@ -600,7 +600,7 @@ it('display-img-max-dimensions', function(done) {
 /**
  * Check loading of invalid images doesn't wedge the terminal.
  */
-it('display-img-invalid', function(done) {
+it("display-img-invalid", function(done) {
   this.timeout(DISPLAY_IMAGE_TIMEOUT);
   this.terminal.allowImagesInline = true;
 
@@ -614,8 +614,8 @@ it('display-img-invalid', function(done) {
   // The data is invalid image content.
   this.terminal.displayImage({
     inline: true,
-    uri: 'data:application/octet-stream;base64,asdf',
-  }, () => assert.fail('image loading should have failed'), () => {
+    uri: "data:application/octet-stream;base64,asdf",
+  }, () => assert.fail("image loading should have failed"), () => {
      // We can't seem to run directly from the onError as JS doesn't like to
      // throw exceptions in there that our framework catches.
      // TODO(vapier): Should figure this out.
@@ -629,24 +629,24 @@ it('display-img-invalid', function(done) {
  * This test isn't great.  Since we use CSS animations for everything, we
  * assume that part is working, so we just check the stored timing values.
  */
-it('text-blink', function() {
+it("text-blink", function() {
   // Default blink state is enabled.
   this.terminal.setTextBlink();
-  assert.notEqual('0', this.terminal.getCssVar('blink-node-duration'));
+  assert.notEqual("0", this.terminal.getCssVar("blink-node-duration"));
 
   // Explicitly turn it off.
   this.terminal.setTextBlink(false);
-  assert.equal('0', this.terminal.getCssVar('blink-node-duration'));
+  assert.equal("0", this.terminal.getCssVar("blink-node-duration"));
 
   // Explicitly turn it back on.
   this.terminal.setTextBlink(true);
-  assert.notEqual('0', this.terminal.getCssVar('blink-node-duration'));
+  assert.notEqual("0", this.terminal.getCssVar("blink-node-duration"));
 });
 
 /**
  * Check mouse wheel emulation of arrow keys.
  */
-it('mouse-wheel-arrow-keys', function() {
+it("mouse-wheel-arrow-keys", function() {
   const terminal = this.terminal;
   let e;
 
@@ -659,41 +659,41 @@ it('mouse-wheel-arrow-keys', function() {
   terminal.setAlternateMode(true);
 
   // Send a wheel event w/no delta and check the report.
-  e = MockTerminalMouseEvent('wheel');
+  e = MockTerminalMouseEvent("wheel");
   terminal.onMouse_(e);
-  assert.equal('', resultString);
+  assert.equal("", resultString);
 
   // Send a wheel up event and check the report.
-  e = MockTerminalMouseEvent('wheel', {deltaY: -1, deltaMode: 1});
+  e = MockTerminalMouseEvent("wheel", {deltaY: -1, deltaMode: 1});
   terminal.onMouse_(e);
-  assert.equal('\x1bOA', resultString);
+  assert.equal("\x1bOA", resultString);
 
   // Send a wheel down event and check the report.
-  e = MockTerminalMouseEvent('wheel', {deltaY: 1, deltaMode: 1});
+  e = MockTerminalMouseEvent("wheel", {deltaY: 1, deltaMode: 1});
   terminal.onMouse_(e);
-  assert.equal('\x1bOB', resultString);
+  assert.equal("\x1bOB", resultString);
 
   // Send a wheel left event and check the report.
-  e = MockTerminalMouseEvent('wheel', {deltaX: -1, deltaMode: 1});
+  e = MockTerminalMouseEvent("wheel", {deltaX: -1, deltaMode: 1});
   terminal.onMouse_(e);
-  assert.equal('\x1bOD', resultString);
+  assert.equal("\x1bOD", resultString);
 
   // Send a wheel right event and check the report.
-  e = MockTerminalMouseEvent('wheel', {deltaX: 1, deltaMode: 1});
+  e = MockTerminalMouseEvent("wheel", {deltaX: 1, deltaMode: 1});
   terminal.onMouse_(e);
-  assert.equal('\x1bOC', resultString);
+  assert.equal("\x1bOC", resultString);
 
   // Send multiple combo reports.  The order doesn't matter, but reflects
   // how the code internally works atm.
-  e = MockTerminalMouseEvent('wheel', {deltaY: 2, deltaX: 2, deltaMode: 1});
+  e = MockTerminalMouseEvent("wheel", {deltaY: 2, deltaX: 2, deltaMode: 1});
   terminal.onMouse_(e);
-  assert.equal('\x1bOB\x1bOB\x1bOC\x1bOC', resultString);
+  assert.equal("\x1bOB\x1bOB\x1bOC\x1bOC", resultString);
 });
 
 /**
  * Check mouse wheel emulation of arrow keys are disabled on primary screen.
  */
-it('mouse-wheel-arrow-keys-primary', function() {
+it("mouse-wheel-arrow-keys-primary", function() {
   const terminal = this.terminal;
   let e;
 
@@ -706,17 +706,17 @@ it('mouse-wheel-arrow-keys-primary', function() {
   terminal.setAlternateMode(false);
 
   // Send a wheel event w/no delta and check the report.
-  e = MockTerminalMouseEvent('wheel');
+  e = MockTerminalMouseEvent("wheel");
   terminal.onMouse_(e);
   assert.isUndefined(resultString);
 
   // Send a wheel up event and check the report.
-  e = MockTerminalMouseEvent('wheel', {deltaY: -1, deltaMode: 1});
+  e = MockTerminalMouseEvent("wheel", {deltaY: -1, deltaMode: 1});
   terminal.onMouse_(e);
   assert.isUndefined(resultString);
 
   // Send a wheel down event and check the report.
-  e = MockTerminalMouseEvent('wheel', {deltaY: 1, deltaMode: 1});
+  e = MockTerminalMouseEvent("wheel", {deltaY: 1, deltaMode: 1});
   terminal.onMouse_(e);
   assert.isUndefined(resultString);
 });
@@ -724,12 +724,12 @@ it('mouse-wheel-arrow-keys-primary', function() {
 /**
  * Check mouse row and column.
  */
-it('mouse-row-column', function() {
+it("mouse-row-column", function() {
   const terminal = this.terminal;
   let e;
 
   // Turn on mouse click reporting.
-  terminal.vt.setDECMode('1000', true);
+  terminal.vt.setDECMode("1000", true);
 
   let eventReported = false;
   terminal.onMouse = (e) => {
@@ -751,39 +751,39 @@ it('mouse-row-column', function() {
   // Cell 10, 10.
   const x10 = padding + 9.5 * charWidth;
   const y10 = padding + 9.5 * charHeight;
-  e = send('mousedown', x10, y10);
+  e = send("mousedown", x10, y10);
   assert.isTrue(eventReported);
   assert.equal(e.terminalRow, 10);
   assert.equal(e.terminalColumn, 10);
 
   // Top padding, clamp to row 1.
-  e = send('mousedown', x10, 0);
+  e = send("mousedown", x10, 0);
   assert.isTrue(eventReported);
   assert.equal(e.terminalRow, 1);
   assert.equal(e.terminalColumn, 10);
 
   // Right padding, clamp to width.
-  e = send('mousedown', padding + (screenWidth * charWidth) + 1, y10);
+  e = send("mousedown", padding + (screenWidth * charWidth) + 1, y10);
   assert.isTrue(eventReported);
   assert.equal(e.terminalRow, 10);
   assert.equal(e.terminalColumn, screenWidth);
 
   // Scrollbar area, ignore mousedown.
-  e = send('mousedown', (2 * padding) + (screenWidth * charWidth) + 1, y10);
+  e = send("mousedown", (2 * padding) + (screenWidth * charWidth) + 1, y10);
   assert.isFalse(eventReported);
-  e = send('mousemove', (2 * padding) + (screenWidth * charWidth) + 1, y10);
+  e = send("mousemove", (2 * padding) + (screenWidth * charWidth) + 1, y10);
   assert.isTrue(eventReported);
   assert.equal(e.terminalRow, 10);
   assert.equal(e.terminalColumn, screenWidth);
 
   // Bottom padding, clamp to height.
-  e = send('mousedown', x10, padding + (screenHeight * charHeight) + 1);
+  e = send("mousedown", x10, padding + (screenHeight * charHeight) + 1);
   assert.isTrue(eventReported);
   assert.equal(e.terminalRow, screenHeight);
   assert.equal(e.terminalColumn, 10);
 
   // Left padding, clamp to column 1.
-  e = send('mousedown', 0, y10);
+  e = send("mousedown", 0, y10);
   assert.isTrue(eventReported);
   assert.equal(e.terminalRow, 10);
   assert.equal(e.terminalColumn, 1);
@@ -794,7 +794,7 @@ it('mouse-row-column', function() {
  * pasting using document.execCommand() because it is hard to simulate the
  * behavior.
  */
-it('paste', async function() {
+it("paste", async function() {
   if (!navigator.clipboard) {
     // Skip this test.
     return;
@@ -802,7 +802,7 @@ it('paste', async function() {
 
   const terminal = this.terminal;
   const oldReadText = navigator.clipboard.readText;
-  navigator.clipboard.readText = async () => 'hello world';
+  navigator.clipboard.readText = async () => "hello world";
   const oldOnPasteData = terminal.onPasteData_;
   const onPasteDataPromise = new Promise((resolve) => {
     terminal.onPasteData_ = (data) => {
@@ -813,7 +813,7 @@ it('paste', async function() {
 
   try {
     assert.isNull(this.terminal.paste());
-    assert.equal((await onPasteDataPromise), 'hello world');
+    assert.equal((await onPasteDataPromise), "hello world");
   } finally {
     navigator.clipboard.readText = oldReadText;
   }
@@ -822,7 +822,7 @@ it('paste', async function() {
 /**
  * Check set and reset of color palette.
  */
-it('set-and-reset-colors', async function() {
+it("set-and-reset-colors", async function() {
   const terminal = this.terminal;
 
   const assertColor = (i, value) => {
@@ -830,13 +830,13 @@ it('set-and-reset-colors', async function() {
     assert.equal(value, terminal.getColorPalette(i));
     const style = getComputedStyle(this.terminal.document_.documentElement);
     const p = style.getPropertyValue(`--hterm-color-${i}`);
-    assert.equal(value, `rgb(${p.trim().replace(/,/g, ', ')})`);
+    assert.equal(value, `rgb(${p.trim().replace(/,/g, ", ")})`);
   };
 
   // The color entries we'll test.
   const indices = [0, 7, 15, 31, 63, 127, 255];
   // The unique color we'll test against.
-  const custom = 'rgb(1, 2, 3)';
+  const custom = "rgb(1, 2, 3)";
 
   // Change the colors.
   indices.forEach((index) => {
@@ -860,7 +860,7 @@ it('set-and-reset-colors', async function() {
 /**
  * Use reduced scoll region.
  */
-it('scroll-region', function() {
+it("scroll-region", function() {
   const terminal = this.terminal;
 
   // This test prints 4 screens worth of text with different VT scroll region
@@ -876,10 +876,10 @@ it('scroll-region', function() {
   // Print |visibleRowCount+ 1| rows.
   const screenA = [];
   for (let i = 0; i <= this.visibleRowCount; ++i) {
-    const p = i.toString().padStart(2, '0');
+    const p = i.toString().padStart(2, "0");
     terminal.interpret(`           |a${p}`);
     if (i < this.visibleRowCount) {
-      terminal.interpret('\n\r');
+      terminal.interpret("\n\r");
     }
     screenA.push(`           |a${p}`);
   }
@@ -901,12 +901,12 @@ it('scroll-region', function() {
   terminal.setVTScrollRegion(1, null);
   terminal.setCursorPosition(0, 0);
   for (let i = 0; i <= this.visibleRowCount; ++i) {
-    const p = i.toString().padStart(2, '0');
+    const p = i.toString().padStart(2, "0");
     terminal.interpret(`       |b${p}`);
     if (i < this.visibleRowCount) {
-      terminal.interpret('\n\r');
+      terminal.interpret("\n\r");
     }
-    let fromScreenA = '';
+    let fromScreenA = "";
     if (i < this.visibleRowCount) {
       fromScreenA = screenA[i].substr(11);
     }
@@ -922,12 +922,12 @@ it('scroll-region', function() {
   terminal.setVTScrollRegion(null, this.visibleRowCount - 2);
   terminal.setCursorPosition(0, 0);
   for (let i = 0; i <= this.visibleRowCount; ++i) {
-    const p = i.toString().padStart(2, '0');
+    const p = i.toString().padStart(2, "0");
     terminal.interpret(`   |c${p}`);
     if (i < this.visibleRowCount) {
-      terminal.interpret('\n\r');
+      terminal.interpret("\n\r");
     }
-    let fromScreenB = '';
+    let fromScreenB = "";
     if (i < this.visibleRowCount - 1) {
       fromScreenB = screenB[i].substr(7);
     }
@@ -945,12 +945,12 @@ it('scroll-region', function() {
   terminal.setVTScrollRegion(1, this.visibleRowCount - 2);
   terminal.setCursorPosition(0, 0);
   for (let i = 0; i <= this.visibleRowCount; ++i) {
-    const p = i.toString().padStart(2, '0');
+    const p = i.toString().padStart(2, "0");
     terminal.interpret(`d${p}`);
     if (i < this.visibleRowCount) {
-      terminal.interpret('\n\r');
+      terminal.interpret("\n\r");
     }
-    let fromScreenC = '';
+    let fromScreenC = "";
     if (i < this.visibleRowCount - 1) {
       fromScreenC = screenC[i].substr(3);
     }
@@ -967,42 +967,42 @@ it('scroll-region', function() {
 /**
  * Test the autoScroll is enabled/disabled when primary mouse button is down.
  */
-it('auto-scroll-enabled', function() {
+it("auto-scroll-enabled", function() {
   const s = this.terminal.getScrollPort().selection;
   assert.isFalse(s.autoScrollEnabled_);
 
   // Auto scroll should not get enabled from right button down.
-  this.terminal.onMouse_(new MouseEvent('mousedown', {button: 1}));
+  this.terminal.onMouse_(new MouseEvent("mousedown", {button: 1}));
   assert.isFalse(s.autoScrollEnabled_);
 
   // Auto scroll should be enabled from left (primary).
-  this.terminal.onMouse_(new MouseEvent('mousedown', {button: 0}));
+  this.terminal.onMouse_(new MouseEvent("mousedown", {button: 0}));
   assert.isTrue(s.autoScrollEnabled_);
 
   // Auto scroll should not get disabled from right button up.
-  this.terminal.onMouse_(new MouseEvent('mouseup', {button: 1}));
+  this.terminal.onMouse_(new MouseEvent("mouseup", {button: 1}));
   assert.isTrue(s.autoScrollEnabled_);
 
   // Auto scroll should be disabled from left (primary).
-  this.terminal.onMouse_(new MouseEvent('mouseup', {button: 0}));
+  this.terminal.onMouse_(new MouseEvent("mouseup", {button: 0}));
   assert.isFalse(s.autoScrollEnabled_);
 });
 
 /**
  * Tests changing profile for terminal.
  */
-it('set-profile', async function() {
+it("set-profile", async function() {
   const prefs = this.terminal.getPrefs();
-  assert.equal('/hterm/profiles/default/', prefs.prefix);
+  assert.equal("/hterm/profiles/default/", prefs.prefix);
   await new Promise((resolve) => {
-    this.terminal.setProfile('default', resolve);
+    this.terminal.setProfile("default", resolve);
   });
   assert.equal(prefs, this.terminal.getPrefs());
-  assert.equal('/hterm/profiles/default/', prefs.prefix);
+  assert.equal("/hterm/profiles/default/", prefs.prefix);
 
   await new Promise((resolve) => {
-    this.terminal.setProfile('not-default', resolve);
+    this.terminal.setProfile("not-default", resolve);
   });
   assert.equal(prefs, this.terminal.getPrefs());
-  assert.equal('/hterm/profiles/not-default/', prefs.prefix);
+  assert.equal("/hterm/profiles/not-default/", prefs.prefix);
 });

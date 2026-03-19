@@ -6,9 +6,9 @@
  * @fileoverview Syscall handler APIs.  These actually implement syscalls.
  */
 
-import {SyscallLock} from './syscall_lock.js';
-import * as util from './util.js';
-import * as WASI from './wasi.js';
+import {SyscallLock} from "./syscall_lock.js";
+import * as util from "./util.js";
+import * as WASI from "./wasi.js";
 
 /**
  * Base class for creating syscall handlers.
@@ -40,7 +40,7 @@ export class Base {
       [Symbol.iterator]: function* () {
         while (1) {
           const ele = gen.next();
-          if (ele.value && ele.value.startsWith('handle_')) {
+          if (ele.value && ele.value.startsWith("handle_")) {
             yield ele.value;
           }
           if (ele.done) {
@@ -65,7 +65,7 @@ export class ProxyWasiPreview1 extends Base {
     this.syscallLock = new SyscallLock(sab);
 
     handlers.forEach((handler) => {
-      if (handler.startsWith('handle_') && !(handler in this)) {
+      if (handler.startsWith("handle_") && !(handler in this)) {
         this[handler] = this.dispatch_.bind(this, handler.slice(7));
       }
     });
@@ -73,9 +73,9 @@ export class ProxyWasiPreview1 extends Base {
 
   dispatch_(...args) {
     if (!this.syscallLock.lock()) {
-      throw new Error('Overlapped syscall');
+      throw new Error("Overlapped syscall");
     }
-    this.worker.postMessage('syscall', ...args);
+    this.worker.postMessage("syscall", ...args);
     this.syscallLock.wait();
     const ret = this.syscallLock.getRetcode();
     if (ret == -1) {
@@ -91,7 +91,7 @@ export class ProxyWasiPreview1 extends Base {
    * @override
    */
   handle_proc_exit(status) {
-    this.worker.postMessage('exit', status);
+    this.worker.postMessage("exit", status);
     return WASI.errno.ESUCCESS;
   }
 
@@ -101,7 +101,7 @@ export class ProxyWasiPreview1 extends Base {
    * @override
    */
   handle_proc_raise(signal) {
-    this.worker.postMessage('signal', signal);
+    this.worker.postMessage("signal", signal);
     return WASI.errno.ESUCCESS;
   }
 }

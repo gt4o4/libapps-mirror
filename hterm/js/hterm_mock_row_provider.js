@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * MockRowProvider implements RowProvider for tests.
@@ -16,7 +16,7 @@ export class MockRowProvider {
    */
   constructor(document, count) {
     this.document_ = document;
-    this.rows_ = new Array();
+    this.rows_ = [];
     this.rows_.length = count;
 
     this.rowNodeCache_ = null;
@@ -93,16 +93,16 @@ export class MockRowProvider {
     if (!this.rows_[index]) {
       this.rows_[index] = {
         html:
-        '<x-state data-fg=7 data-bg=0>This is line ' + index +
-        '</x-state>' +
-        '<x-state data-fg=1 data-bg=0> red</x-state>' +
-        '<x-state data-fg=2 data-bg=0> green</x-state>' +
-        '<x-state data-fg=3 data-bg=0> yellow</x-state>' +
-        '<x-state data-fg=4 data-bg=0> blue</x-state>' +
-        '<x-state data-fg=5 data-bg=0> magenta</x-state>' +
-        '<x-state data-fg=6 data-bg=0> cyan</x-state>',
+        "<x-state data-fg=7 data-bg=0>This is line " + index +
+        "</x-state>" +
+        "<x-state data-fg=1 data-bg=0> red</x-state>" +
+        "<x-state data-fg=2 data-bg=0> green</x-state>" +
+        "<x-state data-fg=3 data-bg=0> yellow</x-state>" +
+        "<x-state data-fg=4 data-bg=0> blue</x-state>" +
+        "<x-state data-fg=5 data-bg=0> magenta</x-state>" +
+        "<x-state data-fg=6 data-bg=0> cyan</x-state>",
         text:
-        'This is line ' + index + ' red green yellow blue magenta cyan',
+        "This is line " + index + " red green yellow blue magenta cyan",
       };
     }
 
@@ -118,11 +118,11 @@ export class MockRowProvider {
    */
   getRowsText(start, end) {
     if (start < 0 || end >= this.rows_.length) {
-      throw new Error('Index out of bounds.');
+      throw new Error("Index out of bounds.");
     }
 
     const text = this.rows_.slice(start, end);
-    return text.map((e) => e.text).join('\n');
+    return text.map((e) => e.text).join("\n");
   }
 
   /**
@@ -144,14 +144,14 @@ export class MockRowProvider {
    * @override
    */
   getRowNode(index) {
-    this.addCallCount('getRowNode');
+    this.addCallCount("getRowNode");
 
     if (this.rowNodeCache_ && index in this.rowNodeCache_) {
       return this.rowNodeCache_[index];
     }
 
     const rec = this.getRowRecord_(index);
-    const rowNode = this.document_.createElement('x-row');
+    const rowNode = this.document_.createElement("x-row");
     rowNode.rowIndex = index;
     rowNode.innerHTML = rec.html;
 

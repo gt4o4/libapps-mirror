@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {Packet} from './nassh_sftp_packet.js';
+import {Packet} from "./nassh_sftp_packet.js";
 
 /**
  * @typedef {{
@@ -217,7 +217,7 @@ export function ValidExtension(ext) {
   }
 
   // Split apart the extension@domain format.
-  const ary = ext.split('@');
+  const ary = ext.split("@");
   if (ary.length > 2) {
     return false;
   }
@@ -227,14 +227,14 @@ export function ValidExtension(ext) {
   // "," (0x2c), or DEL (0x7f).  So remove all valid chars and make sure the
   // result is an empty string.
   if (name.length == 0 ||
-      name.replace(/[\x21-\x2b\x2d-\x3f\x41-\x7e]/g, '').length != 0) {
+      name.replace(/[\x21-\x2b\x2d-\x3f\x41-\x7e]/g, "").length != 0) {
     return false;
   }
 
   // The domain part is supposed to be a bit more strict ("a valid domain"),
   // but using the same form as above should be good enough.
   if (domain !== undefined) {
-    if (domain.replace(/[\x21-\x2b\x2d-\x3f\x41-\x7e]/g, '').length != 0) {
+    if (domain.replace(/[\x21-\x2b\x2d-\x3f\x41-\x7e]/g, "").length != 0) {
       return false;
     }
   }
@@ -250,7 +250,7 @@ export function ValidExtension(ext) {
  * @extends {Packet}
  */
 export function VersionPacket(packet) {
-  this.requestId = 'init';
+  this.requestId = "init";
   this.version = packet.getUint32();
 
   // Pull out all the extensions that might exist.
@@ -328,21 +328,21 @@ export const PermissionBits = {
  * @return {string} The short `ls -l`-like summary.
  */
 export function bitsToUnixModeLine(bits = 0) {
-  let ret = '';
+  let ret = "";
 
   // First handle the file type.
   const ifmt = bits & PermissionBits.IFMT;
   const fmtMap = {
-    [PermissionBits.IFCHR]: 'c',
-    [PermissionBits.IFDIR]: 'd',
-    [PermissionBits.IFBLK]: 'b',
-    [PermissionBits.IFREG]: '-',
-    [PermissionBits.IFIFO]: 'p',
-    [PermissionBits.IFLNK]: 'l',
-    [PermissionBits.IFSOCK]: 's',
+    [PermissionBits.IFCHR]: "c",
+    [PermissionBits.IFDIR]: "d",
+    [PermissionBits.IFBLK]: "b",
+    [PermissionBits.IFREG]: "-",
+    [PermissionBits.IFIFO]: "p",
+    [PermissionBits.IFLNK]: "l",
+    [PermissionBits.IFSOCK]: "s",
   };
   if (fmtMap[ifmt] === undefined) {
-    ret += '?';
+    ret += "?";
   } else {
     ret += fmtMap[ifmt];
   }
@@ -350,17 +350,17 @@ export function bitsToUnixModeLine(bits = 0) {
   // Then handle user/group/other permissions.
   function threebits(bits, sid, x, X) {
     if (!sid) {
-      x = 'x';
-      X = '-';
+      x = "x";
+      X = "-";
     }
-    return ((bits & 0o4) ? 'r' : '-') +
-           ((bits & 0o2) ? 'w' : '-') +
+    return ((bits & 0o4) ? "r" : "-") +
+           ((bits & 0o2) ? "w" : "-") +
            ((bits & 0o1) ? x : X);
   }
 
-  ret += threebits(bits >> 6, (bits & PermissionBits.ISUID), 's', 'S');
-  ret += threebits(bits >> 3, (bits & PermissionBits.ISGID), 's', 'S');
-  ret += threebits(bits >> 0, (bits & PermissionBits.ISVTX), 't', 'T');
+  ret += threebits(bits >> 6, (bits & PermissionBits.ISUID), "s", "S");
+  ret += threebits(bits >> 3, (bits & PermissionBits.ISGID), "s", "S");
+  ret += threebits(bits >> 0, (bits & PermissionBits.ISVTX), "t", "T");
 
   return ret;
 }
@@ -404,8 +404,8 @@ export function getFileAttrs(packet) {
 
     for (let i = 0; i < extendedCount; i++) {
       extendedData.push({
-        'type': packet.getString(),
-        'data': packet.getString(),
+        "type": packet.getString(),
+        "data": packet.getString(),
       });
     }
 

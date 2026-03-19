@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {newBuffer} from './nassh_buffer.js';
-import {Packet} from './nassh_sftp_packet.js';
+import {newBuffer} from "./nassh_buffer.js";
+import {Packet} from "./nassh_sftp_packet.js";
 import {
   AttrsPacket, DataPacket, DiskFreePacket, ExtendedReplyPacket, File, FileAttrs,
   FileHandle, HandlePacket, LimitsPacket, NamePacket, OpenFlags, RequestPackets,
   ResponsePackets, setFileAttrs, StatusCodes, StatusPacket, UnknownPacket,
-} from './nassh_sftp_packet_types.js';
-import {StatusError} from './nassh_sftp_status.js';
+} from "./nassh_sftp_packet_types.js";
+import {StatusError} from "./nassh_sftp_status.js";
 
 /**
  * A SFTP Client that manages the sending and receiving of SFTP packets.
@@ -19,7 +19,7 @@ import {StatusError} from './nassh_sftp_status.js';
  * @param {string=} basePath The base directory for client requests.
  * @constructor
  */
-export function Client(basePath = '') {
+export function Client(basePath = "") {
   // The version of the protocol we're using.
   this.protocolClientVersion = 3;
 
@@ -40,8 +40,8 @@ export function Client(basePath = '') {
   if (basePath) {
     // Make sure the path always ends with a slash.  This simplifies
     // the path logic in the rest of the client.
-    if (!basePath.endsWith('/')) {
-      basePath += '/';
+    if (!basePath.endsWith("/")) {
+      basePath += "/";
     }
   }
   this.basePath_ = basePath;
@@ -180,7 +180,7 @@ Client.prototype.onPacket = function(packet) {
     this.pendingRequests_[requestId](responsePacket);
     delete this.pendingRequests_[requestId];
   } else {
-    throw new TypeError('Received reply to unknown request:', requestId);
+    throw new TypeError("Received reply to unknown request:", requestId);
   }
   return true;
 };
@@ -206,14 +206,14 @@ Client.prototype.initConnection = async function(plugin) {
  */
 Client.prototype.sendRequest_ = function(type, data) {
   if (!this.isInitialised) {
-    throw new Error('Tried sending a SFTP request before the connection had'
-                    + ' been initialized.');
+    throw new Error("Tried sending a SFTP request before the connection had"
+                    + " been initialized.");
   }
 
   // First construct the packet type portion of the packet header.
   const requestId = this.requestId_++;
   const packetType = new Packet();
-  if (typeof type == 'string') {
+  if (typeof type == "string") {
     // Handle extended packets.
     packetType.setUint8(RequestPackets.EXTENDED);
     packetType.setUint32(requestId);
@@ -254,8 +254,8 @@ Client.prototype.isExpectedResponse_ = function(
   }
 
   if (!(responsePacket instanceof expectedPacketType)) {
-    throw new TypeError('Received unexpected response to '
-                        + requestType + ' packet: ' + responsePacket);
+    throw new TypeError("Received unexpected response to "
+                        + requestType + " packet: " + responsePacket);
   }
 
   return responsePacket;
@@ -270,8 +270,8 @@ Client.prototype.isExpectedResponse_ = function(
  */
 Client.prototype.isSuccessResponse_ = function(responsePacket, requestType) {
   if (!(responsePacket instanceof StatusPacket)) {
-        throw new TypeError('Received unexpected response to '
-                            + requestType + ' packet: ' + responsePacket);
+        throw new TypeError("Received unexpected response to "
+                            + requestType + " packet: " + responsePacket);
   }
 
   if (responsePacket.code != StatusCodes.OK) {
@@ -299,8 +299,8 @@ Client.prototype.isNameResponse_ = function(responsePacket, requestType) {
   }
 
   if (!(responsePacket instanceof NamePacket)) {
-    throw new TypeError('Received unexpected response to '
-                        + requestType + ' packet: ' + responsePacket);
+    throw new TypeError("Received unexpected response to "
+                        + requestType + " packet: " + responsePacket);
   }
 
   return responsePacket;
@@ -319,8 +319,8 @@ Client.prototype.init = async function() {
 
   // Get through the initial init handshake.
   await new Promise((resolve, reject) => {
-    this.pendingRequests_['init'] = (packet) => {
-      console.log('init: SFTP');
+    this.pendingRequests_["init"] = (packet) => {
+      console.log("init: SFTP");
       this.protocolServerVersion = packet.version;
       this.protocolServerExtensions = packet.extensions;
 
@@ -361,7 +361,7 @@ Client.prototype.fileStatus = function(path) {
 
   return this.sendRequest_(RequestPackets.STAT, packet)
       .then((response) => {
-        return this.isExpectedResponse_(response, AttrsPacket, 'STAT');
+        return this.isExpectedResponse_(response, AttrsPacket, "STAT");
       })
       .then((response) => response.attrs);
 };
@@ -379,7 +379,7 @@ Client.prototype.linkStatus = function(path) {
 
   return this.sendRequest_(RequestPackets.LSTAT, packet)
       .then((response) => {
-        return this.isExpectedResponse_(response, AttrsPacket, 'LSTAT');
+        return this.isExpectedResponse_(response, AttrsPacket, "LSTAT");
       })
       .then((response) => response.attrs);
 };
@@ -397,7 +397,7 @@ Client.prototype.fileHandleStatus = function(handle) {
 
   return this.sendRequest_(RequestPackets.FSTAT, packet)
       .then((response) => {
-        return this.isExpectedResponse_(response, AttrsPacket, 'FSTAT');
+        return this.isExpectedResponse_(response, AttrsPacket, "FSTAT");
       })
       .then((response) => response.attrs);
 };
@@ -417,7 +417,7 @@ Client.prototype.setFileStatus = function(path, attrs) {
   setFileAttrs(packet, attrs);
 
   return this.sendRequest_(RequestPackets.SETSTAT, packet)
-    .then((response) => this.isSuccessResponse_(response, 'SETSTAT'));
+    .then((response) => this.isSuccessResponse_(response, "SETSTAT"));
 };
 
 /**
@@ -435,7 +435,7 @@ Client.prototype.setFileHandleStatus = function(handle, attrs) {
   setFileAttrs(packet, attrs);
 
   return this.sendRequest_(RequestPackets.FSETSTAT, packet)
-    .then((response) => this.isSuccessResponse_(response, 'FSETSTAT'));
+    .then((response) => this.isSuccessResponse_(response, "FSETSTAT"));
 };
 
 /**
@@ -451,7 +451,7 @@ Client.prototype.openDirectory = function(path) {
 
   return this.sendRequest_(RequestPackets.OPENDIR, packet)
       .then((response) => {
-        return this.isExpectedResponse_(response, HandlePacket, 'OPENDIR');
+        return this.isExpectedResponse_(response, HandlePacket, "OPENDIR");
       })
       .then((response) => response.handle);
 };
@@ -468,7 +468,7 @@ Client.prototype.readDirectory = function(handle) {
   packet.setString(handle);
 
   return this.sendRequest_(RequestPackets.READDIR, packet)
-    .then((response) => this.isNameResponse_(response, 'READDIR'));
+    .then((response) => this.isNameResponse_(response, "READDIR"));
 };
 
 /**
@@ -548,7 +548,7 @@ Client.prototype.removeDirectory = function(path, recursive = false) {
     packet.setUtf8String(this.basePath_ + path);
 
     return this.sendRequest_(RequestPackets.RMDIR, packet)
-      .then((response) => this.isSuccessResponse_(response, 'RMDIR'));
+      .then((response) => this.isSuccessResponse_(response, "RMDIR"));
   };
 
   // Higher level function to recursively remove a directory.
@@ -558,7 +558,7 @@ Client.prototype.removeDirectory = function(path, recursive = false) {
       .then((handle) => { directoryHandle = handle; })
       .then(() => {
         return this.scanDirectory(directoryHandle, (entry) => {
-          return (entry.filename != '.' && entry.filename != '..');
+          return (entry.filename != "." && entry.filename != "..");
         });
       })
       .then((entries) => {
@@ -604,7 +604,7 @@ Client.prototype.openFile = function(path, pflags) {
 
   return this.sendRequest_(RequestPackets.OPEN, packet)
       .then((response) => {
-        return this.isExpectedResponse_(response, HandlePacket, 'OPEN');
+        return this.isExpectedResponse_(response, HandlePacket, "OPEN");
       })
       .then((response) => response.handle);
 };
@@ -631,13 +631,13 @@ Client.prototype.readChunk = function(handle, offset, len) {
     .then((response) => {
       if (response instanceof StatusPacket) {
         if (response.code != StatusCodes.EOF) {
-          throw new StatusError(response, 'READ');
+          throw new StatusError(response, "READ");
         }
-        return ''; // EOF, return empty data string
+        return ""; // EOF, return empty data string
       }
 
       if (!(response instanceof DataPacket)) {
-        throw new TypeError('Received unexpected response to READ packet: '
+        throw new TypeError("Received unexpected response to READ packet: "
                             + response);
       }
 
@@ -759,7 +759,7 @@ Client.prototype.closeFile = function(handle) {
   packet.setString(handle);
 
   return this.sendRequest_(RequestPackets.CLOSE, packet)
-    .then((response) => this.isSuccessResponse_(response, 'CLOSE'));
+    .then((response) => this.isSuccessResponse_(response, "CLOSE"));
 };
 
 /**
@@ -785,8 +785,8 @@ Client.prototype.copyData = function(
   packet.setString(writeHandle);
   packet.setUint64(writeOffset);
 
-  return this.sendRequest_('copy-data', packet)
-    .then((response) => this.isSuccessResponse_(response, 'copy-data'));
+  return this.sendRequest_("copy-data", packet)
+    .then((response) => this.isSuccessResponse_(response, "copy-data"));
 };
 
 /**
@@ -801,7 +801,7 @@ Client.prototype.removeFile = function(path) {
   packet.setUtf8String(this.basePath_ + path);
 
   return this.sendRequest_(RequestPackets.REMOVE, packet)
-    .then((response) => this.isSuccessResponse_(response, 'REMOVE'));
+    .then((response) => this.isSuccessResponse_(response, "REMOVE"));
 };
 
 /**
@@ -811,11 +811,11 @@ Client.prototype.removeFile = function(path) {
  *     limits, or rejects (usually with a StatusError).
  */
 Client.prototype.queryLimits = function() {
-  if (this.protocolServerExtensions['limits@openssh.com'] !== '1') {
+  if (this.protocolServerExtensions["limits@openssh.com"] !== "1") {
     // If the extension is not supported, try and guess if it's OpenSSH.  We
     // probably want to drop this one day (like when OpenSSH 8.5 from Mar 2021
     // is widely deployed).  Let's say keep it until Mar 2025?
-    if (this.protocolServerExtensions['fstatvfs@openssh.com'] == '2') {
+    if (this.protocolServerExtensions["fstatvfs@openssh.com"] == "2") {
       // See if the server is OpenSSH.  Checking for this particular protocol
       // extension isn't an exact match, but should be good enough for now.
       return Promise.resolve(/** @type {!LimitsPacket} */ ({
@@ -829,9 +829,9 @@ Client.prototype.queryLimits = function() {
   }
 
   const packet = new Packet();
-  return this.sendRequest_('limits@openssh.com', packet)
+  return this.sendRequest_("limits@openssh.com", packet)
     .then((response) => {
-      return this.isExpectedResponse_(response, ExtendedReplyPacket, 'LIMITS');
+      return this.isExpectedResponse_(response, ExtendedReplyPacket, "LIMITS");
     })
     .then((response) => new LimitsPacket(response));
 };
@@ -848,8 +848,8 @@ Client.prototype.renameFile = function(sourcePath, targetPath) {
   const packet = new Packet();
 
   let type;
-  if (this.protocolServerExtensions['posix-rename@openssh.com'] == '1') {
-    type = 'posix-rename@openssh.com';
+  if (this.protocolServerExtensions["posix-rename@openssh.com"] == "1") {
+    type = "posix-rename@openssh.com";
   } else {
     type = RequestPackets.RENAME;
   }
@@ -857,7 +857,7 @@ Client.prototype.renameFile = function(sourcePath, targetPath) {
   packet.setUtf8String(this.basePath_ + targetPath);
 
   return this.sendRequest_(type, packet)
-    .then((response) => this.isSuccessResponse_(response, 'RENAME'));
+    .then((response) => this.isSuccessResponse_(response, "RENAME"));
 };
 
 /**
@@ -883,7 +883,7 @@ Client.prototype.writeChunk = function(handle, offset, data) {
   packet.setData(data);
 
   return this.sendRequest_(RequestPackets.WRITE, packet)
-    .then((response) => this.isSuccessResponse_(response, 'WRITE'));
+    .then((response) => this.isSuccessResponse_(response, "WRITE"));
 };
 
 /**
@@ -899,7 +899,7 @@ Client.prototype.makeDirectory = function(path) {
   packet.setUint32(0); // flags, 0b0000, no modified attributes
 
   return this.sendRequest_(RequestPackets.MKDIR, packet)
-    .then((response) => this.isSuccessResponse_(response, 'MKDIR'));
+    .then((response) => this.isSuccessResponse_(response, "MKDIR"));
 };
 
 /**
@@ -914,7 +914,7 @@ Client.prototype.realPath = function(path) {
   packet.setUtf8String(this.basePath_ + path);
 
   return this.sendRequest_(RequestPackets.REALPATH, packet)
-    .then((response) => this.isNameResponse_(response, 'REALPATH'));
+    .then((response) => this.isNameResponse_(response, "REALPATH"));
 };
 
 /**
@@ -929,7 +929,7 @@ Client.prototype.readLink = function(path) {
   packet.setUtf8String(this.basePath_ + path);
 
   return this.sendRequest_(RequestPackets.READLINK, packet)
-    .then((response) => this.isNameResponse_(response, 'READLINK'));
+    .then((response) => this.isNameResponse_(response, "READLINK"));
 };
 
 /**
@@ -949,7 +949,7 @@ Client.prototype.symLink = function(target, path) {
   packet.setUtf8String(this.basePath_ + path);
 
   return this.sendRequest_(RequestPackets.SYMLINK, packet)
-    .then((response) => this.isSuccessResponse_(response, 'SYMLINK'));
+    .then((response) => this.isSuccessResponse_(response, "SYMLINK"));
 };
 
 /**
@@ -963,19 +963,19 @@ Client.prototype.symLink = function(target, path) {
  *     StatusError.
  */
 Client.prototype.hardLink = function(oldpath, newpath) {
-  if (this.protocolServerExtensions['hardlink@openssh.com'] != '1') {
+  if (this.protocolServerExtensions["hardlink@openssh.com"] != "1") {
     throw new StatusError({
-      'code': StatusCodes.OP_UNSUPPORTED,
-      'message': 'hardlink@openssh.com not supported',
-    }, 'HARDLINK');
+      "code": StatusCodes.OP_UNSUPPORTED,
+      "message": "hardlink@openssh.com not supported",
+    }, "HARDLINK");
   }
 
   const packet = new Packet();
   packet.setUtf8String(this.basePath_ + oldpath);
   packet.setUtf8String(this.basePath_ + newpath);
 
-  return this.sendRequest_('hardlink@openssh.com', packet)
-    .then((response) => this.isSuccessResponse_(response, 'HARDLINK'));
+  return this.sendRequest_("hardlink@openssh.com", packet)
+    .then((response) => this.isSuccessResponse_(response, "HARDLINK"));
 };
 
 /**
@@ -988,19 +988,19 @@ Client.prototype.hardLink = function(oldpath, newpath) {
  *     StatusError.
  */
 Client.prototype.statvfs = function(path) {
-  if (this.protocolServerExtensions['statvfs@openssh.com'] != '2') {
+  if (this.protocolServerExtensions["statvfs@openssh.com"] != "2") {
     throw new StatusError({
-      'code': StatusCodes.OP_UNSUPPORTED,
-      'message': 'statvfs@openssh.com not supported',
-    }, 'STATVFS');
+      "code": StatusCodes.OP_UNSUPPORTED,
+      "message": "statvfs@openssh.com not supported",
+    }, "STATVFS");
   }
 
   const packet = new Packet();
   packet.setUtf8String(this.basePath_ + path);
 
-  return this.sendRequest_('statvfs@openssh.com', packet)
+  return this.sendRequest_("statvfs@openssh.com", packet)
     .then((response) => {
-      return this.isExpectedResponse_(response, ExtendedReplyPacket, 'STATVFS');
+      return this.isExpectedResponse_(response, ExtendedReplyPacket, "STATVFS");
     })
     .then((response) => new DiskFreePacket(response));
 };
@@ -1015,16 +1015,16 @@ Client.prototype.statvfs = function(path) {
  *     StatusError.
  */
 Client.prototype.fsync = function(handle) {
-  if (this.protocolServerExtensions['fsync@openssh.com'] != '1') {
+  if (this.protocolServerExtensions["fsync@openssh.com"] != "1") {
     throw new StatusError({
-      'code': StatusCodes.OP_UNSUPPORTED,
-      'message': 'fsync@openssh.com not supported',
-    }, 'FSYNC');
+      "code": StatusCodes.OP_UNSUPPORTED,
+      "message": "fsync@openssh.com not supported",
+    }, "FSYNC");
   }
 
   const packet = new Packet();
   packet.setString(handle);
 
-  return this.sendRequest_('fsync@openssh.com', packet)
-    .then((response) => this.isSuccessResponse_(response, 'FSYNC'));
+  return this.sendRequest_("fsync@openssh.com", packet)
+    .then((response) => this.isSuccessResponse_(response, "FSYNC"));
 };

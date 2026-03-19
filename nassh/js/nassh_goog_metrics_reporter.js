@@ -8,9 +8,9 @@
  * Corp SSH relays. It will never be used for non-Googlers.
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LocalPreferenceManager} from './nassh_preference_manager.js';
+import {LocalPreferenceManager} from "./nassh_preference_manager.js";
 
 /**
  * Host and client metadata attached to latency values.
@@ -34,14 +34,14 @@ let Metadata;
  * @const {string}
  */
 const CLOUDTOP_API_LIST_INSTANCES =
-    'https://us-cloudtoplifecycle-googleapis.corp.google.com/v1/instances:list';
+    "https://us-cloudtoplifecycle-googleapis.corp.google.com/v1/instances:list";
 
 /**
  * API key for CLOUDTOP_API_LIST_INSTANCES.
  *
  * @const {string}
  */
-const CLOUDTOP_API_KEY = 'AIzaSyAKXdFoyDqSPCGlbQiHz1LHrMFDYVZ0TTU';
+const CLOUDTOP_API_KEY = "AIzaSyAKXdFoyDqSPCGlbQiHz1LHrMFDYVZ0TTU";
 
 /**
  * Payload sent with requests to CLOUDTOP_API_LIST_INSTANCES.
@@ -58,7 +58,7 @@ const CLOUDTOP_PAYLOAD =
  *
  * @const {string}
  */
-const UBERPROXY_DEBUG = 'https://uberproxy-debug.corp.google.com/oncorp';
+const UBERPROXY_DEBUG = "https://uberproxy-debug.corp.google.com/oncorp";
 
 /**
  * Origin used to get permmision for CLOUDTOP_API_LIST_INSTANCES.
@@ -66,28 +66,28 @@ const UBERPROXY_DEBUG = 'https://uberproxy-debug.corp.google.com/oncorp';
  * @const {string}
  */
 const CLOUDTOP_API_ORIGIN =
-    'https://us-cloudtoplifecycle-googleapis.corp.google.com/*';
+    "https://us-cloudtoplifecycle-googleapis.corp.google.com/*";
 
 /**
  * Origin used to get permission for UBERPROXY_DEBUG.
  *
  * @const {string}
  */
-const UBERPROXY_DEBUG_ORIGIN = 'https://uberproxy-debug.corp.google.com/*';
+const UBERPROXY_DEBUG_ORIGIN = "https://uberproxy-debug.corp.google.com/*";
 
 /**
  * Endpoint used to get metrics into storage.
  *
  * @const {string}
  */
-const MON_API_INSERT = 'https://prodxmon-wbl.corp.googleapis.com/v1:insert';
+const MON_API_INSERT = "https://prodxmon-wbl.corp.googleapis.com/v1:insert";
 
 /**
  * API key for MON_API_INSERT.
  *
  * @const {string}
  */
-const MON_API_KEY = 'AIzaSyDolxpAuGd-B4aiNmQVQ9XHeXc1lMEYsTs';
+const MON_API_KEY = "AIzaSyDolxpAuGd-B4aiNmQVQ9XHeXc1lMEYsTs";
 
 /**
  * Frequency at which to send data. It is ideal for this value to be greater
@@ -168,7 +168,7 @@ export class GoogMetricsReporter {
   async requestChromePermissions() {
     if (globalThis.chrome?.permissions === undefined
         || await this.checkChromePermissions()
-        || this.localPrefs.get('goog-metrics-reporter-permission') === false) {
+        || this.localPrefs.get("goog-metrics-reporter-permission") === false) {
       // Don't request permissions if:
       // 1. Environment doesn't have chrome.permissions API, or
       // 2. Permissions already exist, or
@@ -180,24 +180,24 @@ export class GoogMetricsReporter {
     // Construct prompt.
     const io = this.io.push();
 
-    const container = document.createElement('div');
-    const prompt = document.createElement('p');
-    prompt.style.fontWeight = 'bold';
-    prompt.style.textAlign = 'center';
+    const container = document.createElement("div");
+    const prompt = document.createElement("p");
+    prompt.style.fontWeight = "bold";
+    prompt.style.textAlign = "center";
     prompt.textContent = this.PERMISSIONS_PROMPT;
     container.appendChild(prompt);
 
-    const yesButton = document.createElement('button');
-    yesButton.style.marginRight = '10px';
-    yesButton.textContent = 'Yes';
+    const yesButton = document.createElement("button");
+    yesButton.style.marginRight = "10px";
+    yesButton.textContent = "Yes";
 
-    const noButton = document.createElement('button');
-    noButton.style.marginLeft = '10px';
-    noButton.textContent = 'No';
+    const noButton = document.createElement("button");
+    noButton.style.marginLeft = "10px";
+    noButton.textContent = "No";
 
-    const buttonContainer = document.createElement('div');
-    buttonContainer.style.width = 'fit-content';
-    buttonContainer.style.margin = '0 auto';
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.width = "fit-content";
+    buttonContainer.style.margin = "0 auto";
     buttonContainer.appendChild(yesButton);
     buttonContainer.appendChild(noButton);
     container.append(buttonContainer);
@@ -205,7 +205,7 @@ export class GoogMetricsReporter {
     // Request permissions.
     io.showOverlay(container, null);
     return new Promise((resolve) => {
-      yesButton.addEventListener('click', () => {
+      yesButton.addEventListener("click", () => {
         io.hideOverlay();
         io.pop();
         const permissions = {
@@ -214,7 +214,7 @@ export class GoogMetricsReporter {
         };
         if (globalThis.chrome?.permissions !== undefined) {
           chrome.permissions.request(permissions, (granted) => {
-            this.localPrefs.set('goog-metrics-reporter-permission', granted);
+            this.localPrefs.set("goog-metrics-reporter-permission", granted);
             resolve();
           });
         } else {
@@ -222,8 +222,8 @@ export class GoogMetricsReporter {
         }
       });
 
-      noButton.addEventListener('click', () => {
-        this.localPrefs.set('goog-metrics-reporter-permission', false);
+      noButton.addEventListener("click", () => {
+        this.localPrefs.set("goog-metrics-reporter-permission", false);
         io.hideOverlay();
         io.pop();
         resolve();
@@ -243,7 +243,7 @@ export class GoogMetricsReporter {
                       `${UBERPROXY_DEBUG_ORIGIN} is missing.`);
     }
 
-    if (this.getInfraProvider_() === 'cloud') {
+    if (this.getInfraProvider_() === "cloud") {
       const timestamp = Date.now();
       this.metadata = {
         start_time_ms: timestamp,
@@ -251,7 +251,7 @@ export class GoogMetricsReporter {
         host_zone: await this.getHostZone_(),
         client_corp_status: await this.getClientCorpStatus_(),
         client_os: this.getOs_(),
-        infra_provider: 'cloud',
+        infra_provider: "cloud",
         ssh_client: this.getSshClient_(),
         connection_phase: this.getConnectionPhase_(),
       };
@@ -296,14 +296,14 @@ export class GoogMetricsReporter {
   async sendDistribution_() {
     try {
       const response = await fetch(MON_API_INSERT, {
-        method: 'POST',
+        method: "POST",
         body: this.buildMetricsPayload_(),
         headers: {
-          'X-Goog-Api-Key': MON_API_KEY,
+          "X-Goog-Api-Key": MON_API_KEY,
         },
       });
-      const message = (await response.json())?.['responseStatus']?.['message'];
-      if (response.status === 200 && message === 'OK') {
+      const message = (await response.json())?.["responseStatus"]?.["message"];
+      if (response.status === 200 && message === "OK") {
         return true;
       }
     } catch (error) {
@@ -321,7 +321,7 @@ export class GoogMetricsReporter {
         this.sendDistribution_();
       }, INSERT_FREQUENCY_MS);
     } else {
-      throw new Error('Attempt to start a timer when one already exists.');
+      throw new Error("Attempt to start a timer when one already exists.");
     }
   }
 
@@ -333,9 +333,9 @@ export class GoogMetricsReporter {
    */
   buildMetricsPayload_() {
     return JSON.stringify({payload: {metrics_collection: {metrics_data_set: {
-      metric_name: '/corp/ssh/relay_latency',
-      stream_kind: 'CUMULATIVE',
-      value_type: 'DISTRIBUTION',
+      metric_name: "/corp/ssh/relay_latency",
+      stream_kind: "CUMULATIVE",
+      value_type: "DISTRIBUTION",
       data: {
         start_timestamp: this.getTimestampFromMs(this.metadata.start_time_ms),
         end_timestamp: this.getTimestampFromMs(Date.now()),
@@ -354,60 +354,60 @@ export class GoogMetricsReporter {
         },
         field: [
           {
-            name: 'ssh_client',
+            name: "ssh_client",
             string_value: this.metadata.ssh_client,
           },
           {
-            name: 'host_zone',
+            name: "host_zone",
             string_value: this.metadata.host_zone,
           },
           {
-            name: 'client_os',
+            name: "client_os",
             string_value: this.metadata.client_os,
           },
           {
-            name: 'connection_phase',
+            name: "connection_phase",
             string_value: this.metadata.connection_phase,
           },
           {
-            name: 'infra_provider',
+            name: "infra_provider",
             string_value: this.metadata.infra_provider,
           },
           {
-            name: 'client_corp_status',
+            name: "client_corp_status",
             string_value: this.metadata.client_corp_status,
           },
           {
-            name: 'l1gfe_cluster',
-            string_value: '__unknown__',
+            name: "l1gfe_cluster",
+            string_value: "__unknown__",
           },
           {
-            name: 'client_region',
-            string_value: 'unknown',
+            name: "client_region",
+            string_value: "unknown",
           },
         ],
       },
     },
     root_labels: [
       {
-        key: 'service_name',
-        string_value: 'nassh',
+        key: "service_name",
+        string_value: "nassh",
       },
       {
-        key: 'host_name',
+        key: "host_name",
         string_value: this.metadata.host_name,
       },
       {
-        key: 'proxy_zone',
-        string_value: 'atl',
+        key: "proxy_zone",
+        string_value: "atl",
       },
       {
-        key: 'corp_site',
-        string_value: '',
+        key: "corp_site",
+        string_value: "",
       },
       {
-        key: 'job_name',
-        string_value: '',
+        key: "job_name",
+        string_value: "",
       },
     ]}}});
   }
@@ -434,17 +434,17 @@ export class GoogMetricsReporter {
   async getHostZone_() {
     try {
       const response = await fetch(CLOUDTOP_API_LIST_INSTANCES, {
-        method: 'POST',
+        method: "POST",
         body: CLOUDTOP_PAYLOAD,
         headers: {
-          'X-Goog-Api-Key': CLOUDTOP_API_KEY,
+          "X-Goog-Api-Key": CLOUDTOP_API_KEY,
         },
       });
       const data = await response.json();
-      return this.findHostInstanceZone_(data['instances']);
+      return this.findHostInstanceZone_(data["instances"]);
     } catch (error) {
       console.error(`Looking up host GCE zone failed: ${error}`);
-      return 'unknown';
+      return "unknown";
     }
   }
 
@@ -455,9 +455,9 @@ export class GoogMetricsReporter {
    */
   getOs_() {
     switch (hterm.os) {
-      case 'mac':
-      case 'linux':
-      case 'windows':
+      case "mac":
+      case "linux":
+      case "windows":
         return `g${hterm.os}`;
       default:
         return hterm.os;
@@ -474,13 +474,13 @@ export class GoogMetricsReporter {
    */
   findHostInstanceZone_(instances) {
     if (!instances) {
-      return 'unknown';
+      return "unknown";
     }
     const hostInstance = instances.filter((instance) => {
-      return instance['primaryFqdn'] === this.hostname;
+      return instance["primaryFqdn"] === this.hostname;
     });
 
-    return hostInstance[0]?.['location']?.['zone']?.['gceZone'] ?? 'unknown';
+    return hostInstance[0]?.["location"]?.["zone"]?.["gceZone"] ?? "unknown";
   }
 
   /**
@@ -492,18 +492,18 @@ export class GoogMetricsReporter {
   async getClientCorpStatus_() {
     try {
       const response = await fetch(UBERPROXY_DEBUG, {
-        method: 'GET',
-        credentials: 'include',
+        method: "GET",
+        credentials: "include",
       });
       // Requests to uberproxy-debug/oncorp redirect to /yes or /no, which both
       // return a 502. See b/67662002.
       if (response.status === 502) {
-        return response.url.endsWith('/yes') ? 'on-corp' : 'off-corp';
+        return response.url.endsWith("/yes") ? "on-corp" : "off-corp";
       }
     } catch (error) {
       console.error(`Looking up client corp status failed: ${error}`);
     }
-    return 'unknown';
+    return "unknown";
   }
 
   /**
@@ -512,7 +512,7 @@ export class GoogMetricsReporter {
    * @return {string} 'cloud' if host is a remote workstation, 'corp' if not.
    */
   getInfraProvider_() {
-    return this.hostname.endsWith('c.googlers.com') ? 'cloud' : 'corp';
+    return this.hostname.endsWith("c.googlers.com") ? "cloud" : "corp";
   }
 
   /**
@@ -521,19 +521,19 @@ export class GoogMetricsReporter {
    * @return {string} Client name.
    */
   getSshClient_() {
-    const secureShell = 'iodihamcpbpeioajjeobimgagajmlibd';
-    const secureShellDev = 'algkcnfjnajfhgimadimbjhmpaeohhln';
-    const terminal = 'terminal';
+    const secureShell = "iodihamcpbpeioajjeobimgagajmlibd";
+    const secureShellDev = "algkcnfjnajfhgimadimbjhmpaeohhln";
+    const terminal = "terminal";
 
     switch (chrome.runtime.id) {
       case secureShell:
-        return 'secureshell';
+        return "secureshell";
       case secureShellDev:
-        return 'secureshell-dev';
+        return "secureshell-dev";
       case terminal:
-        return 'terminal';
+        return "terminal";
       default:
-        return 'unknown';
+        return "unknown";
     }
   }
 
@@ -544,7 +544,7 @@ export class GoogMetricsReporter {
    *     go/monapi, 'setup' if not.
    */
   getConnectionPhase_() {
-    return this.firstReportIsSent ? 'established' : 'setup';
+    return this.firstReportIsSent ? "established" : "setup";
   }
 }
 
@@ -554,12 +554,12 @@ export class GoogMetricsReporter {
  * @const {string}
  */
 GoogMetricsReporter.prototype.PERMISSIONS_PROMPT =
-    '[GOOGLE EMPLOYEES ONLY] Help improve your SSH experience to your ' +
-    'Cloudtop/workstation by sharing latency data with developers. Collected ' +
-    'data will include the name of your host device. If yes, you will ' +
-    'receive a prompt for additional permissions to ' +
-    'us-cloudtoplifecycle-googleapis.corp.google.com and ' +
-    'uberproxy-debug.corp.google.com';
+    "[GOOGLE EMPLOYEES ONLY] Help improve your SSH experience to your " +
+    "Cloudtop/workstation by sharing latency data with developers. Collected " +
+    "data will include the name of your host device. If yes, you will " +
+    "receive a prompt for additional permissions to " +
+    "us-cloudtoplifecycle-googleapis.corp.google.com and " +
+    "uberproxy-debug.corp.google.com";
 
 /**
  * Stores and manages latency data in the form of a distribution.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Keyboard handler.
@@ -26,11 +26,11 @@ hterm.Keyboard = function(terminal) {
   // The event handlers we are interested in, and their bound callbacks, saved
   // so they can be uninstalled with removeEventListener, when required.
   this.handlers_ = [
-      ['focusout', this.onFocusOut_.bind(this)],
-      ['keydown', this.onKeyDown_.bind(this)],
-      ['keypress', this.onKeyPress_.bind(this)],
-      ['keyup', this.onKeyUp_.bind(this)],
-      ['textInput', this.onTextInput_.bind(this)],
+      ["focusout", this.onFocusOut_.bind(this)],
+      ["keydown", this.onKeyDown_.bind(this)],
+      ["keypress", this.onKeyPress_.bind(this)],
+      ["keyup", this.onKeyUp_.bind(this)],
+      ["textInput", this.onTextInput_.bind(this)],
   ];
 
   /**
@@ -46,7 +46,7 @@ hterm.Keyboard = function(terminal) {
    * left-alt: Assume left Alt means AltGr.
    * right-alt: Assume right Alt means AltGr.
    */
-  this.altGrMode = 'none';
+  this.altGrMode = "none";
 
   /**
    * If true, Shift+Insert will fall through to the browser as a paste.
@@ -127,7 +127,7 @@ hterm.Keyboard = function(terminal) {
    * This setting only matters when alt is distinct from meta (altIsMeta is
    * false.)
    */
-  this.altSendsWhat = 'escape';
+  this.altSendsWhat = "escape";
 
   /**
    * Set whether the alt key acts as a meta key, instead of producing 8-bit
@@ -183,7 +183,7 @@ hterm.Keyboard.KeyActions = {
    * Call preventDefault and stopPropagation for this key event and nothing
    * else.
    */
-  CANCEL: 'CANCEL',
+  CANCEL: "CANCEL",
 
   /**
    * This performs the default terminal action for the key.  If used in the
@@ -209,13 +209,13 @@ hterm.Keyboard.KeyActions = {
    *  - If meta is down and configured to send an escape, '\x1b' will be sent
    *    before the normal action is performed.
    */
-  DEFAULT: 'DEFAULT',
+  DEFAULT: "DEFAULT",
 
   /**
    * Causes the terminal to opt out of handling the key event, instead letting
    * the browser deal with it.
    */
-  PASS: 'PASS',
+  PASS: "PASS",
 
   /**
    * Insert the first or second character of the keyCap, based on e.shiftKey.
@@ -225,7 +225,7 @@ hterm.Keyboard.KeyActions = {
    * It is useful for a modified key action, where it essentially strips the
    * modifier while preventing the browser from reacting to the key.
    */
-  STRIP: 'STRIP',
+  STRIP: "STRIP",
 };
 
 /** @typedef {string|!hterm.Keyboard.KeyActions} */
@@ -301,7 +301,7 @@ hterm.Keyboard.prototype.onKeyPress_ = function(e) {
   // FF doesn't set keyCode reliably in keypress events.  Stick to the which
   // field here until we can move to keydown entirely.
   const key = String.fromCharCode(e.which).toLowerCase();
-  if ((e.ctrlKey || e.metaKey) && (key == 'c' || key == 'v')) {
+  if ((e.ctrlKey || e.metaKey) && (key == "c" || key == "v")) {
     // On FF the key press (not key down) event gets fired for copy/paste.
     // Let it fall through for the default browser behavior.
     return;
@@ -317,7 +317,7 @@ hterm.Keyboard.prototype.onKeyPress_ = function(e) {
 
   /** @type {string} */
   let ch;
-  if (e.altKey && this.altSendsWhat == 'browser-key' && e.charCode == 0) {
+  if (e.altKey && this.altSendsWhat == "browser-key" && e.charCode == 0) {
     // If we got here because we were expecting the browser to handle an
     // alt sequence but it didn't do it, then we might be on an OS without
     // an enabled IME system.  In that case we fall back to xterm-like
@@ -399,12 +399,12 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
     resolvedActionType = name;
 
     let action = keyDef[name];
-    if (typeof action == 'function') {
+    if (typeof action == "function") {
       action = action.call(this.keyMap, e, keyDef);
     }
 
-    if (action === DEFAULT && name != 'normal') {
-      action = getKeyDefAction('normal');
+    if (action === DEFAULT && name != "normal") {
+      action = getKeyDefAction("normal");
     }
 
     return action;
@@ -427,7 +427,7 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
   const isPrintable = !(/^\[\w+\]$/.test(keyDef.keyCap));
 
   switch (this.altGrMode) {
-    case 'ctrl-alt':
+    case "ctrl-alt":
     if (isPrintable && control && alt) {
       // ctrl-alt-printable means altGr.  We clear out the control and
       // alt modifiers and wait to see the charCode in the keydown event.
@@ -436,14 +436,14 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
     }
     break;
 
-    case 'right-alt':
+    case "right-alt":
     if (isPrintable && (this.terminal.keyboard.altKeyPressed & 2)) {
       control = false;
       alt = false;
     }
     break;
 
-    case 'left-alt':
+    case "left-alt":
     if (isPrintable && (this.terminal.keyboard.altKeyPressed & 1)) {
       control = false;
       alt = false;
@@ -469,9 +469,9 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
     // Clear out the modifier bits so we don't try to munge the sequence
     // further.
     shift = control = alt = meta = false;
-    resolvedActionType = 'normal';
+    resolvedActionType = "normal";
 
-    if (typeof binding.action == 'function') {
+    if (typeof binding.action == "function") {
       const bindingFn =
           /** @type {!hterm.Keyboard.KeyBindingFunction} */ (binding.action);
       action = bindingFn.call(this, this.terminal, keyDown);
@@ -481,13 +481,13 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
   } else {
     // No user keybinding, so use default keyDef.
     if (control) {
-      action = getKeyDefAction('control');
+      action = getKeyDefAction("control");
     } else if (alt) {
-      action = getKeyDefAction('alt');
+      action = getKeyDefAction("alt");
     } else if (meta) {
-      action = getKeyDefAction('meta');
+      action = getKeyDefAction("meta");
     } else {
-      action = getKeyDefAction('normal');
+      action = getKeyDefAction("normal");
     }
 
     // If e.maskShiftKey was set (during getKeyDefAction) it means the shift key
@@ -498,11 +498,11 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
   }
 
   // Call keyDef function now that we have given bindings a chance to override.
-  if (typeof action == 'function') {
+  if (typeof action == "function") {
     action = action.call(this.keyMap, e, keyDef);
   }
 
-  if (alt && this.altSendsWhat == 'browser-key' && action == DEFAULT) {
+  if (alt && this.altSendsWhat == "browser-key" && action == DEFAULT) {
     // When altSendsWhat is 'browser-key', we wait for the keypress event.
     // In keypress, the browser should have set the event.charCode to the
     // appropriate character.
@@ -536,7 +536,7 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
   if (action === STRIP) {
     alt = control = false;
     action = keyDef.normal;
-    if (typeof action == 'function') {
+    if (typeof action == "function") {
       action = action.call(this.keyMap, e, keyDef);
     }
 
@@ -552,22 +552,22 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
     return;
   }
 
-  if (action !== DEFAULT && typeof action != 'string') {
-    console.warn('Invalid action: ' + JSON.stringify(action));
+  if (action !== DEFAULT && typeof action != "string") {
+    console.warn("Invalid action: " + JSON.stringify(action));
     return;
   }
 
   // Strip the modifier that is associated with the action, since we assume that
   // modifier has already been accounted for in the action.
-  if (resolvedActionType == 'control') {
+  if (resolvedActionType == "control") {
     control = false;
-  } else if (resolvedActionType == 'alt') {
+  } else if (resolvedActionType == "alt") {
     alt = false;
-  } else if (resolvedActionType == 'meta') {
+  } else if (resolvedActionType == "meta") {
     meta = false;
   }
 
-  if (typeof action == 'string' && action.substr(0, 2) == '\x1b[' &&
+  if (typeof action == "string" && action.substr(0, 2) == "\x1b[" &&
       (alt || control || shift || meta)) {
     // The action is an escape sequence that and it was triggered in the
     // presence of a keyboard modifier, we may need to alter the action to
@@ -587,11 +587,11 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
     if (meta) {
       imod += 8;
     }
-    const mod = ';' + imod;
+    const mod = ";" + imod;
 
     if (action.length == 3) {
       // Some of the CSI sequences have zero parameters unless modified.
-      action = '\x1b[1' + mod + action.substr(2, 1);
+      action = "\x1b[1" + mod + action.substr(2, 1);
     } else {
       // Others always have at least one parameter.
       action = action.substr(0, action.length - 1) + mod +
@@ -611,7 +611,7 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
       }
     }
 
-    if (alt && this.altSendsWhat == '8-bit' && action.length == 1) {
+    if (alt && this.altSendsWhat == "8-bit" && action.length == 1) {
       const code = action.charCodeAt(0) + 128;
       action = String.fromCharCode(code);
     }
@@ -619,9 +619,9 @@ hterm.Keyboard.prototype.onKeyDown_ = function(e) {
     // We respect alt/metaSendsEscape even if the keymap action was a literal
     // string.  Otherwise, every overridden alt/meta action would have to
     // check alt/metaSendsEscape.
-    if ((alt && this.altSendsWhat == 'escape') ||
+    if ((alt && this.altSendsWhat == "escape") ||
         (meta && this.metaSendsEscape)) {
-      action = '\x1b' + action;
+      action = "\x1b" + action;
     }
   }
 

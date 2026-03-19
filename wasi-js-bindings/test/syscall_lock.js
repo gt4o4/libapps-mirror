@@ -6,9 +6,9 @@
  * @fileoverview Tests for SyscallLock.
  */
 
-import {SyscallLock} from '../js/syscall_lock.js';
+import {SyscallLock} from "../js/syscall_lock.js";
 
-describe('syscall_lock.js', () => {
+describe("syscall_lock.js", () => {
 
 /**
  * If running on a web page, SharedArrayBuffers might not work.
@@ -17,7 +17,7 @@ describe('syscall_lock.js', () => {
  */
 before(function() {
   if (window.SharedArrayBuffer === undefined) {
-    console.warn('SharedArrayBuffer API not available');
+    console.warn("SharedArrayBuffer API not available");
     this.skip();
   }
 });
@@ -25,7 +25,7 @@ before(function() {
 /**
  * Check BigInt is correctly serialized and deserialized.
  */
-it('setData and getData BigInt', () => {
+it("setData and getData BigInt", () => {
   const buf = new SharedArrayBuffer(64 * 1024);
   const lock = new SyscallLock(buf);
   const data = {events: [{fd_read: {nwritten: BigInt(100)}}]};
@@ -37,7 +37,7 @@ it('setData and getData BigInt', () => {
 /**
  * Check TypedArray is correctly serialized and deserialized as an Array.
  */
-it('setData and getData TypedArray', () => {
+it("setData and getData TypedArray", () => {
   const typedArray = new Uint8Array([1, 2, 3, 4, 5]);
   const buf = new SharedArrayBuffer(64 * 1024);
   const lock = new SyscallLock(buf);

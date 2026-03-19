@@ -7,7 +7,7 @@
  * that are too small to deserve dedicated files.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
 /** @const */
 const hterm = {};
@@ -38,10 +38,10 @@ hterm.initWindowType_ = async function() {
     } else {
       // TODO(rginda): This is where we end up for a v1 app's background page.
       // Maybe windowType = 'none' would be more appropriate, or something.
-      hterm.windowType = 'normal';
+      hterm.windowType = "normal";
     }
   } else {
-    hterm.windowType = 'normal';
+    hterm.windowType = "normal";
   }
 };
 
@@ -72,7 +72,7 @@ hterm.initOs_ = function() {
  * bell.  \u226a is a unicode EIGHTH NOTE, %(title) will
  * be replaced by the terminal title.
  */
-hterm.desktopNotificationTitle = '\u266A %(title) \u266A';
+hterm.desktopNotificationTitle = "\u266A %(title) \u266A";
 
 /** @type {?lib.MessageManager} */
 hterm.messageManager = null;
@@ -111,7 +111,7 @@ hterm.initPromise = hterm.init_();
 hterm.sanitizeHtml = function(html) {
   if (globalThis.trustedTypes?.createPolicy) {
     if (!hterm.sanitizeHtml.policy) {
-      hterm.sanitizeHtml.policy = trustedTypes.createPolicy('default', {
+      hterm.sanitizeHtml.policy = trustedTypes.createPolicy("default", {
         createHTML: (source) => source,
       });
     }
@@ -136,13 +136,13 @@ hterm.copySelectionToClipboard = function(document, str) {
   const requestPermission = () => {
     // Use the Permissions API if available.
     if (navigator.permissions && navigator.permissions.query) {
-      return navigator.permissions.query({name: 'clipboard-write'})
+      return navigator.permissions.query({name: "clipboard-write"})
         .then((status) => {
           const checkState = (resolve, reject) => {
             switch (status.state) {
-              case 'granted':
+              case "granted":
                 return resolve();
-              case 'denied':
+              case "denied":
                 return reject();
               default:
                 // Wait for the user to approve/disprove.
@@ -181,13 +181,13 @@ hterm.copySelectionToClipboard = function(document, str) {
   // TODO: Once we can rely on the Clipboard API everywhere, we can simplify
   // this a lot by deleting the custom selection logic.
   const execCommand = () => {
-    const copySource = document.createElement('pre');
-    copySource.id = 'hterm:copy-to-clipboard-source';
+    const copySource = document.createElement("pre");
+    copySource.id = "hterm:copy-to-clipboard-source";
     copySource.textContent = str;
     copySource.style.cssText = (
-        'user-select: text;' +
-        'position: absolute;' +
-        'top: -99px');
+        "user-select: text;" +
+        "position: absolute;" +
+        "top: -99px");
 
     document.body.appendChild(copySource);
 
@@ -207,7 +207,7 @@ hterm.copySelectionToClipboard = function(document, str) {
     }
 
     try {
-      document.execCommand('copy');
+      document.execCommand("copy");
     } catch (firefoxException) {
       // Ignore this. FF throws an exception if there was an error, even
       // though the spec says just return false.
@@ -243,8 +243,8 @@ hterm.copySelectionToClipboard = function(document, str) {
  * @param {string=} string The default message text.
  * @return {string} The localized message.
  */
-hterm.msg = function(name, args = [], string = '') {
-  return hterm.messageManager.get('HTERM_' + name, args, string);
+hterm.msg = function(name, args = [], string = "") {
+  return hterm.messageManager.get("HTERM_" + name, args, string);
 };
 
 /**
@@ -265,15 +265,15 @@ hterm.notify = function(params) {
   // Merge the user's choices with the default settings.  We don't take it
   // directly in case it was stuffed with excess junk.
   const options = {
-      'body': params.body,
-      'icon': def(params.icon, hterm.resources.IMG_ICON_96),
+      "body": params.body,
+      "icon": def(params.icon, hterm.resources.IMG_ICON_96),
   };
 
   let title = def(params.title, globalThis.document.title);
   if (!title) {
-    title = 'hterm';
+    title = "hterm";
   }
-  title = lib.f.replaceVars(hterm.desktopNotificationTitle, {'title': title});
+  title = lib.f.replaceVars(hterm.desktopNotificationTitle, {"title": title});
 
   const n = new Notification(title, options);
   n.onclick = function() {
@@ -291,9 +291,9 @@ hterm.notify = function(params) {
 hterm.openUrl = function(url) {
   if (globalThis.chrome?.browser?.openTab) {
     // For Chrome v2 apps, we need to use this API to properly open windows.
-    chrome.browser.openTab({'url': url});
+    chrome.browser.openTab({"url": url});
   } else {
-    const win = lib.f.openWindow(url, '_blank');
+    const win = lib.f.openWindow(url, "_blank");
     if (win) {
       win.focus();
     }

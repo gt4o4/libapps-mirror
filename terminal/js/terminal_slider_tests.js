@@ -6,7 +6,7 @@
  * @fileoverview Terminal Slider unit tests
  */
 
-import {ARROW_KEY_OFFSET} from './terminal_slider.js';
+import {ARROW_KEY_OFFSET} from "./terminal_slider.js";
 
 const ERROR = 0.001;
 
@@ -15,8 +15,8 @@ const ERROR = 0.001;
  * @return {!Element}
  */
 const createElement = (value) => {
-  const el = document.createElement('terminal-slider');
-  el.setAttribute('value', value);
+  const el = document.createElement("terminal-slider");
+  el.setAttribute("value", value);
   return el;
 };
 
@@ -25,7 +25,7 @@ const createElement = (value) => {
  * @return {!HTMLElement}
  */
 const getKnob =
-    (el) => el.shadowRoot.getElementById('knob-container');
+    (el) => el.shadowRoot.getElementById("knob-container");
 
 /**
  * @param {!Element} el
@@ -36,10 +36,10 @@ const assertKnobPositionCloseTo = (el, value) => {
 };
 
 afterEach(function() {
-  document.querySelectorAll('terminal-slider').forEach((el) => el.remove());
+  document.querySelectorAll("terminal-slider").forEach((el) => el.remove());
 });
 
-it('initialises-the-knob-to-the-correct-x-coordinates', async function() {
+it("initialises-the-knob-to-the-correct-x-coordinates", async function() {
   const values = [0, 0.5, 1];
   const els = values.map((v) => createElement(v));
 
@@ -49,7 +49,7 @@ it('initialises-the-knob-to-the-correct-x-coordinates', async function() {
   values.forEach((v, index) => assertKnobPositionCloseTo(els[index], v));
 });
 
-it('updates-knob-location-when-attribute-changed', async function() {
+it("updates-knob-location-when-attribute-changed", async function() {
   const el = createElement(0.3);
 
   document.body.appendChild(el);
@@ -57,13 +57,13 @@ it('updates-knob-location-when-attribute-changed', async function() {
 
   assertKnobPositionCloseTo(el, 0.3);
 
-  el.setAttribute('value', 0.7);
+  el.setAttribute("value", 0.7);
   await el.updateComplete;
 
   assertKnobPositionCloseTo(el, 0.7);
 });
 
-it('updates-on-pointer-event', async function() {
+it("updates-on-pointer-event", async function() {
   const value = 0.2;
   const newValue = 0.8;
   const el = createElement(value);
@@ -73,7 +73,7 @@ it('updates-on-pointer-event', async function() {
   assertKnobPositionCloseTo(el, value);
 
   let listenerInvocations = 0;
-  el.addEventListener('change', () => {
+  el.addEventListener("change", () => {
     assert.closeTo(el.value, newValue, ERROR);
     ++listenerInvocations;
   });
@@ -87,10 +87,10 @@ it('updates-on-pointer-event', async function() {
 });
 
 [
-    ['ArrowLeft', -ARROW_KEY_OFFSET],
-    ['ArrowUp', -ARROW_KEY_OFFSET],
-    ['ArrowRight', ARROW_KEY_OFFSET],
-    ['ArrowDown', ARROW_KEY_OFFSET],
+    ["ArrowLeft", -ARROW_KEY_OFFSET],
+    ["ArrowUp", -ARROW_KEY_OFFSET],
+    ["ArrowRight", ARROW_KEY_OFFSET],
+    ["ArrowDown", ARROW_KEY_OFFSET],
 ].forEach(([key, amount]) => it(`updates-on-${key}`, async function() {
   const value = 0.1;
   const newValue = value + amount;
@@ -101,11 +101,11 @@ it('updates-on-pointer-event', async function() {
   assertKnobPositionCloseTo(el, value);
 
   let listenerInvocations = 0;
-  el.addEventListener('change', () => {
+  el.addEventListener("change", () => {
     assert.closeTo(el.value, newValue, ERROR);
     ++listenerInvocations;
   });
-  getKnob(el).dispatchEvent(new KeyboardEvent('keydown', {code: key}));
+  getKnob(el).dispatchEvent(new KeyboardEvent("keydown", {code: key}));
   await el.updateComplete;
   assertKnobPositionCloseTo(el, newValue);
   assert.equal(listenerInvocations, 1);

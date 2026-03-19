@@ -6,14 +6,14 @@
  * @fileoverview Protocol registration helper dialog.
  */
 
-import {registerProtocolHandler} from './nassh.js';
+import {registerProtocolHandler} from "./nassh.js";
 
 /**
  * Attempt to register all the protocols we support.
  */
 function registerProtocols() {
-  registerProtocolHandler('ssh');
-  registerProtocolHandler('sftp');
+  registerProtocolHandler("ssh");
+  registerProtocolHandler("sftp");
 }
 
 /**
@@ -22,13 +22,13 @@ function registerProtocols() {
 function openSettings() {
   // NB: We have to use chrome.tabs.create rather than window.open as Chrome
   // blocks chrome:// URIs with the latter API.
-  chrome.tabs.create({url: 'chrome://settings/handlers'});
+  chrome.tabs.create({url: "chrome://settings/handlers"});
 }
 
 /**
  * Event when the window finishes loading.
  */
-globalThis.addEventListener('DOMContentLoaded', (event) => {
-  document.getElementById('proto-register').onclick = registerProtocols;
-  document.getElementById('proto-open-settings').onclick = openSettings;
+globalThis.addEventListener("DOMContentLoaded", (event) => {
+  document.getElementById("proto-register").onclick = registerProtocols;
+  document.getElementById("proto-open-settings").onclick = openSettings;
 });

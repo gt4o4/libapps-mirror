@@ -9,8 +9,8 @@
  * and have good test coverage.
  */
 
-import {delayedScheduler} from './terminal_common.js';
-import {Terminal} from './xterm.js';
+import {delayedScheduler} from "./terminal_common.js";
+import {Terminal} from "./xterm.js";
 
 const BUFFER_SIZE = 4096;
 
@@ -59,10 +59,10 @@ class TmuxDcsPHandler {
   /** @param {!IParams} params */
   hook(params) {
     if (params.length === 1 && params.params[0] === 1000) {
-      this.buffer_ = '';
+      this.buffer_ = "";
       return;
     }
-    console.warn('Unknown DCS P sequence. Params:',
+    console.warn("Unknown DCS P sequence. Params:",
         params.params.slice(0, params.length));
   }
 
@@ -79,9 +79,9 @@ class TmuxDcsPHandler {
 
     for (const code of data) {
       const c = String.fromCodePoint(code);
-      if (c === '\n' && this.buffer_.slice(-1) === '\r') {
+      if (c === "\n" && this.buffer_.slice(-1) === "\r") {
         this.onTmuxControlModeLine_(this.buffer_.slice(0, -1));
-        this.buffer_ = '';
+        this.buffer_ = "";
         continue;
       }
       this.buffer_ += String.fromCodePoint(code);
@@ -92,7 +92,7 @@ class TmuxDcsPHandler {
   unhook(success) {
     if (this.buffer_ !== null) {
       if (this.buffer_) {
-        console.warn('Unexpected tmux data before ST', {data: this.buffer_});
+        console.warn("Unexpected tmux data before ST", {data: this.buffer_});
       }
       this.onTmuxControlModeLine_(null);
     }
@@ -245,7 +245,7 @@ export class XtermInternal {
    *     `hterm.Terminal.onTmuxControlModeLine`.
    */
   installTmuxControlModeHandler(onTmuxControlModeLine) {
-    this.core_._inputHandler._parser.registerDcsHandler({final: 'p'},
+    this.core_._inputHandler._parser.registerDcsHandler({final: "p"},
         new TmuxDcsPHandler(onTmuxControlModeLine));
   }
 
@@ -255,27 +255,27 @@ export class XtermInternal {
    */
   enableA11y(a11yPageUpButton, a11yPageDownButton) {
     if (this.terminal_.options.screenReaderMode) {
-      throw new Error('screenReaderMode is already true');
+      throw new Error("screenReaderMode is already true");
     }
     this.terminal_.options.screenReaderMode = true;
 
     const terminalElement = this.terminal_.element;
     const xtermA11yElement = terminalElement.querySelector(
-        '.xterm-accessibility');
+        ".xterm-accessibility");
 
     // Surround xtermA11yElement with the buttons.
-    xtermA11yElement.insertAdjacentElement('beforebegin', a11yPageUpButton);
-    xtermA11yElement.insertAdjacentElement('afterend', a11yPageDownButton);
+    xtermA11yElement.insertAdjacentElement("beforebegin", a11yPageUpButton);
+    xtermA11yElement.insertAdjacentElement("afterend", a11yPageDownButton);
 
     // When a screen reader user move the focus (away from the terminal input
     // field), they normally move it upwards because the history output are at
     // the top. So, here we re-position xterm's live region to the bottom so
     // that it will not catch the focus.
-    const liveRegionContainer = document.createElement('div');
+    const liveRegionContainer = document.createElement("div");
     liveRegionContainer.style.cssText = A11Y_LIVE_REGION_CSS;
-    terminalElement.insertAdjacentElement('beforeend', liveRegionContainer);
+    terminalElement.insertAdjacentElement("beforeend", liveRegionContainer);
     liveRegionContainer.appendChild(
-        xtermA11yElement.querySelector('[aria-live]'));
+        xtermA11yElement.querySelector("[aria-live]"));
 
     this.a11yElements_ = [
         a11yPageUpButton,
@@ -286,7 +286,7 @@ export class XtermInternal {
 
   disableA11y() {
     if (!this.terminal_.options.screenReaderMode) {
-      throw new Error('screenReaderMode is already false');
+      throw new Error("screenReaderMode is already false");
     }
     this.terminal_.options.screenReaderMode = false;
 
@@ -302,11 +302,11 @@ export class XtermInternal {
    *     hasn't called `terminal.open()`.
    */
   setScrollbarVisible(visible) {
-    const viewport = this.terminal_.element?.querySelector('.xterm-viewport');
+    const viewport = this.terminal_.element?.querySelector(".xterm-viewport");
     if (!viewport) {
       return false;
     }
-    viewport.style.overflowY = visible ? '' : 'hidden';
+    viewport.style.overflowY = visible ? "" : "hidden";
     return true;
   }
 }

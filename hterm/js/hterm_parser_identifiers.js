@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Collections of identifier for hterm.Parser.
@@ -18,12 +18,12 @@ hterm.Parser.identifiers = {};
  * Note: Names here cannot overlap with hterm.Parser.identifiers.keyCodes.
  */
 hterm.Parser.identifiers.modifierKeys = {
-  SHIFT: 'shift',
-  CTRL: 'ctrl',
+  SHIFT: "shift",
+  CTRL: "ctrl",
   // Common alias.
-  CONTROL: 'ctrl',
-  ALT: 'alt',
-  META: 'meta',
+  CONTROL: "ctrl",
+  ALT: "alt",
+  META: "meta",
 };
 
 /**
@@ -86,7 +86,7 @@ hterm.Parser.identifiers.keyCodes = {
   T: 84,
   Y: 89,
   U: 85,
-  // eslint-disable-next-line id-denylist
+   
   I: 73,
   O: 79,
   P: 80,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * @typedef {{
@@ -52,25 +52,25 @@ hterm.Keyboard.Bindings = function() {
  * @type {!Object<string, !Object<string, string>>}
  */
 hterm.Keyboard.Bindings.OsDefaults = {
-  'android': {
+  "android": {
   },
-  'cros': {
+  "cros": {
     // Submit feedback.
-    'Alt+Shift+I': 'PASS',
+    "Alt+Shift+I": "PASS",
     // Toggle chromevox.
-    'Ctrl+Alt+Z': 'PASS',
+    "Ctrl+Alt+Z": "PASS",
     // Switch input method.
-    'Ctrl+Space': 'PASS',
+    "Ctrl+Space": "PASS",
   },
-  'linux': {
+  "linux": {
   },
-  'mac': {
+  "mac": {
     // Home.
-    'Meta+Left': '"\u001b[H"',
+    "Meta+Left": '"\u001b[H"',
     // End.
-    'Meta+Right': '"\u001b[F"',
+    "Meta+Right": '"\u001b[F"',
   },
-  'windows': {
+  "windows": {
   },
 };
 
@@ -147,7 +147,7 @@ hterm.Keyboard.Bindings.prototype.addBinding_ = function(keyPattern, action) {
  */
 hterm.Keyboard.Bindings.prototype.addBinding = function(key, action) {
   // If we're given a hterm.Keyboard.KeyPattern object, pass it down.
-  if (typeof key != 'string') {
+  if (typeof key != "string") {
     this.addBinding_(key, action);
     return;
   }
@@ -166,12 +166,12 @@ hterm.Keyboard.Bindings.prototype.addBinding = function(key, action) {
   }
 
   if (!p.isComplete()) {
-    console.error(p.error('Expected end of sequence: ' + sequence));
+    console.error(p.error("Expected end of sequence: " + sequence));
     return;
   }
 
   // If action is a string, parse it.  Otherwise assume it's callable.
-  if (typeof action == 'string') {
+  if (typeof action == "string") {
     p.reset(action);
     try {
       action = p.parseKeyAction();
@@ -182,7 +182,7 @@ hterm.Keyboard.Bindings.prototype.addBinding = function(key, action) {
   }
 
   if (!p.isComplete()) {
-    console.error(p.error('Expected end of sequence: ' + sequence));
+    console.error(p.error("Expected end of sequence: " + sequence));
     return;
   }
 

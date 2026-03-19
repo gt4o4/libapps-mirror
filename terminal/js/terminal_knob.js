@@ -8,7 +8,7 @@
  *
  * @suppress {moduleLoad}
  */
-import {LitElement, css} from './lit.js';
+import {LitElement, css} from "./lit.js";
 
 export class TerminalKnob extends LitElement {
   /**
@@ -38,4 +38,4 @@ export class TerminalKnob extends LitElement {
   }
 }
 
-customElements.define('terminal-knob', TerminalKnob);
+customElements.define("terminal-knob", TerminalKnob);

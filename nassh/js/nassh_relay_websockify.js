@@ -6,14 +6,14 @@
  * @fileoverview Implementation for websockify proxies.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LocalPreferenceManager} from './nassh_preference_manager.js';
-import {Relay} from './nassh_relay.js';
-import {Stream} from './nassh_stream.js';
-import {RelayWebsockifyStream} from './nassh_stream_relay_websockify.js';
+import {LocalPreferenceManager} from "./nassh_preference_manager.js";
+import {Relay} from "./nassh_relay.js";
+import {Stream} from "./nassh_stream.js";
+import {RelayWebsockifyStream} from "./nassh_stream_relay_websockify.js";
 
 /**
  * Websockify relay implementation.
@@ -35,13 +35,13 @@ export class Websockify extends Relay {
    */
   constructor(io, options, location, storage, localPrefs) {
     super(io, options, location, storage, localPrefs);
-    this.useSecure = options['--use-ssl'];
+    this.useSecure = options["--use-ssl"];
   }
 
   /** @override */
   redirect() {
     // This shouldn't be called in the first place.
-    throw new Error('websockify does not redirect');
+    throw new Error("websockify does not redirect");
   }
 
   /**
@@ -77,7 +77,7 @@ export class Websockify extends Relay {
       relayPort: this.proxyPort,
       host: host,
       port: port,
-      protocol: this.useSecure ? 'wss' : 'ws',
+      protocol: this.useSecure ? "wss" : "ws",
     };
     const stream = new RelayWebsockifyStream();
     await stream.open(settings);

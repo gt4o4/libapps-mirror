@@ -17,9 +17,9 @@
  * information contained in the pre-recorded sessions.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../index.js';
+import {hterm} from "../index.js";
 
 /*
  * (This documentation moved out of JSDoc block due to use of '@@')
@@ -79,8 +79,8 @@ before(function() {
 beforeEach(function(done) {
   const document = globalThis.document;
 
-  const div = document.createElement('div');
-  div.style.position = 'absolute';
+  const div = document.createElement("div");
+  div.style.position = "absolute";
   document.body.appendChild(div);
 
   this.div = div;
@@ -97,7 +97,7 @@ beforeEach(function(done) {
   this.terminal.onTerminalReady = () => {
     // The canned tests want access to graphics charsets, so make sure the
     // encoding is not utf-8 (as we might default to).
-    this.terminal.vt.setEncoding('iso-2022');
+    this.terminal.vt.setEncoding("iso-2022");
 
     this.terminal.setCursorPosition(0, 0);
     this.terminal.setCursorVisible(true);
@@ -129,13 +129,13 @@ const testData = async function(terminal, name) {
 
   let m = data.match(/^(#[^\n]*\n)*@@ HEADER_START/);
   // And that it has optional lead-in comments followed by a header.
-  assert.isTrue(!!m, 'data has a header');
+  assert.isTrue(!!m, "data has a header");
 
   const headerStart = m[0].length;
 
   // And that the header has an ending.
   m = data.match(/^@@ HEADER_END\r?\n/m);
-  assert.isTrue(!!m, 'header ends');
+  assert.isTrue(!!m, "header ends");
 
   const header = data.substring(headerStart, m.index);
   data = data.substr(headerStart + header.length + m[0].length);
@@ -157,7 +157,7 @@ const testData = async function(terminal, name) {
 
     const ary = line.match(
         /^@@\s+OFFSET:(\d+)\s+LINES:(\d+)\s+CURSOR:(\d+),(\d+)\s*$/);
-    assert.isTrue(!!ary, 'header line: ' + line);
+    assert.isTrue(!!ary, "header line: " + line);
 
     const endOffset = Number(ary[1]);
     // console.log(`Playing to offset: ${endOffset}`);
@@ -168,12 +168,12 @@ const testData = async function(terminal, name) {
       headerIndex++;
       assert.equal(terminal.getRowText(rowIndex),
                    headerLines[headerIndex],
-                   'row:' + rowIndex);
+                   "row:" + rowIndex);
     }
 
-    assert.equal(terminal.getCursorRow(), Number(ary[3]), 'cursor row');
+    assert.equal(terminal.getCursorRow(), Number(ary[3]), "cursor row");
     assert.equal(terminal.getCursorColumn(), Number(ary[4]),
-                 'cursor column');
+                 "cursor column");
 
     startOffset = endOffset;
   }
@@ -184,9 +184,9 @@ const testData = async function(terminal, name) {
 
 [
   // A pre-recorded session of vttest menu option 1, 'Test of cursor movements'.
-  'vttest-01',
-  'vttest-02',
-  'charsets',
+  "vttest-01",
+  "vttest-02",
+  "charsets",
 ].forEach((name) => {
   it(name, async function() {
     this.timeout(5000);

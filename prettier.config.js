@@ -14,26 +14,26 @@ const shared = {
   useTabs: false,
   semi: true,
   singleQuote: true,
-  quoteProps: 'preserve',
+  quoteProps: "preserve",
   bracketSpacing: false,
-  trailingComma: 'all',
-  arrowParens: 'always',
-  embeddedLanguageFormatting: 'off',
+  trailingComma: "all",
+  arrowParens: "always",
+  embeddedLanguageFormatting: "off",
   bracketSameLine: true,
   singleAttributePerLine: false,
   jsxSingleQuote: false,
-  htmlWhitespaceSensitivity: 'strict',
+  htmlWhitespaceSensitivity: "strict",
 };
 
 const config = {
   overrides: [
     {
       /** TSX/TS/JS-specific configuration. */
-      files: '*.tsx',
+      files: "*.tsx",
       options: shared,
     },
     {
-      files: '*.ts',
+      files: "*.ts",
       options: shared,
     },
     /* TODO(vapier): Enable.
@@ -44,36 +44,36 @@ const config = {
     */
     {
       /** Sass-specific configuration. */
-      files: '*.scss',
+      files: "*.scss",
       options: {
         singleQuote: true,
       },
     },
     {
-      files: '*.html',
+      files: "*.html",
       options: {
         printWidth: 100,
       },
     },
     {
-      files: '*.html.in',
+      files: "*.html.in",
       options: {
-        parser: 'html',
+        parser: "html",
         printWidth: 100,
       },
     },
     {
-      files: '*.acx.html',
+      files: "*.acx.html",
       options: {
-        parser: 'angular',
+        parser: "angular",
         singleQuote: true,
       },
     },
     {
-      files: '*.ng.html',
+      files: "*.ng.html",
       options: {
-        parser: 'angular',
-        embeddedLanguageFormatting: 'auto',
+        parser: "angular",
+        embeddedLanguageFormatting: "auto",
         singleQuote: true,
         printWidth: 100,
       },

@@ -6,7 +6,7 @@
  * @fileoverview Context menu handling.
  */
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Manage the context menu usually shown when right clicking.
@@ -29,7 +29,7 @@ hterm.ContextMenu.Item;
 /**
  * Constant to add a separator to the context menu.
  */
-hterm.ContextMenu.SEPARATOR = Symbol('-');
+hterm.ContextMenu.SEPARATOR = Symbol("-");
 
 /**
  * Bind context menu to a specific document element.
@@ -51,8 +51,8 @@ hterm.ContextMenu.prototype.setDocument = function(document) {
  */
 hterm.ContextMenu.prototype.regenerate_ = function() {
   if (!this.element_) {
-    this.element_ = this.document_.createElement('menu');
-    this.element_.id = 'hterm:context-menu';
+    this.element_ = this.document_.createElement("menu");
+    this.element_.id = "hterm:context-menu";
   } else {
     this.hide();
   }
@@ -63,13 +63,13 @@ hterm.ContextMenu.prototype.regenerate_ = function() {
   }
 
   this.menu_.forEach(({name, action}) => {
-    const menuitem = this.document_.createElement('menuitem');
+    const menuitem = this.document_.createElement("menuitem");
     if (name === hterm.ContextMenu.SEPARATOR) {
-      menuitem.innerHTML = hterm.sanitizeHtml('<hr>');
-      menuitem.className = 'separator';
+      menuitem.innerHTML = hterm.sanitizeHtml("<hr>");
+      menuitem.className = "separator";
     } else {
       menuitem.innerText = name;
-      menuitem.addEventListener('mousedown', function(e) {
+      menuitem.addEventListener("mousedown", function(e) {
         e.preventDefault();
         action(e);
       });
@@ -122,7 +122,7 @@ hterm.ContextMenu.prototype.show = function(e, terminal) {
   this.element_.style.left = `${e.clientX}px`;
   const docSize = this.document_.body.getBoundingClientRect();
 
-  this.element_.style.display = 'block';
+  this.element_.style.display = "block";
 
   // We can't calculate sizes until after it's displayed.
   const eleSize = this.element_.getBoundingClientRect();
@@ -145,5 +145,5 @@ hterm.ContextMenu.prototype.hide = function() {
     return;
   }
 
-  this.element_.style.display = 'none';
+  this.element_.style.display = "none";
 };

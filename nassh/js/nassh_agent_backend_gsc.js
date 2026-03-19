@@ -13,22 +13,22 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {asn1js, pkijs} from './deps_pkijs.rollup.js';
+import {asn1js, pkijs} from "./deps_pkijs.rollup.js";
 
-import {concatTyped, compare} from './lib_array.js';
-import {CredentialCache} from './lib_credential_cache.js';
-import {localize} from './nassh.js';
-import {UserIO} from './nassh_agent.js';
-import {Backend} from './nassh_agent_backend.js';
+import {concatTyped, compare} from "./lib_array.js";
+import {CredentialCache} from "./lib_credential_cache.js";
+import {localize} from "./nassh.js";
+import {UserIO} from "./nassh_agent.js";
+import {Backend} from "./nassh_agent_backend.js";
 import {
   decodeCurveOidWithVendorFixes, encodeAsWireMpint, encodeAsWireString,
   generateKeyBlob, KeyTypes, Identity, OidToCurveInfo,
-} from './nassh_agent_message_types.js';
+} from "./nassh_agent_message_types.js";
 import {
   GoogleSmartCard,
-} from '../third_party/google-smart-card/google-smart-card-client-library.js';
+} from "../third_party/google-smart-card/google-smart-card-client-library.js";
 
 /**
  * An SSH agent backend that uses the Google Smart Card Connector library to
@@ -77,9 +77,9 @@ export class GSC extends Backend {
       await GSC.initializeAPIContext();
     } catch (e) {
       this.showMessage(localize(
-          'SMART_CARD_CONNECTOR_NOT_INSTALLED',
-          ['https://chrome.google.com/webstore/detail/' +
-           'khpfeaanjngmcnplbdlpegiifgpfgdco']));
+          "SMART_CARD_CONNECTOR_NOT_INSTALLED",
+          ["https://chrome.google.com/webstore/detail/" +
+           "khpfeaanjngmcnplbdlpegiifgpfgdco"]));
       throw e;
     }
   }
@@ -138,7 +138,7 @@ export class GSC extends Backend {
     } catch (e) {
       console.error(e);
       console.error(
-          `GSC.requestIdentities: failed to get public key ID from ` +
+          "GSC.requestIdentities: failed to get public key ID from " +
           `reader ${reader}, skipping`);
       return [];
     } finally {
@@ -201,7 +201,7 @@ export class GSC extends Backend {
     // Show 8 hex character (4 byte) fingerprint to the user.
     const shortFingerprint = arrayToHexString(readerKeyId.slice(-4));
     return this.promptUser(localize(
-        'REQUEST_PIN_PROMPT',
+        "REQUEST_PIN_PROMPT",
         [shortFingerprint, reader, appletName, numTries]));
   }
 
@@ -231,7 +231,7 @@ export class GSC extends Backend {
       if (this.pinCache_.isEnabled() && !triedCache && numTries > 1) {
         triedCache = true;
         pinBytes = await this.pinCache_.retrieve(
-            `${manager.reader()}|${new TextDecoder('utf-8').decode(keyId)}`);
+            `${manager.reader()}|${new TextDecoder("utf-8").decode(keyId)}`);
       }
       if (!pinBytes) {
         try {
@@ -240,20 +240,20 @@ export class GSC extends Backend {
               keyId,
               manager.appletName(),
               numTries);
-          pinBytes = new TextEncoder('utf-8').encode(pin);
+          pinBytes = new TextEncoder("utf-8").encode(pin);
         } catch (e) {
-          throw new Error('GSC.signRequest: authentication canceled by user');
+          throw new Error("GSC.signRequest: authentication canceled by user");
         }
       }
     } while (!await manager.verifyPIN(pinBytes));
 
     if (this.pinCache_.isEnabled() === null) {
-      const reply = await this.promptUser(localize('CACHE_PIN_PROMPT'));
-      this.pinCache_.setEnabled(reply.toLowerCase() === 'y');
+      const reply = await this.promptUser(localize("CACHE_PIN_PROMPT"));
+      this.pinCache_.setEnabled(reply.toLowerCase() === "y");
     }
     if (this.pinCache_.isEnabled()) {
       await this.pinCache_.store(
-          `${manager.reader()}|${new TextDecoder('utf-8').decode(keyId)}`,
+          `${manager.reader()}|${new TextDecoder("utf-8").decode(keyId)}`,
           pinBytes);
     }
 
@@ -278,7 +278,7 @@ export class GSC extends Backend {
    * @override
    */
   async signRequest(keyBlob, data, flags) {
-    const keyBlobStr = new TextDecoder('utf-8').decode(keyBlob);
+    const keyBlobStr = new TextDecoder("utf-8").decode(keyBlob);
     if (!this.keyBlobToReader_.hasOwnProperty(keyBlobStr)) {
       throw new Error(
           `GSC.signRequest: no reader found for key "${keyBlobStr}"`);
@@ -304,7 +304,7 @@ export class GSC extends Backend {
             rsaHashConstants = HashAlgorithms.SHA256;
           } else {
             throw new Error(
-                `GSC.signRequest: unsupported flag value for RSA: ` +
+                "GSC.signRequest: unsupported flag value for RSA: " +
                 `0x${flags.toString(16)}`);
           }
           const hash = await globalThis.crypto.subtle.digest(
@@ -316,7 +316,7 @@ export class GSC extends Backend {
         case KeyTypes.ECDSA: {
           if (flags !== 0) {
             throw new Error(
-                `GSC.signRequest: unsupported flag value for ECDSA: ` +
+                "GSC.signRequest: unsupported flag value for ECDSA: " +
                 `0x${flags.toString(16)}`);
           }
           const hashAlgorithm =
@@ -328,14 +328,14 @@ export class GSC extends Backend {
         case KeyTypes.EDDSA:
           if (flags !== 0) {
             throw new Error(
-                `GSC.signRequest: unsupported flag value for EdDSA: ` +
+                "GSC.signRequest: unsupported flag value for EdDSA: " +
                 `0x${flags.toString(16)}`);
           }
           dataToSign = data;
           break;
         default:
           throw new Error(
-              `GSC.signRequest: unsupported key type: ` +
+              "GSC.signRequest: unsupported key type: " +
               `${JSON.stringify(keyInfo)}`);
       }
 
@@ -381,7 +381,7 @@ export class GSC extends Backend {
  * @const {string}
  * @override
  */
-GSC.prototype.BACKEND_ID = 'gsc';
+GSC.prototype.BACKEND_ID = "gsc";
 
 /**
  * The title of the app (used for logging purposes by the GSC library).
@@ -389,7 +389,7 @@ GSC.prototype.BACKEND_ID = 'gsc';
  * @readonly
  * @const {string}
  */
-const CLIENT_TITLE = 'nassh';
+const CLIENT_TITLE = "nassh";
 
 /**
  * The ID of the official Google Smart Card Connector app.
@@ -430,7 +430,7 @@ GSC.APIContext = null;
  */
 const HashAlgorithms = {
   SHA1: {
-    name: 'SHA-1',
+    name: "SHA-1",
     identifier: new Uint8Array([
       0x30, 0x21, 0x30, 0x09, 0x06, 0x05, 0x2b, 0x0E, 0x03, 0x02,
       0x1A, 0x05, 0x00, 0x04, 0x14,
@@ -440,7 +440,7 @@ const HashAlgorithms = {
     ]),
   },
   SHA256: {
-    name: 'SHA-256',
+    name: "SHA-256",
     identifier: new Uint8Array([
       0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
       0x65, 0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20,
@@ -451,7 +451,7 @@ const HashAlgorithms = {
     ]),
   },
   SHA512: {
-    name: 'SHA-512',
+    name: "SHA-512",
     identifier: new Uint8Array([
       0x30, 0x51, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01,
       0x65, 0x03, 0x04, 0x02, 0x03, 0x05, 0x00, 0x04, 0x40,
@@ -468,7 +468,7 @@ const HashAlgorithms = {
  * Handler for the apiContextDisposed event.
  */
 GSC.apiContextDisposedListener = function() {
-  console.debug('GSC: API context disposed');
+  console.debug("GSC: API context disposed");
   GSC.APIContext = null;
   GSC.API = null;
 };
@@ -495,8 +495,8 @@ GSC.initializeAPIContext = async function() {
   }
   if (!GSC.API || !GSC.APIContext) {
     throw new Error(
-        'GSC.initializeAPIContext: Smart Card Connector app not ' +
-        'installed or disabled.');
+        "GSC.initializeAPIContext: Smart Card Connector app not " +
+        "installed or disabled.");
   }
 };
 
@@ -513,9 +513,9 @@ GSC.initializeAPIContext = async function() {
  * @return {!Promise<!Error>}
  */
 async function decodePcscError(error, stack) {
-  stack = stack || '';
+  stack = stack || "";
   // Numeric error codes signify PC/SC-Lite errors.
-  if (typeof error === 'number') {
+  if (typeof error === "number") {
     try {
       const errorText = await GSC.API.pcsc_stringify_error(error);
       return new Error(`${errorText} (${error})\n${stack}`);
@@ -536,7 +536,7 @@ async function decodePcscError(error, stack) {
 function arrayToHexString(array) {
   // Always include leading zeros.
   return array.reduce(
-      (str, byte) => str + lib.f.zpad(byte.toString(16).toUpperCase(), 2), '');
+      (str, byte) => str + lib.f.zpad(byte.toString(16).toUpperCase(), 2), "");
 }
 
 /**
@@ -653,33 +653,33 @@ class CommandAPDU {
  * @enum {string}
  */
 const DATA_OBJECT_TAG = {
-  0x5E: 'Login data',
-  0x5F50: 'URL to public keys',
+  0x5E: "Login data",
+  0x5F50: "URL to public keys",
 
-  0x65: 'Cardholder Related Data',
-  0x5B: 'Name',
-  0x5F2D: 'Language preference',
-  0x5F35: 'Sex',
+  0x65: "Cardholder Related Data",
+  0x5B: "Name",
+  0x5F2D: "Language preference",
+  0x5F35: "Sex",
 
-  0x6E: 'Application Related Data',
-  0x4F: 'Application Identifier',
-  0x5F52: 'Historical bytes',
-  0x73: 'Discretionary data objects',
-  0xC0: 'Extended capabilities',
-  0xC1: 'Algorithm attributes: signature',
-  0xC2: 'Algorithm attributes: decryption',
-  0xC3: 'Algorithm attributes: authentication',
-  0xC4: 'PW Status Bytes',
-  0xC5: 'Fingerprints',
-  0xC6: 'CA Fingerprints',
-  0xCD: 'Generation Timestamps',
+  0x6E: "Application Related Data",
+  0x4F: "Application Identifier",
+  0x5F52: "Historical bytes",
+  0x73: "Discretionary data objects",
+  0xC0: "Extended capabilities",
+  0xC1: "Algorithm attributes: signature",
+  0xC2: "Algorithm attributes: decryption",
+  0xC3: "Algorithm attributes: authentication",
+  0xC4: "PW Status Bytes",
+  0xC5: "Fingerprints",
+  0xC6: "CA Fingerprints",
+  0xCD: "Generation Timestamps",
 
-  0x7A: 'Security support template',
-  0x93: 'Digital signature counter',
+  0x7A: "Security support template",
+  0x93: "Digital signature counter",
 
-  0x7F49: 'Public key template',
-  0x81: 'Modulus',
-  0x82: 'Public exponent',
+  0x7F49: "Public key template",
+  0x81: "Modulus",
+  0x82: "Public exponent",
 };
 
 /**
@@ -691,10 +691,10 @@ const DATA_OBJECT_TAG = {
  * @enum {string}
  */
 const DATA_OBJECT_TAG_CLASS = {
-  0: 'universal',
-  1: 'application',
-  2: 'context-specific',
-  3: 'private',
+  0: "universal",
+  1: "application",
+  2: "context-specific",
+  3: "private",
 };
 
 /**
@@ -753,7 +753,7 @@ DataObject.fromBytesInRange = function(bytes, start = 0, end = bytes.length) {
   if (tagNumber === 0b00011111) {
     if (!(bytes[pos] & 0b01111111)) {
       throw new Error(
-          'DataObject.fromBytesWithStart: first byte of the tag number is 0');
+          "DataObject.fromBytesWithStart: first byte of the tag number is 0");
     }
     tagNumber = 0;
     do {
@@ -997,15 +997,15 @@ SmartCardManager.CardApplets = {
  * @const {!Array<string>}
  */
 SmartCardManager.READER_SHORT_NAMES = [
-  'Yubikey NEO-N',
-  'Yubikey NEO',
-  'Yubikey 4-N',
-  'Yubikey 4',
-  'Nitrokey Start',
-  'Nitrokey Pro',
-  'Nitrokey Storage',
-  'Gemalto PC Twin Reader',
-  'Gemalto USB Shell Token',
+  "Yubikey NEO-N",
+  "Yubikey NEO",
+  "Yubikey 4-N",
+  "Yubikey 4",
+  "Nitrokey Start",
+  "Nitrokey Pro",
+  "Nitrokey Storage",
+  "Gemalto PC Twin Reader",
+  "Gemalto USB Shell Token",
 ];
 
 /**
@@ -1060,11 +1060,11 @@ SmartCardManager.prototype.readerShort = function() {
 SmartCardManager.prototype.appletName = function() {
   switch (this.appletSelected_) {
     case SmartCardManager.CardApplets.OPENPGP:
-      return 'OpenPGP';
+      return "OpenPGP";
     case SmartCardManager.CardApplets.PIV:
-      return 'PIV';
+      return "PIV";
     default:
-      return 'None';
+      return "None";
   }
 };
 
@@ -1136,7 +1136,7 @@ SmartCardManager.prototype.listReaders = async function() {
   if (await this.hasValidContext()) {
     return this.execute_(GSC.API.SCardListReaders(this.context_, null));
   } else {
-    throw new Error('SmartCardManager.listReaders: invalid context');
+    throw new Error("SmartCardManager.listReaders: invalid context");
   }
 };
 
@@ -1152,7 +1152,7 @@ SmartCardManager.prototype.listReaders = async function() {
  */
 SmartCardManager.prototype.connect = async function(reader) {
   if (!await this.hasValidContext()) {
-    throw new Error('SmartCardManager.connect: invalid context');
+    throw new Error("SmartCardManager.connect: invalid context");
   }
   if (this.connected_) {
     await this.disconnect();
@@ -1181,7 +1181,7 @@ SmartCardManager.prototype.connect = async function(reader) {
  */
 SmartCardManager.prototype.transmit = async function(commandAPDU) {
   if (!this.connected_) {
-    throw new Error('SmartCardManager.transmit: not connected');
+    throw new Error("SmartCardManager.transmit: not connected");
   }
   let data;
   for (const command of commandAPDU.commands(
@@ -1235,7 +1235,7 @@ SmartCardManager.prototype.getData_ = async function(rawResult) {
   } else if (
       statusBytes.value() !== SmartCardManager.StatusValues.COMMAND_CORRECT) {
     console.warn(
-        'SmartCardManager.getData_: operation returned specific status bytes ' +
+        "SmartCardManager.getData_: operation returned specific status bytes " +
         statusBytes);
     throw statusBytes;
   }
@@ -1253,10 +1253,10 @@ SmartCardManager.prototype.getData_ = async function(rawResult) {
  */
 SmartCardManager.prototype.selectApplet = async function(applet) {
   if (!this.connected_) {
-    throw new Error('SmartCardManager.selectApplet: not connected');
+    throw new Error("SmartCardManager.selectApplet: not connected");
   }
   if (this.appletSelected_ !== SmartCardManager.CardApplets.NONE) {
-    throw new Error('SmartCardManager.selectApplet: applet already selected');
+    throw new Error("SmartCardManager.selectApplet: applet already selected");
   }
   switch (applet) {
     case SmartCardManager.CardApplets.OPENPGP: {
@@ -1309,7 +1309,7 @@ SmartCardManager.prototype.selectApplet = async function(applet) {
   }
   if (this.appletSelected_ !== SmartCardManager.CardApplets.NONE) {
     throw new Error(
-        'SmartCardManager.selectApplet: applet already selected (race)');
+        "SmartCardManager.selectApplet: applet already selected (race)");
   }
   this.appletSelected_ = applet;
 };
@@ -1361,14 +1361,14 @@ SmartCardManager.prototype.fetchKeyInfo = async function() {
               decodeCurveOidWithVendorFixes(curveOidBytes, this.reader());
           if (!(curveOid in OidToCurveInfo)) {
             throw new Error(
-                `SmartCardManager.fetchKeyInfo: unsupported curve OID: ` +
+                "SmartCardManager.fetchKeyInfo: unsupported curve OID: " +
                 `${curveOid}`);
           }
           return {type, curveOid};
         }
         default:
           throw new Error(
-              `SmartCardManager.fetchKeyInfo: unsupported algorithm ID: ` +
+              "SmartCardManager.fetchKeyInfo: unsupported algorithm ID: " +
               `${type}`);
       }
     }
@@ -1402,10 +1402,10 @@ SmartCardManager.prototype.fetchKeyInfo = async function() {
       const algorithmId =
           certificate.subjectPublicKeyInfo.algorithm.algorithmId;
       switch (algorithmId) {
-        case '1.2.840.113549.1.1.1':
+        case "1.2.840.113549.1.1.1":
           // RSA
           return {type: KeyTypes.RSA, curveOid: null};
-        case '1.2.840.10045.2.1': {
+        case "1.2.840.10045.2.1": {
           // ECDSA
           // We deviate from the PIV spec by allowing curves other than P-256.
           // If curve detection fails, we fall back to the default.
@@ -1415,25 +1415,25 @@ SmartCardManager.prototype.fetchKeyInfo = async function() {
                 certificate.subjectPublicKeyInfo.algorithm.algorithmParams;
             curveOid = algorithmParams.valueBlock.toJSON().value;
           } catch (e) {
-            return {type: KeyTypes.ECDSA, curveOid: '1.2.840.10045.3.1.7'};
+            return {type: KeyTypes.ECDSA, curveOid: "1.2.840.10045.3.1.7"};
           }
           if (!(curveOid in OidToCurveInfo &&
-                'pivAlgorithmId' in OidToCurveInfo[curveOid])) {
+                "pivAlgorithmId" in OidToCurveInfo[curveOid])) {
             throw new Error(
-                `SmartCardManager.fetchKeyInfo: unsupported curve OID for ` +
+                "SmartCardManager.fetchKeyInfo: unsupported curve OID for " +
                 `PIV: ${curveOid}`);
           }
           return {type: KeyTypes.ECDSA, curveOid};
         }
         default:
           throw new Error(
-              `SmartCardManager.fetchKeyInfo: unsupported PIV algorithm OID: ` +
+              "SmartCardManager.fetchKeyInfo: unsupported PIV algorithm OID: " +
               `${algorithmId}`);
       }
     }
     default:
       throw new Error(
-          `SmartCardManager.fetchKeyInfo: no or unsupported applet ` +
+          "SmartCardManager.fetchKeyInfo: no or unsupported applet " +
           `selected: ${this.appletSelected_}`);
   }
 };
@@ -1477,7 +1477,7 @@ SmartCardManager.prototype.fetchPublicKeyBlob = async function() {
         }
         default:
           throw new Error(
-              `SmartCardManager.fetchPublicKeyBlob: unsupported key type: ` +
+              "SmartCardManager.fetchPublicKeyBlob: unsupported key type: " +
               `${JSON.stringify(keyInfo)}`);
       }
     }
@@ -1527,13 +1527,13 @@ SmartCardManager.prototype.fetchPublicKeyBlob = async function() {
               keyInfo.type, keyInfo.curveOid, new Uint8Array(rawPublicKey));
         default:
           throw new Error(
-              `SmartCardManager.fetchPublicKeyBlob: unsupported key type: ` +
+              "SmartCardManager.fetchPublicKeyBlob: unsupported key type: " +
               `${JSON.stringify(keyInfo)}`);
       }
     }
     default:
       throw new Error(
-          `SmartCardManager.fetchPublicKeyBlob: no or unsupported applet ` +
+          "SmartCardManager.fetchPublicKeyBlob: no or unsupported applet " +
           `selected: ${this.appletSelected_}`);
   }
 };
@@ -1593,11 +1593,11 @@ SmartCardManager.prototype.fetchAuthenticationPublicKeyId = async function() {
       const subjectPublicKeyInfo =
           pkijsCertificate.subjectPublicKeyInfo.toSchema().toBER(false);
       return new Uint8Array(
-          await globalThis.crypto.subtle.digest('SHA-1', subjectPublicKeyInfo));
+          await globalThis.crypto.subtle.digest("SHA-1", subjectPublicKeyInfo));
     }
     default:
       throw new Error(
-          `SmartCardManager.fetchAuthenticationPublicKeyId: no or ` +
+          "SmartCardManager.fetchAuthenticationPublicKeyId: no or " +
           `unsupported applet selected: ${this.appletSelected_}`);
   }
 };
@@ -1649,15 +1649,15 @@ SmartCardManager.prototype.fetchPINVerificationTriesRemaining =
           return statusBytes.value() & 0xF;
         }
         throw new Error(
-            `SmartCardManager.fetchPINVerificationTriesRemaining: expected ` +
-            `status bytes of the form 0x63 0xCX, but got` +
+            "SmartCardManager.fetchPINVerificationTriesRemaining: expected " +
+            "status bytes of the form 0x63 0xCX, but got" +
             `${statusBytes.toString()}`);
       }
       break;
     }
     default:
       throw new Error(
-          `SmartCardManager.fetchPINVerificationTriesRemaining: no or ` +
+          "SmartCardManager.fetchPINVerificationTriesRemaining: no or " +
           `unsupported applet selected: ${this.appletSelected_}`);
   }
 };
@@ -1701,8 +1701,8 @@ SmartCardManager.prototype.determineOpenPGPCardCapabilities = async function() {
     this.supportsExtendedLength_ = capabilitiesBytes[2] & (1 << 6);
   } else {
     console.error(
-        'SmartCardManager.determineOpenPGPCardCapabilities: ' +
-        'capabilities tag not found');
+        "SmartCardManager.determineOpenPGPCardCapabilities: " +
+        "capabilities tag not found");
   }
 };
 
@@ -1742,7 +1742,7 @@ SmartCardManager.prototype.verifyPIN = async function(pinBytes) {
             case SmartCardManager.StatusValues.COMMAND_WRONG_PIN:
               return false;
             case SmartCardManager.StatusValues.COMMAND_BLOCKED_PIN:
-              throw new Error('SmartCardManager.verifyPIN: device is blocked');
+              throw new Error("SmartCardManager.verifyPIN: device is blocked");
             default:
               throw new Error(
                   `SmartCardManager.verifyPIN: failed (${error.toString()})`);
@@ -1784,7 +1784,7 @@ SmartCardManager.prototype.verifyPIN = async function(pinBytes) {
             return false;
           } else if (error.value() ===
                      SmartCardManager.StatusValues.COMMAND_BLOCKED_PIN) {
-            throw new Error('SmartCardManager.verifyPIN: device is blocked');
+            throw new Error("SmartCardManager.verifyPIN: device is blocked");
           } else {
             throw new Error(
                 `SmartCardManager.verifyPIN: failed (${error.toString()})`);
@@ -1796,7 +1796,7 @@ SmartCardManager.prototype.verifyPIN = async function(pinBytes) {
     }
     default:
       throw new Error(
-          `SmartCardManager.verifyPIN: no or unsupported applet selected: ` +
+          "SmartCardManager.verifyPIN: no or unsupported applet selected: " +
           `${this.appletSelected_}`);
   }
 };
@@ -1883,7 +1883,7 @@ SmartCardManager.prototype.authenticate = async function(data) {
     }
     default:
       throw new Error(
-          `SmartCardManager.authenticate: no or unsupported applet ` +
+          "SmartCardManager.authenticate: no or unsupported applet " +
           `selected: ${this.appletSelected_}`);
   }
 };

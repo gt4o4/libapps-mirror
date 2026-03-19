@@ -6,18 +6,18 @@
  * @fileoverview Terminal Settings Fonts Element unit tests.
  */
 
-import {lib} from '../../libdot/index.js';
-import {hterm} from '../../hterm/index.js';
+import {lib} from "../../libdot/index.js";
+import {hterm} from "../../hterm/index.js";
 
 import {SUPPORTED_FONT_FAMILIES, DEFAULT_FONT_FAMILY}
-    from './terminal_common.js';
-import './terminal_settings_fonts.js';
+    from "./terminal_common.js";
+import "./terminal_settings_fonts.js";
 
 beforeEach(async function() {
   window.preferenceManager =
       new hterm.PreferenceManager(new lib.Storage.Memory());
   window.preferenceManager.definePreference(
-    'font-family', DEFAULT_FONT_FAMILY);
+    "font-family", DEFAULT_FONT_FAMILY);
 
   this.fontInfo = new Map();
   for (const font of SUPPORTED_FONT_FAMILIES) {
@@ -33,14 +33,14 @@ beforeEach(async function() {
     });
   }
 
-  this.el = document.createElement('terminal-settings-fonts');
+  this.el = document.createElement("terminal-settings-fonts");
   this.el.fontManager_ = {
     loadFont: (font) => this.fontInfo.get(font).promise,
   };
   document.body.appendChild(this.el);
   await this.el.updateComplete;
   this.dropdown = this.el.shadowRoot.querySelector(
-      'terminal-settings-dropdown');
+      "terminal-settings-dropdown");
 });
 
 afterEach(function() {
@@ -49,7 +49,7 @@ afterEach(function() {
   delete window.preferenceManager;
 });
 
-it('enable-loaded-web-fonts', async function() {
+it("enable-loaded-web-fonts", async function() {
   assert.equal(this.dropdown.options.length, SUPPORTED_FONT_FAMILIES.length);
 
   // We need double layers of async (instead of directly await on

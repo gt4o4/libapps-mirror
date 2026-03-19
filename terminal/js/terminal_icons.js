@@ -8,7 +8,7 @@
  * @suppress {moduleLoad}
  */
 
-import {html} from './lit.js';
+import {html} from "./lit.js";
 
 /**
  * Bruschetta svg icon.

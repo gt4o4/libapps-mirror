@@ -6,9 +6,9 @@
  * @fileoverview Implementation for the corp-relay-v4@google.com proxy.
  */
 
-import {Corp} from './nassh_relay_corp.js';
-import {Stream} from './nassh_stream.js';
-import {RelayCorpv4WsStream} from './nassh_stream_relay_corpv4.js';
+import {Corp} from "./nassh_relay_corp.js";
+import {Stream} from "./nassh_stream.js";
+import {RelayCorpv4WsStream} from "./nassh_stream_relay_corpv4.js";
 
 /**
  * Corp v4 relay implementation.

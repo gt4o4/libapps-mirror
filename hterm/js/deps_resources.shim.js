@@ -7,15 +7,15 @@
  * @suppress {moduleLoad}
  */
 
-import auBell from '../audio/bell.ogg';
-import htmlFindBar from '../html/find_bar.html';
-import htmlFindScreen from '../html/find_screen.html';
-import imgClose from '../images/close.svg';
-import imgCopy from '../images/copy.svg';
-import icon96 from '../images/icon-96.png';
-import imgKeyboardArrowDown from '../images/keyboard_arrow_down.svg';
-import imgKeyboardArrowUp from '../images/keyboard_arrow_up.svg';
-import {gitCommitHash, gitDate, version} from '../package.json';
+import auBell from "../audio/bell.ogg";
+import htmlFindBar from "../html/find_bar.html";
+import htmlFindScreen from "../html/find_screen.html";
+import imgClose from "../images/close.svg";
+import imgCopy from "../images/copy.svg";
+import icon96 from "../images/icon-96.png";
+import imgKeyboardArrowDown from "../images/keyboard_arrow_down.svg";
+import imgKeyboardArrowUp from "../images/keyboard_arrow_up.svg";
+import {gitCommitHash, gitDate, version} from "../package.json";
 
 export {
   auBell as AU_BELL,

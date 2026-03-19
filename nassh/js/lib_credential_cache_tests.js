@@ -6,14 +6,14 @@
  * @fileoverview Test suite for the session-local, encrypted cache.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {CredentialCache} from './lib_credential_cache.js';
+import {CredentialCache} from "./lib_credential_cache.js";
 
 /**
  * Verify that the cache remains enabled after being enabled once.
  */
-it('enabled', () => {
+it("enabled", () => {
   const cache = new CredentialCache();
   assert.isNull(cache.isEnabled());
   cache.setEnabled(true);
@@ -25,7 +25,7 @@ it('enabled', () => {
 /**
  * Verify that the cache remains disabled after being disabled once.
  */
-it('disabled', () => {
+it("disabled", () => {
   const cache = new CredentialCache();
   assert.isNull(cache.isEnabled());
   cache.setEnabled(false);
@@ -38,26 +38,26 @@ it('disabled', () => {
  * Simulate and verify a typical workflow consisting of store and retrieve
  * operations.
  */
-it('workflow', async () => {
+it("workflow", async () => {
   const cache = new CredentialCache();
-  const keyId1 = 'AABBCCDDEEFF';
-  const keyId2 = 'FFEEDDCCBBAA';
-  await cache.store('reader_1' + keyId1, new Uint8Array([1, 2, 4, 8]));
-  assert.deepStrictEqual(await cache.retrieve('foobar_1' + keyId1), null);
-  assert.deepStrictEqual(await cache.retrieve('reader_1' + keyId2), null);
+  const keyId1 = "AABBCCDDEEFF";
+  const keyId2 = "FFEEDDCCBBAA";
+  await cache.store("reader_1" + keyId1, new Uint8Array([1, 2, 4, 8]));
+  assert.deepStrictEqual(await cache.retrieve("foobar_1" + keyId1), null);
+  assert.deepStrictEqual(await cache.retrieve("reader_1" + keyId2), null);
   assert.deepStrictEqual(
-      Array.from(lib.notNull(await cache.retrieve('reader_1' + keyId1))),
+      Array.from(lib.notNull(await cache.retrieve("reader_1" + keyId1))),
       [1, 2, 4, 8]);
-  assert.deepStrictEqual(await cache.retrieve('reader_1' + keyId1), null);
-  await cache.store('reader_2' + keyId1, new Uint8Array([1, 3, 9, 27]));
-  await cache.store('reader_1' + keyId2, new Uint8Array([1, 5, 25]));
-  await cache.store('reader_1' + keyId2, new Uint8Array([1, 7]));
+  assert.deepStrictEqual(await cache.retrieve("reader_1" + keyId1), null);
+  await cache.store("reader_2" + keyId1, new Uint8Array([1, 3, 9, 27]));
+  await cache.store("reader_1" + keyId2, new Uint8Array([1, 5, 25]));
+  await cache.store("reader_1" + keyId2, new Uint8Array([1, 7]));
   assert.deepStrictEqual(
-      Array.from(lib.notNull(await cache.retrieve('reader_1' + keyId2))),
+      Array.from(lib.notNull(await cache.retrieve("reader_1" + keyId2))),
       [1, 7]);
-  assert.deepStrictEqual(await cache.retrieve('reader_1' + keyId2), null);
-  await cache.store('reader_1' + keyId2, new Uint8Array([1, 5, 25]));
+  assert.deepStrictEqual(await cache.retrieve("reader_1" + keyId2), null);
+  await cache.store("reader_1" + keyId2, new Uint8Array([1, 5, 25]));
   assert.deepStrictEqual(
-      Array.from(lib.notNull(await cache.retrieve('reader_1' + keyId2))),
+      Array.from(lib.notNull(await cache.retrieve("reader_1" + keyId2))),
       [1, 5, 25]);
 });

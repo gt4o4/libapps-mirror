@@ -6,27 +6,27 @@
  * @fileoverview SFTP utility tests.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {Packet} from './nassh_sftp_packet.js';
+import {Packet} from "./nassh_sftp_packet.js";
 
 /**
  * Packet constructor & basic API test.
  */
-it('sftpPacket', () => {
+it("sftpPacket", () => {
   let packet = new Packet();
   assert.equal(0, packet.offset_);
   assert.equal(0, packet.getLength());
-  assert.equal('', packet.toString());
+  assert.equal("", packet.toString());
   const ret = packet.toArrayBuffer();
   assert.isTrue(ret instanceof ArrayBuffer);
   assert.deepStrictEqual(new Uint8Array([]), new Uint8Array(ret));
   assert.isTrue(packet.eod());
 
-  packet = new Packet(lib.codec.stringToCodeUnitArray('abc'));
+  packet = new Packet(lib.codec.stringToCodeUnitArray("abc"));
   assert.equal(0, packet.offset_);
   assert.equal(3, packet.getLength());
-  assert.equal('abc', packet.toString());
+  assert.equal("abc", packet.toString());
   assert.deepStrictEqual(new Uint8Array([97, 98, 99]), packet.toByteArray());
   assert.isFalse(packet.eod());
 });
@@ -34,7 +34,7 @@ it('sftpPacket', () => {
 /**
  * Checks for adding uint8's.
  */
-it('sftpPacketSetUint8', () => {
+it("sftpPacketSetUint8", () => {
   const packet = new Packet();
 
   // Start with a NUL byte.
@@ -59,7 +59,7 @@ it('sftpPacketSetUint8', () => {
 /**
  * Checks for adding uint32's.
  */
-it('sftpPacketSetUint32', () => {
+it("sftpPacketSetUint32", () => {
   const packet = new Packet();
 
   // Start with a NUL byte.
@@ -89,7 +89,7 @@ it('sftpPacketSetUint32', () => {
 /**
  * Checks for adding uint64's.
  */
-it('sftpPacketSetUint64', () => {
+it("sftpPacketSetUint64", () => {
   const packet = new Packet();
 
   // Start with a NUL byte.
@@ -121,18 +121,18 @@ it('sftpPacketSetUint64', () => {
 /**
  * Checks for adding binary strings.
  */
-it('sftpPacketSetString', () => {
+it("sftpPacketSetString", () => {
   const packet = new Packet();
 
   // Start with a NUL byte.
-  packet.setString('\u{0}');
+  packet.setString("\u{0}");
   assert.equal(5, packet.getLength());
   assert.deepStrictEqual(
       new Uint8Array([0x00, 0x00, 0x00, 0x01, 0x00]),
       packet.toByteArray());
 
   // Then another binary string.
-  packet.setString('abc\xff');
+  packet.setString("abc\xff");
   assert.equal(13, packet.getLength());
   assert.deepStrictEqual(
       new Uint8Array([0x00, 0x00, 0x00, 0x01, 0x00,
@@ -143,18 +143,18 @@ it('sftpPacketSetString', () => {
 /**
  * Checks for adding strings.
  */
-it('sftpPacketSetUtf8String', () => {
+it("sftpPacketSetUtf8String", () => {
   const packet = new Packet();
 
   // Start with a NUL byte.
-  packet.setUtf8String('\u{0}');
+  packet.setUtf8String("\u{0}");
   assert.equal(5, packet.getLength());
   assert.deepStrictEqual(
       new Uint8Array([0x00, 0x00, 0x00, 0x01, 0x00]),
       packet.toByteArray());
 
   // Then another normal string.
-  packet.setUtf8String('abcdß');
+  packet.setUtf8String("abcdß");
   assert.equal(15, packet.getLength());
   assert.deepStrictEqual(
       new Uint8Array([0x00, 0x00, 0x00, 0x01, 0x00,
@@ -165,7 +165,7 @@ it('sftpPacketSetUtf8String', () => {
 /**
  * Checks for adding data.
  */
-it('sftpPacketSetData', () => {
+it("sftpPacketSetData", () => {
   const packet = new Packet();
 
   // Start with a NUL byte.
@@ -174,7 +174,7 @@ it('sftpPacketSetData', () => {
   assert.deepStrictEqual(new Uint8Array([0x00]), packet.toByteArray());
 
   // Then another normal string.
-  packet.setData(lib.codec.stringToCodeUnitArray('abcd'));
+  packet.setData(lib.codec.stringToCodeUnitArray("abcd"));
   assert.equal(5, packet.getLength());
   assert.deepStrictEqual(new Uint8Array([0x00, 97, 98, 99, 100]),
                          packet.toByteArray());
@@ -183,7 +183,7 @@ it('sftpPacketSetData', () => {
 /**
  * Checks for reading uint8's.
  */
-it('sftpPacketGetUint8', () => {
+it("sftpPacketGetUint8", () => {
   const packet = new Packet([0x00, 0x7f, 0xff]);
   assert.equal(3, packet.getLength());
 
@@ -204,7 +204,7 @@ it('sftpPacketGetUint8', () => {
 /**
  * Checks for reading uint32's.
  */
-it('sftpPacketGetUint32', () => {
+it("sftpPacketGetUint32", () => {
   const packet = new Packet(
       [0x00, 0x00, 0x00, 0x00, 0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff]);
   assert.equal(12, packet.getLength());
@@ -226,7 +226,7 @@ it('sftpPacketGetUint32', () => {
 /**
  * Checks for reading uint64's.
  */
-it('sftpPacketGetUint64', () => {
+it("sftpPacketGetUint64", () => {
   const packet = new Packet(
       [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
        0x00, 0x00, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff]);
@@ -246,16 +246,16 @@ it('sftpPacketGetUint64', () => {
 /**
  * Checks for reading binary strings.
  */
-it('sftpPacketGetString', () => {
+it("sftpPacketGetString", () => {
   const packet = new Packet(
       [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 97, 98, 99, 0xff]);
   assert.equal(12, packet.getLength());
 
   // Read the binary strings.
-  assert.equal('', packet.getString());
+  assert.equal("", packet.getString());
   assert.isFalse(packet.eod());
 
-  assert.equal('abc\xff', packet.getString());
+  assert.equal("abc\xff", packet.getString());
   assert.isTrue(packet.eod());
 
   // Check short read.
@@ -265,16 +265,16 @@ it('sftpPacketGetString', () => {
 /**
  * Checks for reading strings.
  */
-it('sftpPacketGetUtf8String', () => {
+it("sftpPacketGetUtf8String", () => {
   const packet = new Packet(
       [0x00, 0x00, 0x00, 0x00,
        0x00, 0x00, 0x00, 0x06, 97, 98, 99, 100, 0xc3, 0x9f]);
 
   // Read the strings.
-  assert.equal('', packet.getUtf8String());
+  assert.equal("", packet.getUtf8String());
   assert.isFalse(packet.eod());
 
-  assert.equal('abcdß', packet.getUtf8String());
+  assert.equal("abcdß", packet.getUtf8String());
   assert.isTrue(packet.eod());
 
   // Check short read.
@@ -284,7 +284,7 @@ it('sftpPacketGetUtf8String', () => {
 /**
  * Checks for reading data.
  */
-it('sftpPacketGetData', () => {
+it("sftpPacketGetData", () => {
   const packet = new Packet([97, 98, 99, 100]);
   assert.equal(4, packet.getLength());
 

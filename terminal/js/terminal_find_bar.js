@@ -8,10 +8,10 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, createRef, css, html, ifDefined, ref, when} from './lit.js';
-import {delayedScheduler} from './terminal_common.js';
+import {LitElement, createRef, css, html, ifDefined, ref, when} from "./lit.js";
+import {delayedScheduler} from "./terminal_common.js";
 
 // The find bar UI element. The user interact with it by calling the public
 // methods and listening to "find-bar" events.
@@ -123,7 +123,7 @@ export class TerminalFindBar extends LitElement {
    */
   render() {
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
-    const searchButtonDisabled = this.inputIsEmpty_ ? 'true' : undefined;
+    const searchButtonDisabled = this.inputIsEmpty_ ? "true" : undefined;
 
     // TODO: Uses the icons from terminal_icons.js. We will need to scale them a
     // bit larger though. We should also consider using <mwc-icon-button>, but
@@ -131,7 +131,7 @@ export class TerminalFindBar extends LitElement {
     return html`
         <input ${ref(this.inputRef_)} type="text" @input=${this.onInput_}
             @keydown=${this.onInputKeyDown_}
-            aria-label=${msg('HTERM_BUTTON_FIND')}>
+            aria-label=${msg("HTERM_BUTTON_FIND")}>
         ${when(!this.inputIsEmpty_ && !!this.counter_, () => html`
           <div id="counter">${this.counter_}</div>
         `)}
@@ -139,22 +139,22 @@ export class TerminalFindBar extends LitElement {
         <div id="vertical-separator" tabindex="-1"></div>
 
         <div role="button" tabindex="0"
-            title=${msg('HTERM_BUTTON_PREVIOUS')}
-            aria-label=${msg('HTERM_BUTTON_PREVIOUS')}
+            title=${msg("HTERM_BUTTON_PREVIOUS")}
+            aria-label=${msg("HTERM_BUTTON_PREVIOUS")}
             aria-disabled=${ifDefined(searchButtonDisabled)}
             @click=${() => this.fireFindEvent({backward: true})}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17.29 15.71L12 10.41l-5.29 5.3-1.42-1.42L12 7.59l6.71 6.7z"/><path fill="none" d="M0 0h24v24H0V0z"/></svg>
         </div>
         <div role="button" tabindex="0"
-            title=${msg('HTERM_BUTTON_NEXT')}
-            aria-label=${msg('HTERM_BUTTON_NEXT')}
+            title=${msg("HTERM_BUTTON_NEXT")}
+            aria-label=${msg("HTERM_BUTTON_NEXT")}
             aria-disabled=${ifDefined(searchButtonDisabled)}
             @click=${() => this.fireFindEvent({backward: false})}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 16.41l-6.71-6.7 1.42-1.42 5.29 5.3 5.29-5.3 1.42 1.42z"/><path fill="none" d="M0 0h24v24H0V0z"/></svg>
         </div>
         <div role="button" tabindex="0"
-            title=${msg('HTERM_BUTTON_CLOSE_FIND_BAR')}
-            aria-label=${msg('HTERM_BUTTON_CLOSE_FIND_BAR')}
+            title=${msg("HTERM_BUTTON_CLOSE_FIND_BAR")}
+            aria-label=${msg("HTERM_BUTTON_CLOSE_FIND_BAR")}
             @click=${this.close_}>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/><path fill="none" d="M0 0h24v24H0V0z"/></svg>
         </div>
@@ -165,7 +165,7 @@ export class TerminalFindBar extends LitElement {
    * @return {string}
    */
   get value() {
-    return this.shadowRoot.querySelector('input').value;
+    return this.shadowRoot.querySelector("input").value;
   }
 
   /**
@@ -182,9 +182,9 @@ export class TerminalFindBar extends LitElement {
    * @private
    */
   fireFindEvent({backward}) {
-    this.dispatchEvent(new CustomEvent('find-bar', {
+    this.dispatchEvent(new CustomEvent("find-bar", {
       detail: {
-        type: 'find',
+        type: "find",
         backward,
       },
     }));
@@ -193,16 +193,16 @@ export class TerminalFindBar extends LitElement {
   /** @private */
   close_() {
     this.counter_ = null;
-    this.style.display = 'none';
-    this.dispatchEvent(new CustomEvent('find-bar', {
+    this.style.display = "none";
+    this.dispatchEvent(new CustomEvent("find-bar", {
       detail: {
-        type: 'close',
+        type: "close",
       },
     }));
   }
 
   show() {
-    this.style.display = 'flex';
+    this.style.display = "flex";
     setTimeout(() => {
       const input = this.inputRef_.value;
       input.select();
@@ -221,11 +221,11 @@ export class TerminalFindBar extends LitElement {
   onInputKeyDown_(e) {
     console.log(e);
     switch (e.key) {
-      case 'Enter':
+      case "Enter":
         this.fireFindEvent({backward: e.shiftKey});
         e.preventDefault();
         break;
-      case 'Escape':
+      case "Escape":
         this.close_();
         e.preventDefault();
         break;
@@ -254,4 +254,4 @@ export class TerminalFindBar extends LitElement {
   }
 }
 
-customElements.define('terminal-find-bar', TerminalFindBar);
+customElements.define("terminal-find-bar", TerminalFindBar);

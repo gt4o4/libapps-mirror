@@ -10,11 +10,11 @@
 
 import {
   MemoryFileHandler, StorageFileHandler, WasmSubproc,
-} from './nassh_subproc_wasm.js';
+} from "./nassh_subproc_wasm.js";
 
-import {WASI} from '../../wasi-js-bindings/index.js';
+import {WASI} from "../../wasi-js-bindings/index.js";
 
-import {FileHandle} from '../wassh/js/vfs.js';
+import {FileHandle} from "../wassh/js/vfs.js";
 
 /**
  * A write-only pipe.
@@ -195,8 +195,8 @@ export class SshSubproc extends WasmSubproc {
 
     // Tell OpenSSH to use the sftp subsystem instead of an interactive session.
     if (this.isSftp_) {
-      this.argv_.push('-s');
-      this.argv_.push('sftp');
+      this.argv_.push("-s");
+      this.argv_.push("sftp");
     }
   }
 
@@ -209,27 +209,27 @@ export class SshSubproc extends WasmSubproc {
 
     const vfs = handler.vfs;
     vfs.addHandler(new StorageFileHandler(
-        '/etc/ssh/ssh_config', this.syncStorage_, '/nassh/etc/ssh/ssh_config'));
+        "/etc/ssh/ssh_config", this.syncStorage_, "/nassh/etc/ssh/ssh_config"));
     vfs.addHandler(new StorageFileHandler(
-        '/etc/ssh/ssh_known_hosts', this.syncStorage_,
-        '/nassh/etc/ssh/ssh_known_hosts'));
+        "/etc/ssh/ssh_known_hosts", this.syncStorage_,
+        "/nassh/etc/ssh/ssh_known_hosts"));
     // The OpenSSH client defaults to reading from both /etc/ssh/ssh_known_hosts
     // and /etc/ssh/ssh_known_hosts2 for the global known hosts. We use the
     // second file to inject host keys provided by enterprise policy.
     vfs.addHandler(new MemoryFileHandler(
-        '/etc/ssh/ssh_known_hosts2', this.knownHosts_ ?? ''));
+        "/etc/ssh/ssh_known_hosts2", this.knownHosts_ ?? ""));
 
     // If this is an SFTP connection, rebind stdin/stdout to our custom pipes
     // which connect to our JS SFTP client.
     if (this.isSftp_) {
-      const stdin = new SftpPipeReadHandle('sftp-in', handler);
+      const stdin = new SftpPipeReadHandle("sftp-in", handler);
       let fd = vfs.openHandle(stdin);
       if (fd != 0) {
         vfs.fds_.dup2(fd, 0);
         vfs.close(fd);
       }
 
-      const stdout = new SftpPipeWriteHandle('sftp-out', this.sftpClient_);
+      const stdout = new SftpPipeWriteHandle("sftp-out", this.sftpClient_);
       fd = vfs.openHandle(stdout);
       if (fd != 1) {
         vfs.fds_.dup2(fd, 1);

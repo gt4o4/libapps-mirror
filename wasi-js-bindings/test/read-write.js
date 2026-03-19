@@ -6,13 +6,13 @@
  * @fileoverview Tests for read & write functions.
  */
 
-import * as Process from '../js/process.js';
-import * as SyscallEntry from '../js/syscall_entry.js';
-import * as SyscallHandler from '../js/syscall_handler.js';
-import * as util from '../js/util.js';
-import * as WASI from '../js/wasi.js';
+import * as Process from "../js/process.js";
+import * as SyscallEntry from "../js/syscall_entry.js";
+import * as SyscallHandler from "../js/syscall_handler.js";
+import * as util from "../js/util.js";
+import * as WASI from "../js/wasi.js";
 
-describe('read-write.js', () => {
+describe("read-write.js", () => {
 
 class FileHandle {
   constructor() {
@@ -62,8 +62,8 @@ class FileHandle {
 class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
   constructor(...args) {
     super(...args);
-    this.stdout = '';
-    this.stderr = '';
+    this.stdout = "";
+    this.stderr = "";
     this.td = new TextDecoder();
     this.fd = {};
   }
@@ -217,7 +217,7 @@ async function run(prog, argv) {
   const sys_handlers = [handler];
   const proc = new Process.Foreground({
     executable: prog,
-    argv: ['read-write.wasm', ...argv],
+    argv: ["read-write.wasm", ...argv],
     sys_handlers: sys_handlers,
     sys_entries: [
       new SyscallEntry.WasiPreview1({sys_handlers}),
@@ -245,202 +245,202 @@ before(async function() {
    *
    * @type {!ArrayBuffer}
    */
-  this.prog = await fetch('read-write.wasm')
+  this.prog = await fetch("read-write.wasm")
     .then((response) => response.arrayBuffer());
 });
 
 /**
  * Check internal assert handling.
  */
-it('asserts', async function() {
+it("asserts", async function() {
   await run(this.prog, [
-    'clear-errno',
-    'ret', '0',
-    'errno', '0',
-    'string', '',
-    'lstring', '1', '',
+    "clear-errno",
+    "ret", "0",
+    "errno", "0",
+    "string", "",
+    "lstring", "1", "",
   ]);
 });
 
 /**
  * Verify read() works.
  */
-it('read', async function() {
+it("read", async function() {
   await run(this.prog, [
     // Read an invalid fd.
-    'clear-errno',
-    'read', '123', '1',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "read", "123", "1",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'write', '3', 'abcde',
-    'read', '3', '5',
-    'ret', '5',
-    'errno', '0',
-    'string', 'abcde',
+    "clear-errno",
+    "write", "3", "abcde",
+    "read", "3", "5",
+    "ret", "5",
+    "errno", "0",
+    "string", "abcde",
   ]);
 });
 
 /**
  * Verify readv() works.
  */
-it('readv', async function() {
+it("readv", async function() {
   await run(this.prog, [
     // Read an invalid fd.
-    'clear-errno',
-    'readv', '123', '1', '1',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "readv", "123", "1", "1",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'write', '3', 'abcde',
-    'readv', '3', '4', '2', '0', '2', '1',
-    'ret', '5',
-    'errno', '0',
-    'string', 'abcde',
+    "clear-errno",
+    "write", "3", "abcde",
+    "readv", "3", "4", "2", "0", "2", "1",
+    "ret", "5",
+    "errno", "0",
+    "string", "abcde",
   ]);
 });
 
 /**
  * Verify pread() works.
  */
-it('pread', async function() {
+it("pread", async function() {
   await run(this.prog, [
     // Read an invalid fd.
-    'clear-errno',
-    'pread', '123', '1', '1',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "pread", "123", "1", "1",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'write', '3', 'abcde',
-    'pread', '3', '2', '2',
-    'ret', '2',
-    'errno', '0',
-    'string', 'cd',
-    'pread', '3', '3', '1',
-    'ret', '3',
-    'errno', '0',
-    'string', 'bcd',
+    "clear-errno",
+    "write", "3", "abcde",
+    "pread", "3", "2", "2",
+    "ret", "2",
+    "errno", "0",
+    "string", "cd",
+    "pread", "3", "3", "1",
+    "ret", "3",
+    "errno", "0",
+    "string", "bcd",
   ]);
 });
 
 /**
  * Verify preadv() works.
  */
-it('preadv', async function() {
+it("preadv", async function() {
   await run(this.prog, [
     // Read an invalid fd.
-    'clear-errno',
-    'preadv', '123', '1', '1', '1',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "preadv", "123", "1", "1", "1",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'write', '3', 'abcde',
-    'preadv', '3', '2', '2', '1', '2',
-    'ret', '3',
-    'errno', '0',
-    'string', 'cde',
+    "clear-errno",
+    "write", "3", "abcde",
+    "preadv", "3", "2", "2", "1", "2",
+    "ret", "3",
+    "errno", "0",
+    "string", "cde",
   ]);
 });
 
 /**
  * Verify write() works.
  */
-it('write', async function() {
+it("write", async function() {
   await run(this.prog, [
     // Write an invalid fd.
-    'clear-errno',
-    'write', '-123', 'str',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "write", "-123", "str",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'write', '3', 'abcde',
-    'ret', '5',
-    'errno', '0',
-    'read', '3', '5',
-    'string', 'abcde',
+    "clear-errno",
+    "write", "3", "abcde",
+    "ret", "5",
+    "errno", "0",
+    "read", "3", "5",
+    "string", "abcde",
   ]);
 });
 
 /**
  * Verify writev() works.
  */
-it('writev', async function() {
+it("writev", async function() {
   await run(this.prog, [
     // Write an invalid fd.
-    'clear-errno',
-    'writev', '-123', '1', 'str',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "writev", "-123", "1", "str",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'writev', '3', '3', 'a', 'bcd', 'e',
-    'ret', '5',
-    'errno', '0',
-    'read', '3', '5',
-    'string', 'abcde',
+    "clear-errno",
+    "writev", "3", "3", "a", "bcd", "e",
+    "ret", "5",
+    "errno", "0",
+    "read", "3", "5",
+    "string", "abcde",
   ]);
 });
 
 /**
  * Verify pwrite() works.
  */
-it('pwrite', async function() {
+it("pwrite", async function() {
   await run(this.prog, [
     // Write an invalid fd.
-    'clear-errno',
-    'pwrite', '-123', 'str', '1',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "pwrite", "-123", "str", "1",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'pwrite', '3', 'Xb', '0',
-    'ret', '2',
-    'errno', '0',
-    'pread', '3', '5', '0',
-    'string', 'Xb',
-    'write', '3', 'a',
-    'ret', '1',
-    'errno', '0',
-    'pread', '3', '5', '0',
-    'string', 'ab',
-    'pwrite', '3', 'cde', '2',
-    'ret', '3',
-    'errno', '0',
-    'pread', '3', '5', '0',
-    'string', 'abcde',
+    "clear-errno",
+    "pwrite", "3", "Xb", "0",
+    "ret", "2",
+    "errno", "0",
+    "pread", "3", "5", "0",
+    "string", "Xb",
+    "write", "3", "a",
+    "ret", "1",
+    "errno", "0",
+    "pread", "3", "5", "0",
+    "string", "ab",
+    "pwrite", "3", "cde", "2",
+    "ret", "3",
+    "errno", "0",
+    "pread", "3", "5", "0",
+    "string", "abcde",
   ]);
 });
 
 /**
  * Verify pwritev() works.
  */
-it('pwritev', async function() {
+it("pwritev", async function() {
   await run(this.prog, [
     // Write an invalid fd.
-    'clear-errno',
-    'pwritev', '-123', '1', '1', 'str',
-    'ret', '-1',
-    'errno', `${WASI.errno.EBADF}`,
+    "clear-errno",
+    "pwritev", "-123", "1", "1", "str",
+    "ret", "-1",
+    "errno", `${WASI.errno.EBADF}`,
 
     // Write to an fd and then read the data back out.
-    'clear-errno',
-    'pwritev', '3', '0', '2', 'Xe', 'abcde',
-    'ret', '7',
-    'errno', '0',
-    'pread', '3', '5', '0',
-    'string', 'Xeabc',
+    "clear-errno",
+    "pwritev", "3", "0", "2", "Xe", "abcde",
+    "ret", "7",
+    "errno", "0",
+    "pread", "3", "5", "0",
+    "string", "Xeabc",
   ]);
 });
 

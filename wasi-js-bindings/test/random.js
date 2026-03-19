@@ -6,9 +6,9 @@
  * @fileoverview Tests for random APIs.
  */
 
-import {Process, SyscallEntry, SyscallHandler, WASI} from '../index.js';
+import {Process, SyscallEntry, SyscallHandler, WASI} from "../index.js";
 
-describe('random.js', () => {
+describe("random.js", () => {
 
 /**
  * A handler just to capture output.
@@ -16,8 +16,8 @@ describe('random.js', () => {
 class TestSyscallHandler extends SyscallHandler.DirectWasiPreview1 {
   constructor(...args) {
     super(...args);
-    this.stdout = '';
-    this.stderr = '';
+    this.stdout = "";
+    this.stderr = "";
     this.td = new TextDecoder();
   }
 
@@ -54,14 +54,14 @@ async function run(prog, argv) {
   const sys_handlers = [handler];
   const proc = new Process.Foreground({
     executable: prog,
-    argv: ['random.wasm', ...argv],
+    argv: ["random.wasm", ...argv],
     sys_handlers: sys_handlers,
     sys_entries: [
       new SyscallEntry.WasiPreview1({sys_handlers}),
     ],
   });
   const ret = await proc.run();
-  assert.equal(handler.stderr, '');
+  assert.equal(handler.stderr, "");
   return {
     returncode: ret,
     stdout: handler.stdout,
@@ -80,7 +80,7 @@ before(async function() {
    * If running on a web page, SharedArrayBuffers might not work.
    */
   if (window.SharedArrayBuffer === undefined) {
-    console.warn('SharedArrayBuffer API not available');
+    console.warn("SharedArrayBuffer API not available");
     this.skip();
     return;
   }
@@ -90,7 +90,7 @@ before(async function() {
    *
    * @type {!ArrayBuffer}
    */
-  this.prog = await fetch('random.wasm')
+  this.prog = await fetch("random.wasm")
     .then((response) => response.arrayBuffer());
 });
 
@@ -123,8 +123,8 @@ function looksRandom(buf) {
  * Verify arc4random() is random.  Most of the implementation is in the WASI
  * C library code we didn't author, but it builds on top of our syscalls.
  */
-it('arc4random', async function() {
-  const result = await run(this.prog, ['arc4random']);
+it("arc4random", async function() {
+  const result = await run(this.prog, ["arc4random"]);
   looksRandom(result.data);
 });
 
@@ -132,8 +132,8 @@ it('arc4random', async function() {
  * Verify arc4random_buf() is random.  Most of the implementation is in the WASI
  * C library code we didn't author, but it builds on top of our syscalls.
  */
-it('arc4random_buf', async function() {
-  const result = await run(this.prog, ['arc4random_buf']);
+it("arc4random_buf", async function() {
+  const result = await run(this.prog, ["arc4random_buf"]);
   looksRandom(result.data);
 });
 
@@ -141,8 +141,8 @@ it('arc4random_buf', async function() {
  * Verify getentropy() is random.  Most of the implementation is in the WASI
  * C library code we didn't author, but it builds on top of our syscalls.
  */
-it('getentropy', async function() {
-  const result = await run(this.prog, ['getentropy']);
+it("getentropy", async function() {
+  const result = await run(this.prog, ["getentropy"]);
   looksRandom(result.data);
 });
 

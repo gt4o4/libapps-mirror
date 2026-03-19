@@ -6,12 +6,12 @@
  * @fileoverview Omnibox handling logic.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {localize} from './nassh.js';
+import {localize} from "./nassh.js";
 import {
   LocalPreferenceManager, PreferenceManager,
-} from './nassh_preference_manager.js';
+} from "./nassh_preference_manager.js";
 
 /**
  * Handler for custom omnibox integration.
@@ -97,7 +97,7 @@ export class OmniboxHandler {
    */
   setDefault_() {
     this.omnibox_.setDefaultSuggestion({
-      description: localize('OMNIBOX_DEFAULT'),
+      description: localize("OMNIBOX_DEFAULT"),
     });
   }
 
@@ -112,27 +112,27 @@ export class OmniboxHandler {
     const profileIdToOmni = (id) => {
       const profile = this.prefs_.getProfile(id);
 
-      let port = profile.get('port') || '';
+      let port = profile.get("port") || "";
       if (port) {
-        port = ':' + port;
+        port = ":" + port;
       }
 
       return {
-        uhp: profile.get('username') + '@' + profile.get('hostname') + port,
-        desc: profile.get('description'),
+        uhp: profile.get("username") + "@" + profile.get("hostname") + port,
+        desc: profile.get("description"),
         id: id,
       };
     };
 
     // Read our saved settings and construct the partial matches from all of
     // our active profiles.
-    const ids = this.prefs_.get('profile-ids');
+    const ids = this.prefs_.get("profile-ids");
     for (let i = 0; i < ids.length; ++i) {
       this.matches_.push(profileIdToOmni(ids[i]));
     }
 
     // When first installed, there won't be a last profile.
-    const lastProfile = this.localPrefs_.get('connectDialog/lastProfileId');
+    const lastProfile = this.localPrefs_.get("connectDialog/lastProfileId");
     if (lastProfile) {
       this.default_ = profileIdToOmni(lastProfile);
     }
@@ -155,7 +155,7 @@ export class OmniboxHandler {
         resultsUhp.push({
           content: `profile-id=${match.id}`,
           description: lib.f.replaceVars(
-            '<match>%escapeHTML(uhp)</match>: %escapeHTML(desc)', match),
+            "<match>%escapeHTML(uhp)</match>: %escapeHTML(desc)", match),
         });
       }
 
@@ -163,7 +163,7 @@ export class OmniboxHandler {
         resultsDescLeading.push({
           content: `profile-id=${match.id}`,
           description: lib.f.replaceVars(
-            '%escapeHTML(uhp): <match>%escapeHTML(desc)</match>', match),
+            "%escapeHTML(uhp): <match>%escapeHTML(desc)</match>", match),
         });
       }
 
@@ -171,7 +171,7 @@ export class OmniboxHandler {
         resultsDescSubstr.push({
           content: `profile-id=${match.id}`,
           description: lib.f.replaceVars(
-            '%escapeHTML(uhp): <match>%escapeHTML(desc)</match>', match),
+            "%escapeHTML(uhp): <match>%escapeHTML(desc)</match>", match),
         });
       }
     });
@@ -184,7 +184,7 @@ export class OmniboxHandler {
       if (this.default_) {
         results.unshift({
           content: `profile-id=${this.default_.id}`,
-          description: lib.f.replaceVars('%escapeHTML(uhp): %escapeHTML(desc)',
+          description: lib.f.replaceVars("%escapeHTML(uhp): %escapeHTML(desc)",
                                          this.default_),
         });
       }
@@ -218,13 +218,13 @@ export class OmniboxHandler {
 
     // If the user typed user@host directly, connect to it via hash.  If they
     // matched a saved profile, pass it via query string.
-    const delim = text.startsWith('profile-id=') ? '?' : '#';
+    const delim = text.startsWith("profile-id=") ? "?" : "#";
 
     const url = lib.f.getURL(`/html/nassh.html${delim}${text}`);
     switch (disposition) {
       default:
-        console.warn('unknown disposition: ' + disposition);
-      case 'currentTab':
+        console.warn("unknown disposition: " + disposition);
+      case "currentTab":
         // Fired when pressing Enter.
         // Ideally we'd just call chrome.tabs.update, but that won't focus the
         // new ssh session.  We close the current tab and then open a new one
@@ -240,11 +240,11 @@ export class OmniboxHandler {
           chrome.tabs.create({windowId: win.id, url: url, active: true});
         });
         break;
-      case 'newBackgroundTab':
+      case "newBackgroundTab":
         // Fired when pressing Meta+Enter/Command+Enter.
         chrome.tabs.create({url: url, active: false});
         break;
-      case 'newForegroundTab':
+      case "newForegroundTab":
         // Fired when pressing Alt+Enter.
         // Close the active tab.  We need to do this before opening a new window
         // in case Chrome selects that as the new active tab.  It won't kill us
@@ -259,9 +259,9 @@ export class OmniboxHandler {
           });
         });
         // We'll abuse this to open a window instead of a tab.
-        lib.f.openWindow(url, '',
-                         'chrome=no,close=yes,resize=yes,minimizable=yes,' +
-                         'scrollbars=yes,width=900,height=600');
+        lib.f.openWindow(url, "",
+                         "chrome=no,close=yes,resize=yes,minimizable=yes," +
+                         "scrollbars=yes,width=900,height=600");
         break;
     }
   }

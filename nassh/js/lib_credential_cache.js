@@ -7,7 +7,7 @@
  * a Uint8Array.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
 /**
  * A general-purpose cache for user credentials in the form of a Uint8Array.
@@ -64,7 +64,7 @@ export function CredentialCache() {
   // Clear the cache on screen lock.
   if (globalThis.chrome?.idle) {
     chrome.idle.onStateChanged.addListener((state) => {
-      if (state === 'locked') {
+      if (state === "locked") {
         this.clear_();
       }
     });
@@ -81,7 +81,7 @@ CredentialCache.prototype.init_ = async function() {
   this.cache_ = {};
   this.cryptoKey_ = /** @type {!webCrypto.CryptoKey} */ (
       await globalThis.crypto.subtle.generateKey(
-          {name: 'AES-CBC', length: 128}, false, ['encrypt', 'decrypt']));
+          {name: "AES-CBC", length: 128}, false, ["encrypt", "decrypt"]));
 };
 
 /**
@@ -119,7 +119,7 @@ CredentialCache.prototype.retrieve = async function(key) {
     // Remove cache entry to be added again only if data verification succeeds.
     delete this.cache_[key];
     return new Uint8Array(await globalThis.crypto.subtle.decrypt(
-        {name: 'AES-CBC', iv}, lib.notNull(this.cryptoKey_), encryptedData));
+        {name: "AES-CBC", iv}, lib.notNull(this.cryptoKey_), encryptedData));
   }
   return null;
 };
@@ -142,7 +142,7 @@ CredentialCache.prototype.store = async function(key, data) {
   // AES-CBC requires a new, cryptographically random IV for every operation.
   const iv = globalThis.crypto.getRandomValues(new Uint8Array(16));
   const encryptedData = await globalThis.crypto.subtle.encrypt(
-      {name: 'AES-CBC', iv}, lib.notNull(this.cryptoKey_), data.buffer);
+      {name: "AES-CBC", iv}, lib.notNull(this.cryptoKey_), data.buffer);
   data.fill(0);
   this.cache_[key] = {encryptedData, iv};
 };

@@ -6,8 +6,8 @@
  * @fileoverview Implement element <terminal-tooltip>
  */
 
-import {LitElement, css, html} from './lit.js';
-import {positionElementWithinWindow} from './terminal_common.js';
+import {LitElement, css, html} from "./lit.js";
+import {positionElementWithinWindow} from "./terminal_common.js";
 
 /**
  * A tooltip element that looks like the native tooltip.
@@ -28,7 +28,7 @@ export class TerminalTooltip extends LitElement {
   constructor() {
     super();
 
-    this.content_ = '';
+    this.content_ = "";
   }
 
   /**
@@ -64,14 +64,14 @@ export class TerminalTooltip extends LitElement {
 
     positionElementWithinWindow(this,
         {x: cursorPosition.x, y: cursorPosition.y + 8});
-    this.style.visibility = 'visible';
+    this.style.visibility = "visible";
   }
 
   hide() {
     // Set this to empty string to prevent an on-going show() to set the
     // visibility back.
-    this.content_ = '';
-    this.style.visibility = 'hidden';
+    this.content_ = "";
+    this.style.visibility = "hidden";
   }
 
   /**
@@ -83,4 +83,4 @@ export class TerminalTooltip extends LitElement {
   }
 }
 
-customElements.define('terminal-tooltip', TerminalTooltip);
+customElements.define("terminal-tooltip", TerminalTooltip);

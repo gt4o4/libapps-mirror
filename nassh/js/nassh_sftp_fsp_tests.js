@@ -6,13 +6,13 @@
  * @fileoverview FileSystemProvider tests.
  */
 
-import {Client as sftpClient} from './nassh_sftp_client.js';
-import {SftpFsp, sanitizeMetadata} from './nassh_sftp_fsp.js';
-import {MockSftpClient} from './nassh_sftp_fsp_test_util.js';
-import {Packet} from './nassh_sftp_packet.js';
+import {Client as sftpClient} from "./nassh_sftp_client.js";
+import {SftpFsp, sanitizeMetadata} from "./nassh_sftp_fsp.js";
+import {MockSftpClient} from "./nassh_sftp_fsp_test_util.js";
+import {Packet} from "./nassh_sftp_packet.js";
 import {
   File, FileAttrs, OpenFlags, StatusPacket,
-} from './nassh_sftp_packet_types.js';
+} from "./nassh_sftp_packet_types.js";
 
 /**
  * Reset any FSP state.
@@ -20,7 +20,7 @@ import {
 beforeEach(function() {
   this.fsp = new SftpFsp();
   this.client = new MockSftpClient();
-  this.fsp.addMount('id', {'sftpClient': this.client});
+  this.fsp.addMount("id", {"sftpClient": this.client});
 
   const packet = new Packet([
       // 32-bit request id.
@@ -38,14 +38,14 @@ beforeEach(function() {
 /**
  * Verify all FSP methods are properly registered.
  */
-it('fsp-known-methods', function() {
+it("fsp-known-methods", function() {
   // Check that we have some methods.
   const providerMethods = this.fsp.providerMethods();
   assert.isAbove(providerMethods.length, 10);
 
   // Make sure every method is registered.
   providerMethods.forEach((method) => {
-    assert.typeOf(method, 'function');
+    assert.typeOf(method, "function");
   });
 });
 
@@ -54,10 +54,10 @@ it('fsp-known-methods', function() {
  *
  * This shows up when the Files app state is out of sync with us.
  */
-it('fsp-invalid-fsid', function() {
+it("fsp-invalid-fsid", function() {
   this.fsp.providerMethods().forEach((method) => {
     // onMountRequested doesn't make callbacks.
-    if (method.name === 'onMountRequested') {
+    if (method.name === "onMountRequested") {
       return;
     }
 
@@ -68,7 +68,7 @@ it('fsp-invalid-fsid', function() {
 /**
  * Verify the sanitizeMetadata utility function.
  */
-it('fsp-sanitize-metadata', function() {
+it("fsp-sanitize-metadata", function() {
   // Reduced mock for getFileAttrs like fileStatus returns.
   const /** @type {!FileAttrs} */ fileStat = {
     flags: 0,
@@ -84,9 +84,9 @@ it('fsp-sanitize-metadata', function() {
   };
   // Mock for directory entry like readDirectory returns.
   const fileEntry = /** @type {!File} */ (
-      Object.assign({filename: 'foo.txt'}, fileStat));
+      Object.assign({filename: "foo.txt"}, fileStat));
   const dirEntry = /** @type {!File} */ (
-      Object.assign({filename: 'dir'}, dirStat));
+      Object.assign({filename: "dir"}, dirStat));
 
   let ret;
 
@@ -96,16 +96,16 @@ it('fsp-sanitize-metadata', function() {
 
   // Check each field by itself.
   ret = sanitizeMetadata(fileEntry, {name: true});
-  assert.deepStrictEqual(['name'], Object.keys(ret));
-  assert.equal('foo.txt', ret.name);
+  assert.deepStrictEqual(["name"], Object.keys(ret));
+  assert.equal("foo.txt", ret.name);
   ret = sanitizeMetadata(fileEntry, {isDirectory: true});
-  assert.deepStrictEqual(['isDirectory'], Object.keys(ret));
+  assert.deepStrictEqual(["isDirectory"], Object.keys(ret));
   assert.isFalse(ret.isDirectory);
   ret = sanitizeMetadata(fileEntry, {size: true});
-  assert.deepStrictEqual(['size'], Object.keys(ret));
+  assert.deepStrictEqual(["size"], Object.keys(ret));
   assert.equal(1024, ret.size);
   ret = sanitizeMetadata(fileEntry, {modificationTime: true});
-  assert.deepStrictEqual(['modificationTime'], Object.keys(ret));
+  assert.deepStrictEqual(["modificationTime"], Object.keys(ret));
   assert.equal(100000, ret.modificationTime.getTime());
 
   // Check requesting multiple things at once.
@@ -115,9 +115,9 @@ it('fsp-sanitize-metadata', function() {
     size: true,
     modificationTime: true,
   });
-  assert.deepStrictEqual(['isDirectory', 'modificationTime', 'name', 'size'],
+  assert.deepStrictEqual(["isDirectory", "modificationTime", "name", "size"],
                          Object.keys(ret).sort());
-  assert.equal('dir', ret.name);
+  assert.equal("dir", ret.name);
   assert.isTrue(ret.isDirectory);
   assert.equal(0, ret.size);
   assert.equal(200000, ret.modificationTime.getTime());
@@ -125,30 +125,30 @@ it('fsp-sanitize-metadata', function() {
   // Check filtering of attrs.
   ret = sanitizeMetadata(dirStat, {
     name: true,
-    directoryPath: '/a/b/c',
+    directoryPath: "/a/b/c",
   });
-  assert.deepStrictEqual(['name'], Object.keys(ret));
-  assert.equal('c', ret.name);
+  assert.deepStrictEqual(["name"], Object.keys(ret));
+  assert.equal("c", ret.name);
 
   ret = sanitizeMetadata(fileStat, {
     name: true,
-    entryPath: '/a/b/c.txt',
+    entryPath: "/a/b/c.txt",
   });
-  assert.deepStrictEqual(['name'], Object.keys(ret));
-  assert.equal('c.txt', ret.name);
+  assert.deepStrictEqual(["name"], Object.keys(ret));
+  assert.equal("c.txt", ret.name);
 });
 
 /**
  * Verify onGetMetadataRequested with missing paths.
  */
-it('fsp-onGetMetadata-missing', function(done) {
-  const options = {fileSystemId: 'id', entryPath: '/foo'};
+it("fsp-onGetMetadata-missing", function(done) {
+  const options = {fileSystemId: "id", entryPath: "/foo"};
 
   this.fsp.onGetMetadataRequested(
       options,
       (metadata) => assert.fail(),
       (error) => {
-        assert.equal('NOT_FOUND', error);
+        assert.equal("NOT_FOUND", error);
         done();
       });
 });
@@ -156,16 +156,16 @@ it('fsp-onGetMetadata-missing', function(done) {
 /**
  * Verify onGetMetadataRequested with existing path.
  */
-it('fsp-onGetMetadata-found', function(done) {
+it("fsp-onGetMetadata-found", function(done) {
   const options = {
-    fileSystemId: 'id',
-    entryPath: '/foo',
+    fileSystemId: "id",
+    entryPath: "/foo",
     isDirectory: true,
     size: true,
   };
 
   this.client.fileStatus.return = (path) => {
-    assert.equal('./foo', path);
+    assert.equal("./foo", path);
     return {
       isDirectory: false,
       size: 100,
@@ -184,14 +184,14 @@ it('fsp-onGetMetadata-found', function(done) {
 /**
  * Verify onReadDirectoryRequested with missing path.
  */
-it('fsp-onReadDirectory-missing', function(done) {
-  const options = {fileSystemId: 'id', directoryPath: '/dir'};
+it("fsp-onReadDirectory-missing", function(done) {
+  const options = {fileSystemId: "id", directoryPath: "/dir"};
 
   this.fsp.onReadDirectoryRequested(
       options,
       (entries, hasMore) => assert.fail(),
       (error) => {
-        assert.equal('FAILED', error);
+        assert.equal("FAILED", error);
         done();
       });
 });
@@ -199,19 +199,19 @@ it('fsp-onReadDirectory-missing', function(done) {
 /**
  * Verify onReadDirectoryRequested with empty dir.
  */
-it('fsp-onReadDirectory-empty', function(done) {
-  const options = {fileSystemId: 'id', directoryPath: '/dir'};
+it("fsp-onReadDirectory-empty", function(done) {
+  const options = {fileSystemId: "id", directoryPath: "/dir"};
 
   this.client.openDirectory.return = (path) => {
-    assert.equal('./dir', path);
-    return 'handle';
+    assert.equal("./dir", path);
+    return "handle";
   };
   this.client.scanDirectory.return = (handle, filter) => {
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
     return [];
   };
   this.client.closeFile.return = (handle) => {
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
     done();
   };
   this.fsp.onReadDirectoryRequested(
@@ -226,27 +226,27 @@ it('fsp-onReadDirectory-empty', function(done) {
 /**
  * Verify onReadDirectoryRequested with real results.
  */
-it('fsp-onReadDirectory-found', function(done) {
+it("fsp-onReadDirectory-found", function(done) {
   const options = {
-    fileSystemId: 'id',
-    directoryPath: '/dir',
+    fileSystemId: "id",
+    directoryPath: "/dir",
     isDirectory: true,
     name: true,
   };
 
   this.client.openDirectory.return = (path) => {
-    assert.equal('./dir', path);
-    return 'handle';
+    assert.equal("./dir", path);
+    return "handle";
   };
   const entries = [
-    {filename: '.', isDirectory: true},
-    {filename: '..', isDirectory: true},
-    {filename: 'foo.txt', isDirectory: false},
-    {filename: 'dir', isDirectory: true},
+    {filename: ".", isDirectory: true},
+    {filename: "..", isDirectory: true},
+    {filename: "foo.txt", isDirectory: false},
+    {filename: "dir", isDirectory: true},
   ];
   this.client.scanDirectory.return = (handle, filter) => {
     const filtered = [];
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
     entries.forEach((entry) => {
       const ret = filter(entry);
       if (ret === false) {
@@ -259,16 +259,16 @@ it('fsp-onReadDirectory-found', function(done) {
     return filtered;
   };
   this.client.closeFile.return = (handle) => {
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
     done();
   };
   this.fsp.onReadDirectoryRequested(
       options,
       (entries, hasMore) => {
         assert.equal(2, entries.length);
-        assert.equal('foo.txt', entries[0].name);
+        assert.equal("foo.txt", entries[0].name);
         assert.isFalse(entries[0].isDirectory);
-        assert.equal('dir', entries[1].name);
+        assert.equal("dir", entries[1].name);
         assert.isTrue(entries[1].isDirectory);
         assert.isFalse(hasMore);
       },
@@ -278,29 +278,29 @@ it('fsp-onReadDirectory-found', function(done) {
 /**
  * Verify onReadDirectoryRequested with symlinks.
  */
-it('fsp-onReadDirectory-symlinks', function(done) {
+it("fsp-onReadDirectory-symlinks", function(done) {
   const options = {
-    fileSystemId: 'id',
-    directoryPath: '/dir',
+    fileSystemId: "id",
+    directoryPath: "/dir",
     isDirectory: true,
     name: true,
   };
 
   this.client.openDirectory.return = (path) => {
-    assert.equal('./dir', path);
-    return 'handle';
+    assert.equal("./dir", path);
+    return "handle";
   };
   const entries = [
-    {filename: '.', isDirectory: true},
-    {filename: '..', isDirectory: true},
-    {filename: 'dir', isDirectory: true, isLink: true},
-    {filename: 'file', isDirectory: false, isLink: true},
-    {filename: 'brok', isDirectory: false, isLink: true},
+    {filename: ".", isDirectory: true},
+    {filename: "..", isDirectory: true},
+    {filename: "dir", isDirectory: true, isLink: true},
+    {filename: "file", isDirectory: false, isLink: true},
+    {filename: "brok", isDirectory: false, isLink: true},
   ];
   this.client.scanDirectory.return = (handle, filter) => {
     const filtered = [];
     const promises = [];
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
     entries.forEach((entry) => {
       const ret = filter(entry);
       if (ret === false) {
@@ -319,11 +319,11 @@ it('fsp-onReadDirectory-symlinks', function(done) {
   };
   this.client.fileStatus.return = (path) => {
     switch (path) {
-      case './dir/dir':
+      case "./dir/dir":
         return {isDirectory: true, isLink: false};
-      case './dir/file':
+      case "./dir/file":
         return {isDirectory: false, isLink: false};
-      case './dir/brok':
+      case "./dir/brok":
         return Promise.reject();
       default:
         assert.fail();
@@ -331,16 +331,16 @@ it('fsp-onReadDirectory-symlinks', function(done) {
     }
   };
   this.client.closeFile.return = (handle) => {
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
     done();
   };
   this.fsp.onReadDirectoryRequested(
       options,
       (entries, hasMore) => {
         assert.equal(2, entries.length);
-        assert.equal('dir', entries[0].name);
+        assert.equal("dir", entries[0].name);
         assert.isTrue(entries[0].isDirectory);
-        assert.equal('file', entries[1].name);
+        assert.equal("file", entries[1].name);
         assert.isFalse(entries[1].isDirectory);
         assert.isFalse(hasMore);
       },
@@ -350,14 +350,14 @@ it('fsp-onReadDirectory-symlinks', function(done) {
 /**
  * Verify onWriteFileRequested with missing path.
  */
-it('fsp-onWriteFile-missing', function(done) {
-  const options = {fileSystemId: 'id', openRequestId: 1};
+it("fsp-onWriteFile-missing", function(done) {
+  const options = {fileSystemId: "id", openRequestId: 1};
 
   this.fsp.onWriteFileRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('INVALID_OPERATION', error);
+        assert.equal("INVALID_OPERATION", error);
         done();
       });
 });
@@ -365,14 +365,14 @@ it('fsp-onWriteFile-missing', function(done) {
 /**
  * Verify onOpenFileRequested with missing path.
  */
-it('fsp-onOpenFile-missing', function(done) {
-  const options = {fileSystemId: 'id', filePath: '/foo'};
+it("fsp-onOpenFile-missing", function(done) {
+  const options = {fileSystemId: "id", filePath: "/foo"};
 
   this.fsp.onOpenFileRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('FAILED', error);
+        assert.equal("FAILED", error);
         done();
       });
 });
@@ -380,23 +380,23 @@ it('fsp-onOpenFile-missing', function(done) {
 /**
  * Verify onOpenFileRequested open file for reading.
  */
-it('fsp-onOpenFile-read', function(done) {
+it("fsp-onOpenFile-read", function(done) {
   const options = {
-    fileSystemId: 'id',
-    filePath: '/foo',
+    fileSystemId: "id",
+    filePath: "/foo",
     requestId: 1,
-    mode: 'READ',
+    mode: "READ",
   };
 
   this.client.openFile.return = (path, pflags) => {
-    assert.equal('./foo', path);
+    assert.equal("./foo", path);
     assert.equal(OpenFlags.READ, pflags);
-    return 'handle';
+    return "handle";
   };
   this.fsp.onOpenFileRequested(
       options,
       () => {
-        assert.equal('handle', this.client.openedFiles[1]);
+        assert.equal("handle", this.client.openedFiles[1]);
         done();
       },
       assert.fail);
@@ -405,23 +405,23 @@ it('fsp-onOpenFile-read', function(done) {
 /**
  * Verify onOpenFileRequested open file for writing.
  */
-it('fsp-onOpenFile-write', function(done) {
+it("fsp-onOpenFile-write", function(done) {
   const options = {
-    fileSystemId: 'id',
-    filePath: '/foo',
+    fileSystemId: "id",
+    filePath: "/foo",
     requestId: 1,
-    mode: 'WRITE',
+    mode: "WRITE",
   };
 
   this.client.openFile.return = (path, pflags) => {
-    assert.equal('./foo', path);
+    assert.equal("./foo", path);
     assert.equal(OpenFlags.WRITE, pflags);
-    return 'handle';
+    return "handle";
   };
   this.fsp.onOpenFileRequested(
       options,
       () => {
-        assert.equal('handle', this.client.openedFiles[1]);
+        assert.equal("handle", this.client.openedFiles[1]);
         done();
       },
       assert.fail);
@@ -430,14 +430,14 @@ it('fsp-onOpenFile-write', function(done) {
 /**
  * Verify onCreateFileRequested with missing path.
  */
-it('fsp-onCreateFile-missing', function(done) {
-  const options = {fileSystemId: 'id', filePath: '/foo'};
+it("fsp-onCreateFile-missing", function(done) {
+  const options = {fileSystemId: "id", filePath: "/foo"};
 
   this.fsp.onCreateFileRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('FAILED', error);
+        assert.equal("FAILED", error);
         done();
       });
 });
@@ -445,22 +445,22 @@ it('fsp-onCreateFile-missing', function(done) {
 /**
  * Verify onCreateFileRequested works.
  */
-it('fsp-onCreateFile-found', function(done) {
+it("fsp-onCreateFile-found", function(done) {
   const options = {
-    fileSystemId: 'id',
-    filePath: '/foo',
+    fileSystemId: "id",
+    filePath: "/foo",
     requestId: 1,
   };
 
   this.client.openFile.return = (path, pflags) => {
-    assert.equal('./foo', path);
+    assert.equal("./foo", path);
     assert.equal(OpenFlags.CREAT | OpenFlags.EXCL, pflags);
-    return 'handle';
+    return "handle";
   };
   this.fsp.onCreateFileRequested(
       options,
       () => {
-        assert.equal('handle', this.client.openedFiles[1]);
+        assert.equal("handle", this.client.openedFiles[1]);
         done();
       },
       assert.fail);
@@ -469,10 +469,10 @@ it('fsp-onCreateFile-found', function(done) {
 /**
  * Verify onDeleteEntryRequested with missing dirs.
  */
-it('fsp-onDeleteEntry-missing-dir', function(done) {
+it("fsp-onDeleteEntry-missing-dir", function(done) {
   const options = {
-    fileSystemId: 'id',
-    entryPath: '/path',
+    fileSystemId: "id",
+    entryPath: "/path",
     recursive: true,
   };
 
@@ -480,7 +480,7 @@ it('fsp-onDeleteEntry-missing-dir', function(done) {
       options,
       assert.fail,
       (error) => {
-        assert.equal('NOT_FOUND', error);
+        assert.equal("NOT_FOUND", error);
         done();
       });
 });
@@ -488,19 +488,19 @@ it('fsp-onDeleteEntry-missing-dir', function(done) {
 /**
  * Verify onDeleteEntryRequested with dirs.
  */
-it('fsp-onDeleteEntry-dir', function(done) {
+it("fsp-onDeleteEntry-dir", function(done) {
   const options = {
-    fileSystemId: 'id',
-    entryPath: '/dir',
+    fileSystemId: "id",
+    entryPath: "/dir",
     recursive: true,
   };
 
   this.client.linkStatus.return = (path) => {
-    assert.equal('./dir', path);
+    assert.equal("./dir", path);
     return {isDirectory: true, isLink: false};
   };
   this.client.removeDirectory.return = (path, recursive) => {
-    assert.equal('./dir', path);
+    assert.equal("./dir", path);
     assert.isTrue(recursive);
   };
   this.fsp.onDeleteEntryRequested(
@@ -512,10 +512,10 @@ it('fsp-onDeleteEntry-dir', function(done) {
 /**
  * Verify onDeleteEntryRequested with missing files.
  */
-it('fsp-onDeleteEntry-missing-file', function(done) {
+it("fsp-onDeleteEntry-missing-file", function(done) {
   const options = {
-    fileSystemId: 'id',
-    entryPath: '/path',
+    fileSystemId: "id",
+    entryPath: "/path",
     recursive: false,
   };
 
@@ -523,7 +523,7 @@ it('fsp-onDeleteEntry-missing-file', function(done) {
       options,
       assert.fail,
       (error) => {
-        assert.equal('NOT_FOUND', error);
+        assert.equal("NOT_FOUND", error);
         done();
       });
 });
@@ -531,15 +531,15 @@ it('fsp-onDeleteEntry-missing-file', function(done) {
 /**
  * Verify onDeleteEntryRequested with files.
  */
-it('fsp-onDeleteEntry-file', function(done) {
+it("fsp-onDeleteEntry-file", function(done) {
   const options = {
-    fileSystemId: 'id',
-    entryPath: '/path',
+    fileSystemId: "id",
+    entryPath: "/path",
     recursive: false,
   };
 
   this.client.removeFile.return = (path) => {
-    assert.equal('./path', path);
+    assert.equal("./path", path);
   };
   this.fsp.onDeleteEntryRequested(
       options,
@@ -550,19 +550,19 @@ it('fsp-onDeleteEntry-file', function(done) {
 /**
  * Verify onDeleteEntryRequested with symlinks.
  */
-it('fsp-onDeleteEntry-symlink', function(done) {
+it("fsp-onDeleteEntry-symlink", function(done) {
   const options = {
-    fileSystemId: 'id',
-    entryPath: '/sym',
+    fileSystemId: "id",
+    entryPath: "/sym",
     recursive: true,
   };
 
   this.client.linkStatus.return = (path) => {
-    assert.equal('./sym', path);
+    assert.equal("./sym", path);
     return {isDirectory: false, isLink: true};
   };
   this.client.removeFile.return = (path) => {
-    assert.equal('./sym', path);
+    assert.equal("./sym", path);
   };
   this.fsp.onDeleteEntryRequested(
       options,
@@ -573,14 +573,14 @@ it('fsp-onDeleteEntry-symlink', function(done) {
 /**
  * Verify onTruncateRequested with missing path.
  */
-it('fsp-onTruncate-missing', function(done) {
-  const options = {fileSystemId: 'id', filePath: '/foo'};
+it("fsp-onTruncate-missing", function(done) {
+  const options = {fileSystemId: "id", filePath: "/foo"};
 
   this.fsp.onTruncateRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('FAILED', error);
+        assert.equal("FAILED", error);
         done();
       });
 });
@@ -588,20 +588,20 @@ it('fsp-onTruncate-missing', function(done) {
 /**
  * Verify onTruncateRequested works.
  */
-it('fsp-onTruncate-found', function(done) {
+it("fsp-onTruncate-found", function(done) {
   const options = {
-    fileSystemId: 'id',
-    filePath: '/foo',
+    fileSystemId: "id",
+    filePath: "/foo",
     requestId: 1,
   };
 
   this.client.openFile.return = (path, pflags) => {
-    assert.equal('./foo', path);
+    assert.equal("./foo", path);
     assert.equal(OpenFlags.CREAT | OpenFlags.TRUNC, pflags);
-    return 'handle';
+    return "handle";
   };
   this.client.closeFile.return = (handle) => {
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
   };
   this.fsp.onTruncateRequested(
       options,
@@ -615,14 +615,14 @@ it('fsp-onTruncate-found', function(done) {
 /**
  * Verify onCloseFileRequested with missing path.
  */
-it('fsp-onCloseFile-missing', function(done) {
-  const options = {fileSystemId: 'id', openRequestId: 1};
+it("fsp-onCloseFile-missing", function(done) {
+  const options = {fileSystemId: "id", openRequestId: 1};
 
   this.fsp.onCloseFileRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('INVALID_OPERATION', error);
+        assert.equal("INVALID_OPERATION", error);
         done();
       });
 });
@@ -630,12 +630,12 @@ it('fsp-onCloseFile-missing', function(done) {
 /**
  * Verify onCloseFileRequested works.
  */
-it('fsp-onCloseFile-found', function(done) {
-  const options = {fileSystemId: 'id', openRequestId: 1};
+it("fsp-onCloseFile-found", function(done) {
+  const options = {fileSystemId: "id", openRequestId: 1};
 
-  this.client.openedFiles[1] = 'handle';
+  this.client.openedFiles[1] = "handle";
   this.client.closeFile.return = (handle) => {
-    assert.equal('handle', handle);
+    assert.equal("handle", handle);
   };
   this.fsp.onCloseFileRequested(
       options,
@@ -649,14 +649,14 @@ it('fsp-onCloseFile-found', function(done) {
 /**
  * Verify onCreateDirectoryRequested with missing path.
  */
-it('fsp-onCreateDirectory-missing', function(done) {
-  const options = {fileSystemId: 'id', directoryPath: '/foo'};
+it("fsp-onCreateDirectory-missing", function(done) {
+  const options = {fileSystemId: "id", directoryPath: "/foo"};
 
   this.fsp.onCreateDirectoryRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('FAILED', error);
+        assert.equal("FAILED", error);
         done();
       });
 });
@@ -664,10 +664,10 @@ it('fsp-onCreateDirectory-missing', function(done) {
 /**
  * Verify onCreateDirectoryRequested fails for recursive requests.
  */
-it('fsp-onCreateDirectory-recursive', function(done) {
+it("fsp-onCreateDirectory-recursive", function(done) {
   const options = {
-    fileSystemId: 'id',
-    directoryPath: '/foo',
+    fileSystemId: "id",
+    directoryPath: "/foo",
     recursive: true,
   };
 
@@ -675,7 +675,7 @@ it('fsp-onCreateDirectory-recursive', function(done) {
       options,
       assert.fail,
       (error) => {
-        assert.equal('INVALID_OPERATION', error);
+        assert.equal("INVALID_OPERATION", error);
         done();
       });
 });
@@ -683,11 +683,11 @@ it('fsp-onCreateDirectory-recursive', function(done) {
 /**
  * Verify onCreateDirectoryRequested works.
  */
-it('fsp-onCreateDirectory-found', function(done) {
-  const options = {fileSystemId: 'id', directoryPath: '/foo'};
+it("fsp-onCreateDirectory-found", function(done) {
+  const options = {fileSystemId: "id", directoryPath: "/foo"};
 
   this.client.makeDirectory.return = (path) => {
-    assert.equal('./foo', path);
+    assert.equal("./foo", path);
   };
   this.fsp.onCreateDirectoryRequested(
       options,
@@ -698,14 +698,14 @@ it('fsp-onCreateDirectory-found', function(done) {
 /**
  * Verify onMoveEntryRequested with missing path.
  */
-it('fsp-onMoveEntry-missing', function(done) {
-  const options = {fileSystemId: 'id', sourcePath: '/src', targetPath: '/dst'};
+it("fsp-onMoveEntry-missing", function(done) {
+  const options = {fileSystemId: "id", sourcePath: "/src", targetPath: "/dst"};
 
   this.fsp.onMoveEntryRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('FAILED', error);
+        assert.equal("FAILED", error);
         done();
       });
 });
@@ -713,12 +713,12 @@ it('fsp-onMoveEntry-missing', function(done) {
 /**
  * Verify onMoveEntryRequested works.
  */
-it('fsp-onMoveEntry-found', function(done) {
-  const options = {fileSystemId: 'id', sourcePath: '/src', targetPath: '/dst'};
+it("fsp-onMoveEntry-found", function(done) {
+  const options = {fileSystemId: "id", sourcePath: "/src", targetPath: "/dst"};
 
   this.client.renameFile.return = (sourcePath, targetPath) => {
-    assert.equal('./src', sourcePath);
-    assert.equal('./dst', targetPath);
+    assert.equal("./src", sourcePath);
+    assert.equal("./dst", targetPath);
   };
   this.fsp.onMoveEntryRequested(
       options,
@@ -729,14 +729,14 @@ it('fsp-onMoveEntry-found', function(done) {
 /**
  * Verify onReadFileRequested with missing path.
  */
-it('fsp-onReadFile-missing', function(done) {
-  const options = {fileSystemId: 'id', openRequestId: 1};
+it("fsp-onReadFile-missing", function(done) {
+  const options = {fileSystemId: "id", openRequestId: 1};
 
   this.fsp.onReadFileRequested(
       options,
       (chunk, hasMore) => assert.fail(),
       (error) => {
-        assert.equal('INVALID_OPERATION', error);
+        assert.equal("INVALID_OPERATION", error);
         done();
       });
 });
@@ -744,14 +744,14 @@ it('fsp-onReadFile-missing', function(done) {
 /**
  * Verify onCopyEntryRequested with missing path.
  */
-it('fsp-onCopyEntry-missing', function(done) {
-  const options = {fileSystemId: 'id', sourcePath: '/src', targetPath: '/dst'};
+it("fsp-onCopyEntry-missing", function(done) {
+  const options = {fileSystemId: "id", sourcePath: "/src", targetPath: "/dst"};
 
   this.fsp.onCopyEntryRequested(
       options,
       assert.fail,
       (error) => {
-        assert.equal('FAILED', error);
+        assert.equal("FAILED", error);
         done();
       });
 });
@@ -759,22 +759,22 @@ it('fsp-onCopyEntry-missing', function(done) {
 /**
  * Verify onCopyEntryRequested with a symlink.
  */
-it('fsp-onCopyEntry-symlink', function(done) {
-  const options = {fileSystemId: 'id', sourcePath: '/src', targetPath: '/dst'};
+it("fsp-onCopyEntry-symlink", function(done) {
+  const options = {fileSystemId: "id", sourcePath: "/src", targetPath: "/dst"};
 
   this.client.linkStatus.return = (path) => {
-    assert.equal('./src', path);
+    assert.equal("./src", path);
     return {isDirectory: false, isLink: true};
   };
   this.client.readLink.return = (path) => {
-    assert.equal('./src', path);
+    assert.equal("./src", path);
     return {
-      files: [{filename: '/sym'}],
+      files: [{filename: "/sym"}],
     };
   };
   this.client.symLink.return = (target, path) => {
-    assert.equal('/sym', target);
-    assert.equal('./dst', path);
+    assert.equal("/sym", target);
+    assert.equal("./dst", path);
   };
   this.fsp.onCopyEntryRequested(
       options,
@@ -785,10 +785,10 @@ it('fsp-onCopyEntry-symlink', function(done) {
 /**
  * Verify onUnmount works normally.
  */
-it('fsp-onUnmount-exit', function() {
+it("fsp-onUnmount-exit", function() {
   // Create a stub instance that has an exit method.
   let exitStatus;
-  this.fsp.addMount('id', {
+  this.fsp.addMount("id", {
     sftpClient: /** @type {!sftpClient} */ ({}),
     exit: (status) => exitStatus = status,
   });
@@ -796,7 +796,7 @@ it('fsp-onUnmount-exit', function() {
   // The tests don't have access to chrome.fileSystemProvider, so stub out the
   // success & error callbacks since they won't be used currently.
   this.fsp.onUnmountRequested(
-      {fileSystemId: 'id'},
+      {fileSystemId: "id"},
       assert.fail,
       assert.fail);
   assert.equal(0, exitStatus);

@@ -7,13 +7,13 @@
  *
  * @suppress {moduleLoad}
  */
-import {LitElement, css, html} from './lit.js';
-import {redispatchEvent} from './terminal_common.js';
-import './terminal_knob.js';
-import './terminal_slider.js';
+import {LitElement, css, html} from "./lit.js";
+import {redispatchEvent} from "./terminal_common.js";
+import "./terminal_knob.js";
+import "./terminal_slider.js";
 
 export class HueSliderElement extends LitElement {
-  static get is() { return 'hue-slider'; }
+  static get is() { return "hue-slider"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}
@@ -82,7 +82,7 @@ export class HueSliderElement extends LitElement {
    * @override
    */
   firstUpdated(changedProperties) {
-    this.slider_ = this.shadowRoot.querySelector('terminal-slider');
+    this.slider_ = this.shadowRoot.querySelector("terminal-slider");
   }
 
   onChange_(event) {

@@ -8,14 +8,14 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, createRef, css, html, ref} from './lit.js';
-import './terminal_dialog.js';
-import {ICON_PLUS} from './terminal_icons.js';
+import {LitElement, createRef, css, html, ref} from "./lit.js";
+import "./terminal_dialog.js";
+import {ICON_PLUS} from "./terminal_icons.js";
 import {ProfileType, getProfileIds, setProfileIds}
-  from './terminal_profiles.js';
-import './terminal_textfield.js';
+  from "./terminal_profiles.js";
+import "./terminal_textfield.js";
 
 export class TerminalSettingsProfileHeader extends LitElement {
   /**
@@ -68,14 +68,14 @@ export class TerminalSettingsProfileHeader extends LitElement {
    */
   render() {
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
-    const title = msg('TERMINAL_SETTINGS_PROFILE_CREATE_DIALOG_TITLE');
+    const title = msg("TERMINAL_SETTINGS_PROFILE_CREATE_DIALOG_TITLE");
     return html`
-      <h2>${msg('TERMINAL_PROFILE_LABEL')}</h2>
+      <h2>${msg("TERMINAL_PROFILE_LABEL")}</h2>
       <terminal-dialog ${ref(this.newProfileDialogRef_)}
           @close="${this.onNewDialogClose_}">
         <div slot="title">${title}</div>
         <terminal-textfield ${ref(this.newProfileInputRef_)}
-            label="${msg('TERMINAL_PROFILE_NAME_LABEL')}"
+            label="${msg("TERMINAL_PROFILE_NAME_LABEL")}"
             @keydown="${this.onNewProfileKeydown_}">
         </terminal-textfield>
       </terminal-dialog>
@@ -88,7 +88,7 @@ export class TerminalSettingsProfileHeader extends LitElement {
 
   /** @private */
   openNewDialog_() {
-    this.newProfileInputRef_.value.value = '';
+    this.newProfileInputRef_.value.value = "";
     this.newProfileDialogRef_.value.show();
   }
 
@@ -97,7 +97,7 @@ export class TerminalSettingsProfileHeader extends LitElement {
    * @private
    */
   onNewProfileKeydown_(e) {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       this.newProfileDialogRef_.value.accept();
     }
@@ -117,11 +117,11 @@ export class TerminalSettingsProfileHeader extends LitElement {
       profiles.push(profile);
       await setProfileIds(ProfileType.HTERM, profiles);
     }
-    this.dispatchEvent(new CustomEvent('settings-profile-add', {
+    this.dispatchEvent(new CustomEvent("settings-profile-add", {
       detail: {profile},
     }));
   }
 }
 
-customElements.define('terminal-settings-profile-header',
+customElements.define("terminal-settings-profile-header",
     TerminalSettingsProfileHeader);

@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
 import {
   getManifest, getSyncStorage, loadWebFonts, localize,
   runtimeSendMessage, sendFeedback, setupForWebApp,
-} from './nassh.js';
+} from "./nassh.js";
 
 /**
  * CSP means that we can't kick off the initialization from the html file,
  * so we do it like this instead.
  */
-globalThis.addEventListener('DOMContentLoaded', async (event) => {
+globalThis.addEventListener("DOMContentLoaded", async (event) => {
   await setupForWebApp();
 
   // Support multiple settings subpages.
-  document.querySelectorAll('.navigation > .menu > li > a').forEach((ele) => {
-    ele.addEventListener('click', PreferencesEditor.onSettingsPageClick);
+  document.querySelectorAll(".navigation > .menu > li > a").forEach((ele) => {
+    ele.addEventListener("click", PreferencesEditor.onSettingsPageClick);
   });
 
   const manifest = getManifest();
   const storage = getSyncStorage();
 
   const params = new URLSearchParams(globalThis.location.search);
-  const profileId = params.get('profileId') ??
-      localize('FIELD_TERMINAL_PROFILE_PLACEHOLDER');
+  const profileId = params.get("profileId") ??
+      localize("FIELD_TERMINAL_PROFILE_PLACEHOLDER");
 
   // Create a local hterm instance so people can see their changes live.
   const term = new hterm.Terminal({profileId, storage});
@@ -37,17 +37,17 @@ globalThis.addEventListener('DOMContentLoaded', async (event) => {
       const io = term.io.push();
       io.onVTKeystroke = io.print;
       io.sendString = io.print;
-      io.println('# ' + localize('WELCOME_VERSION',
+      io.println("# " + localize("WELCOME_VERSION",
                                   [manifest.name, manifest.version]));
-      io.print('$ ./configure && make && make install');
+      io.print("$ ./configure && make && make install");
       term.setCursorVisible(true);
     };
-  term.decorate(lib.notNull(document.querySelector('#terminal')));
+  term.decorate(lib.notNull(document.querySelector("#terminal")));
   term.installKeyboard();
   term.contextMenu.setItems([
-    {name: localize('TERMINAL_CLEAR_MENU_LABEL'),
+    {name: localize("TERMINAL_CLEAR_MENU_LABEL"),
      action: function() { term.wipeContents(); }},
-    {name: localize('TERMINAL_RESET_MENU_LABEL'),
+    {name: localize("TERMINAL_RESET_MENU_LABEL"),
      action: function() { term.reset(); }},
   ]);
 
@@ -56,25 +56,25 @@ globalThis.addEventListener('DOMContentLoaded', async (event) => {
 
   const prefsEditor = new PreferencesEditor(storage, profileId);
 
-  let a = document.querySelector('#backup');
-  a.download = localize('PREF_BACKUP_FILENAME');
+  let a = document.querySelector("#backup");
+  a.download = localize("PREF_BACKUP_FILENAME");
   a.onclick = prefsEditor.onBackupClick.bind(prefsEditor);
   prefsEditor.updateBackupLink();
 
-  a = document.querySelector('#restore');
+  a = document.querySelector("#restore");
   a.onclick = prefsEditor.onRestoreClick.bind(prefsEditor);
 
-  a = document.querySelector('#feedback');
+  a = document.querySelector("#feedback");
   a.onclick = prefsEditor.onFeedbackClick.bind(prefsEditor);
 
   // Set up labels.
-  document.querySelector('#manifest-name').textContent = manifest.name;
+  document.querySelector("#manifest-name").textContent = manifest.name;
   hterm.messageManager.processI18nAttributes(document);
 
   // Set up icon on the left side.
   // Start with 128px, but if it's not available, scale the highest available.
-  const icon = document.getElementById('icon');
-  let size = '128';
+  const icon = document.getElementById("icon");
+  let size = "128";
   icon.style.width = `${size}px`;
   if (!manifest.icons.hasOwnProperty(size)) {
     // Sort the keys in descending numeric order.
@@ -85,15 +85,15 @@ globalThis.addEventListener('DOMContentLoaded', async (event) => {
   icon.src = lib.f.getURL(`${manifest.icons[size]}`);
 
   // Set up reset button.
-  document.getElementById('reset').onclick = function() {
+  document.getElementById("reset").onclick = function() {
       prefsEditor.resetAll();
     };
 
   // Set up profile selection field.
-  const profile = lib.notNull(document.getElementById('profile'));
+  const profile = lib.notNull(document.getElementById("profile"));
   profile.oninput = function() {
       PreferencesEditor.debounce(profile, function(input) {
-          prefsEditor.notify(localize('LOADING_LABEL'), 500);
+          prefsEditor.notify(localize("LOADING_LABEL"), 500);
           if (input.value.length) {
             prefsEditor.selectProfile(input.value);
           }
@@ -103,7 +103,7 @@ globalThis.addEventListener('DOMContentLoaded', async (event) => {
 
   // Allow people to reset individual fields by pressing escape.
   document.onkeyup = function(e) {
-      if (document.activeElement.name == 'settings' && e.keyCode == 27) {
+      if (document.activeElement.name == "settings" && e.keyCode == 27) {
         prefsEditor.reset(document.activeElement);
       }
     };
@@ -135,14 +135,14 @@ function PreferencesEditor(
  */
 PreferencesEditor.switchSettingsPage = function(page) {
   const scrollTo = () => {
-    const header = document.querySelector('.mainview > .selected > header');
+    const header = document.querySelector(".mainview > .selected > header");
     const anchor = document.querySelector(`a[name="${page}"]`);
     document.scrollingElement.scrollTo(
         0, anchor ? anchor.offsetTop - header.clientHeight : 0);
   };
 
-  const hash = `#${page.split('_')[0]}`;
-  const selected = 'selected';
+  const hash = `#${page.split("_")[0]}`;
+  const selected = "selected";
 
   // Make sure it's a valid/known menu.
   const currMenuLink = document.querySelector(`.menu a[href="${hash}"]`);
@@ -152,7 +152,7 @@ PreferencesEditor.switchSettingsPage = function(page) {
   }
 
   // If clicking the same page, don't hide/show it to avoid flashing.
-  const oldMenu = document.querySelector('.menu > li.selected');
+  const oldMenu = document.querySelector(".menu > li.selected");
   const newMenu = currMenuLink.parentNode;
   if (oldMenu === newMenu) {
     scrollTo();
@@ -161,9 +161,9 @@ PreferencesEditor.switchSettingsPage = function(page) {
 
   // Deselect the current settings section & hide the content.
   oldMenu.classList.remove(selected);
-  const oldSection = document.querySelector('.mainview > .selected');
+  const oldSection = document.querySelector(".mainview > .selected");
   oldSection.classList.remove(selected);
-  oldSection.style.display = 'none';
+  oldSection.style.display = "none";
 
   // Select the new settings section & show the content.
   newMenu.classList.add(selected);
@@ -173,7 +173,7 @@ PreferencesEditor.switchSettingsPage = function(page) {
     newSection.classList.add(selected);
     scrollTo();
   }, 0);
-  newSection.style.display = 'block';
+  newSection.style.display = "block";
 };
 
 /**
@@ -274,7 +274,7 @@ PreferencesEditor.prototype.onRestoreClick = function(e) {
   if (e) {
     e.preventDefault();
   }
-  const input = document.querySelector('input.restore');
+  const input = document.querySelector("input.restore");
   input.onchange = async () => {
     if (input.files.length != 1) {
       return;
@@ -282,7 +282,7 @@ PreferencesEditor.prototype.onRestoreClick = function(e) {
 
     const prefs = await input.files[0].text();
     await runtimeSendMessage({
-      command: 'prefsImport',
+      command: "prefsImport",
       asJson: true,
       prefs: prefs,
     });
@@ -296,17 +296,17 @@ PreferencesEditor.prototype.onRestoreClick = function(e) {
  * Update the backup link content.
  */
 PreferencesEditor.prototype.updateBackupLink = async function() {
-  const a = document.querySelector('#backup');
-  if (a.href.startsWith('blob:')) {
+  const a = document.querySelector("#backup");
+  if (a.href.startsWith("blob:")) {
     // Revoke any previous URLs created from these blobs.
     URL.revokeObjectURL(a.href);
   }
 
   const result = await runtimeSendMessage({
-    command: 'prefsExport',
+    command: "prefsExport",
     asJson: true,
   });
-  const blob = new Blob([result.prefs], {type: 'text/json'});
+  const blob = new Blob([result.prefs], {type: "text/json"});
   a.href = URL.createObjectURL(blob);
 };
 
@@ -322,7 +322,7 @@ PreferencesEditor.prototype.updateBackupLink = async function() {
  */
 PreferencesEditor.prototype.colorSave = function(key) {
   const cinput = document.getElementById(key);
-  const ainput = document.getElementById(key + ':alpha');
+  const ainput = document.getElementById(key + ":alpha");
   const rgb = lib.colors.hexToRGB(cinput.value);
   this.prefs_.set(key, lib.colors.setAlpha(
       lib.notNull(rgb), ainput.value / 100));
@@ -340,47 +340,47 @@ PreferencesEditor.prototype.save = function(input) {
     return;
   }
 
-  const keys = input.id.split(':');
+  const keys = input.id.split(":");
   const key = keys[0];
   const prefs = this.prefs_;
 
   switch (this.getPreferenceType(key)) {
-    case 'bool':
+    case "bool":
       prefs.set(key, input.checked);
       break;
 
-    case 'int':
+    case "int":
       prefs.set(key, input.value);
       break;
 
-    case 'enum':
+    case "enum":
       prefs.set(key, JSON.parse(input.value));
       break;
 
-    case 'tristate':
+    case "tristate":
       prefs.set(key, JSON.parse(input.value));
       break;
 
-    case 'string':
-    case 'multiline-string':
+    case "string":
+    case "multiline-string":
       prefs.set(key, input.value);
       break;
 
-    case 'color':
+    case "color":
       this.colorSave(key);
       break;
 
-    case 'url':
+    case "url":
       prefs.set(key, input.value);
       break;
 
-    case 'value':
+    case "value":
     default: {
-      let value = input.value || 'null';
+      let value = input.value || "null";
       try {
         value = JSON.parse(value);
       } catch (err) {
-        this.notify(localize('JSON_PARSE_ERROR', [key, err]), 5000);
+        this.notify(localize("JSON_PARSE_ERROR", [key, err]), 5000);
         value = prefs.get(key);
       }
       prefs.set(key, value);
@@ -388,7 +388,7 @@ PreferencesEditor.prototype.save = function(input) {
     }
   }
 
-  console.log('New pref value for ' + key + ': ', prefs.get(key));
+  console.log("New pref value for " + key + ": ", prefs.get(key));
   this.updateBackupLink();
 };
 
@@ -402,7 +402,7 @@ PreferencesEditor.prototype.save = function(input) {
  */
 PreferencesEditor.prototype.colorSync = function(key, pref) {
   const cinput = lib.notNull(document.getElementById(key));
-  const ainput = lib.notNull(document.getElementById(key + ':alpha'));
+  const ainput = lib.notNull(document.getElementById(key + ":alpha"));
 
   const rgba = lib.colors.normalizeCSS(pref);
 
@@ -429,61 +429,61 @@ PreferencesEditor.prototype.colorSync = function(key, pref) {
  *     preference.
  */
 PreferencesEditor.prototype.sync = function(input) {
-  const keys = input.id.split(':');
+  const keys = input.id.split(":");
   const key = keys[0];
   const prefValue = this.prefs_.get(key);
   switch (this.getPreferenceType(key)) {
-    case 'bool':
+    case "bool":
       input.checked = prefValue;
       break;
 
-    case 'int':
+    case "int":
       input.value = prefValue;
       break;
 
-    case 'enum':
+    case "enum":
       input.value = JSON.stringify(prefValue);
       break;
 
-    case 'tristate':
+    case "tristate":
       input.value = JSON.stringify(prefValue);
       break;
 
-    case 'string':
-    case 'multiline-string':
+    case "string":
+    case "multiline-string":
       if (prefValue == null) {
-        input.value = '';
+        input.value = "";
       } else {
         input.value = prefValue;
       }
       break;
 
-    case 'color':
+    case "color":
       this.colorSync(key, prefValue);
       break;
 
-    case 'url':
+    case "url":
       if (prefValue == null) {
-        input.value = '';
+        input.value = "";
       } else {
         input.value = prefValue;
       }
       break;
 
-    case 'value':
+    case "value":
     default:
       // Use an indent for the stringify so the output is formatted somewhat
       // nicely.  Otherwise, the default output packs everything into a single
       // line and strips out all whitespace making it an unreadable mess.
       if (prefValue == null) {
-        input.value = '';
+        input.value = "";
       } else {
         // Replace raw DEL characters with Unicode escapes.  We expect the
         // conversion later on when saving the value will turn it back into
         // the DEL character.  This is because Chrome will insert an actual
         // DEL character into the text field which tends to be invisible.
-        input.value = JSON.stringify(prefValue, null, '  ').replace(
-            '\x7f', '\\u007f');
+        input.value = JSON.stringify(prefValue, null, "  ").replace(
+            "\x7f", "\\u007f");
       }
       break;
   }
@@ -508,8 +508,8 @@ PreferencesEditor.prototype.onInputChange = function(input) {
  * Will basically rewrite the displayed HTML code on the fly.
  */
 PreferencesEditor.prototype.syncPage = function() {
-  const menu = document.getElementById('options-settings-menu');
-  const eles = document.getElementById('settings');
+  const menu = document.getElementById("options-settings-menu");
+  const eles = document.getElementById("settings");
 
   /** @param {?Element} parent The node to clear out. */
   const deleteChildren = (parent) => {
@@ -548,27 +548,27 @@ PreferencesEditor.prototype.syncPage = function() {
  */
 PreferencesEditor.prototype.addCategoryRow =
     function(categoryDef, parent, menu) {
-  const details = document.createElement('section');
-  details.className = 'category-details';
+  const details = document.createElement("section");
+  details.className = "category-details";
 
-  const anchor = document.createElement('a');
+  const anchor = document.createElement("a");
   anchor.name = `options_${categoryDef.id}`;
   details.appendChild(anchor);
 
   const desc = this.getCategoryDescription(categoryDef);
 
-  const summary = document.createElement('h3');
+  const summary = document.createElement("h3");
   summary.innerText = desc;
 
   details.appendChild(summary);
   parent.appendChild(details);
 
   // Generate the menu sidebar link.
-  const li = document.createElement('li');
-  const a = document.createElement('a');
+  const li = document.createElement("li");
+  const a = document.createElement("a");
   a.textContent = desc;
   a.href = `#${anchor.name}`;
-  a.addEventListener('click', PreferencesEditor.onSettingsPageClick);
+  a.addEventListener("click", PreferencesEditor.onSettingsPageClick);
   li.appendChild(a);
   menu.appendChild(li);
 
@@ -594,20 +594,20 @@ PreferencesEditor.prototype.addInputRow = function(key, parent) {
   //    </span>
   //  </label>
   // </div>
-  const div = document.createElement('div');
-  const label = document.createElement('label');
-  const span_text = document.createElement('span');
-  const span_input = document.createElement('span');
-  const help_text = document.createElement('div');
+  const div = document.createElement("div");
+  const label = document.createElement("label");
+  const span_text = document.createElement("span");
+  const span_input = document.createElement("span");
+  const help_text = document.createElement("div");
 
-  label.setAttribute('tabindex', '0');
-  label.className = 'hflex';
-  div.className = 'setting-container ' + input.type;
-  span_text.className = 'setting-label';
+  label.setAttribute("tabindex", "0");
+  label.className = "hflex";
+  div.className = "setting-container " + input.type;
+  span_text.className = "setting-label";
   span_text.innerText = this.getPreferenceName(key);
-  span_input.className = 'setting-ui';
+  span_input.className = "setting-ui";
   help_text.innerText = this.getPreferenceDescription(key);
-  help_text.className = 'setting-help';
+  help_text.className = "setting-help";
 
   div.appendChild(label);
   span_input.appendChild(input);
@@ -616,21 +616,21 @@ PreferencesEditor.prototype.addInputRow = function(key, parent) {
   div.appendChild(help_text);
   parent.appendChild(div);
 
-  if (input.type == 'color') {
-    const alabel = document.createElement('label');
-    alabel.innerText = 'Alpha';
-    alabel.className = 'alpha-text';
-    alabel.setAttribute('tabindex', '0');
+  if (input.type == "color") {
+    const alabel = document.createElement("label");
+    alabel.innerText = "Alpha";
+    alabel.className = "alpha-text";
+    alabel.setAttribute("tabindex", "0");
     span_input.appendChild(alabel);
 
     // Since the HTML5 color picker does not support alpha,
     // we have to create a dedicated slider for it.
-    const ainput = document.createElement('input');
-    ainput.type = 'range';
-    ainput.id = key + ':alpha';
-    ainput.min = '0';
-    ainput.max = '100';
-    ainput.name = 'settings';
+    const ainput = document.createElement("input");
+    ainput.type = "range";
+    ainput.id = key + ":alpha";
+    ainput.min = "0";
+    ainput.max = "100";
+    ainput.name = "settings";
     ainput.onchange = input.onchange;
     ainput.oninput = input.oninput;
     span_input.appendChild(ainput);
@@ -663,24 +663,24 @@ PreferencesEditor.prototype.createInput = function(key) {
   let oninput = null;
 
   const addOption = (parent, value) => {
-    const option = document.createElement('option');
+    const option = document.createElement("option");
     option.value = JSON.stringify(value);
-    option.innerText = (value === null ? 'auto' : value);
+    option.innerText = (value === null ? "auto" : value);
     parent.appendChild(option);
   };
 
-  let input = document.createElement('input');
+  let input = document.createElement("input");
   switch (this.getPreferenceType(key)) {
-    case 'bool':
-      input.type = 'checkbox';
+    case "bool":
+      input.type = "checkbox";
       break;
 
-    case 'int':
-      input.type = 'number';
+    case "int":
+      input.type = "number";
       break;
 
-    case 'enum': {
-      input = document.createElement('select');
+    case "enum": {
+      input = document.createElement("select");
       const prefValues = this.getPreferenceEnumValues(key);
       for (let i = 0; i < prefValues.length; i++) {
         addOption(input, prefValues[i]);
@@ -690,8 +690,8 @@ PreferencesEditor.prototype.createInput = function(key) {
       break;
     }
 
-    case 'tristate':
-      input = document.createElement('select');
+    case "tristate":
+      input = document.createElement("select");
       [null, true, false].forEach(function(value) {
         addOption(input, value);
       });
@@ -699,45 +699,45 @@ PreferencesEditor.prototype.createInput = function(key) {
       onchange = null;
       break;
 
-    case 'string':
-      input.type = 'text';
+    case "string":
+      input.type = "text";
       input.size = 50;
       // Save simple strings immediately.
       oninput = onchangeCursorReset;
       onchange = null;
       break;
 
-    case 'multiline-string':
-      input = document.createElement('textarea');
-      input.setAttribute('autocomplete', 'off');
-      input.setAttribute('spellcheck', 'false');
+    case "multiline-string":
+      input = document.createElement("textarea");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("spellcheck", "false");
       // Save simple strings immediately.
       oninput = onchangeCursorReset;
       onchange = null;
       break;
 
-    case 'color':
-      input.type = 'color';
+    case "color":
+      input.type = "color";
       break;
 
-    case 'url':
-      input.type = 'url';
+    case "url":
+      input.type = "url";
       input.size = 50;
-      input.placeholder = 'https://example.com/some/file';
+      input.placeholder = "https://example.com/some/file";
       break;
 
-    case 'value':
+    case "value":
     default:
       // We'll use JSON to go between object/user text.
-      input = document.createElement('textarea');
-      input.setAttribute('autocomplete', 'off');
-      input.setAttribute('spellcheck', 'false');
-      input.data = 'JSON';
+      input = document.createElement("textarea");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("spellcheck", "false");
+      input.data = "JSON";
       onchange = onchangeCursorReset;
       break;
   }
 
-  input.name = 'settings';
+  input.name = "settings";
   input.id = key;
   input.onchange = onchange;
   input.oninput = oninput;
@@ -752,11 +752,11 @@ PreferencesEditor.prototype.createInput = function(key) {
 PreferencesEditor.prototype.getPreferenceDescription = function(key) {
   const entry = hterm.PreferenceManager.defaultPreferences[key];
   if (entry === undefined) {
-    return '';
+    return "";
   }
 
-  const id = 'PREF_' + key.replace(/-/g, '_').toUpperCase();
-  return hterm.msg(id, [], entry['help']);
+  const id = "PREF_" + key.replace(/-/g, "_").toUpperCase();
+  return hterm.msg(id, [], entry["help"]);
 };
 
 /**
@@ -768,11 +768,11 @@ PreferencesEditor.prototype.getPreferenceDescription = function(key) {
 PreferencesEditor.prototype.getPreferenceName = function(key) {
   const entry = hterm.PreferenceManager.defaultPreferences[key];
   if (entry === undefined) {
-    return '';
+    return "";
   }
 
-  const id = 'NAME_PREF_' + key.replace(/-/g, '_').toUpperCase();
-  return hterm.msg(id, [], entry['name'] || key);
+  const id = "NAME_PREF_" + key.replace(/-/g, "_").toUpperCase();
+  return hterm.msg(id, [], entry["name"] || key);
 };
 
 /**
@@ -793,19 +793,19 @@ PreferencesEditor.prototype.getCategoryDescription = function(def) {
 PreferencesEditor.prototype.getPreferenceType = function(key) {
   const entry = hterm.PreferenceManager.defaultPreferences[key];
   if (entry) {
-    const prefType = entry['type'];
+    const prefType = entry["type"];
     if (Array.isArray(prefType)) {
-      return 'enum';
+      return "enum";
     }
     return prefType;
   }
 
   switch (typeof this.prefs_.get(key)) {
-    case 'boolean': return 'bool';
-    case 'string': return 'string';
-    case 'object': return 'value';
-    case 'number': return 'int';
-    default: return 'value';
+    case "boolean": return "bool";
+    case "string": return "string";
+    case "object": return "value";
+    case "number": return "int";
+    default: return "value";
   }
 };
 
@@ -816,13 +816,13 @@ PreferencesEditor.prototype.getPreferenceType = function(key) {
 PreferencesEditor.prototype.getPreferenceEnumValues = function(key) {
   const entry = hterm.PreferenceManager.defaultPreferences[key];
   if (entry) {
-    const prefType = entry['type'];
+    const prefType = entry["type"];
     if (Array.isArray(prefType)) {
       return prefType;
     }
   }
 
-  console.warn('Pref. is not an enum', key);
+  console.warn("Pref. is not an enum", key);
   return [];
 };
 
@@ -833,7 +833,7 @@ PreferencesEditor.prototype.getPreferenceEnumValues = function(key) {
 PreferencesEditor.prototype.getPreferenceCategory = function(key) {
   const entry = hterm.PreferenceManager.defaultPreferences[key];
   if (entry) {
-    return entry['category'];
+    return entry["category"];
   }
 
   return hterm.PreferenceManager.Categories.Miscellaneous;
@@ -843,13 +843,13 @@ PreferencesEditor.prototype.getPreferenceCategory = function(key) {
  * Reset all preferences to their default state and update the HTML objects.
  */
 PreferencesEditor.prototype.resetAll = function() {
-  const settings = document.getElementsByName('settings');
+  const settings = document.getElementsByName("settings");
 
   this.prefs_.resetAll();
   for (let i = 0; i < settings.length; ++i) {
     this.sync(settings[i]);
   }
-  this.notify(localize('PREFERENCES_RESET'));
+  this.notify(localize("PREFERENCES_RESET"));
 };
 
 /**
@@ -858,7 +858,7 @@ PreferencesEditor.prototype.resetAll = function() {
  * @param {!Element} input An HTML input element to reset.
  */
 PreferencesEditor.prototype.reset = function(input) {
-  const keys = input.id.split(':');
+  const keys = input.id.split(":");
   const key = keys[0];
   this.prefs_.reset(key);
   this.sync(input);
@@ -873,9 +873,9 @@ PreferencesEditor.prototype.reset = function(input) {
 PreferencesEditor.prototype.notify = function(msg, timeout = 1000) {
   // Update status to let user know options were updated.
   clearTimeout(this.notifyTimeout_);
-  const status = document.getElementById('label_status');
+  const status = document.getElementById("label_status");
   status.innerText = msg;
   this.notifyTimeout_ = setTimeout(function() {
-      status.innerText = '\u00A0';
+      status.innerText = "\u00A0";
     }, timeout);
 };

@@ -8,40 +8,40 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {LitElement, createRef, css, html, ref, when} from './lit.js';
-import './terminal_button.js';
-import {DEFAULT_VM_NAME, composeSshUrl} from './terminal_common.js';
-import './terminal_context_menu.js';
+import {LitElement, createRef, css, html, ref, when} from "./lit.js";
+import "./terminal_button.js";
+import {DEFAULT_VM_NAME, composeSshUrl} from "./terminal_common.js";
+import "./terminal_context_menu.js";
 import {ICON_BRUSCHETTA, ICON_CODE, ICON_DOMAIN, ICON_EDIT, ICON_LINUX,
   ICON_MORE_VERT, ICON_OPEN_IN_NEW, ICON_PLUS, ICON_SETTINGS,
-  ICON_SSH} from './terminal_icons.js';
-import './terminal_linux_dialog.js';
+  ICON_SSH} from "./terminal_icons.js";
+import "./terminal_linux_dialog.js";
 import {ProfileType, cleanupVshSyncPrefs, deleteProfile, getProfileIds,
-  getVshProfiles, setVshProfiles} from './terminal_profiles.js';
-import './terminal_ssh_dialog.js';
+  getVshProfiles, setVshProfiles} from "./terminal_profiles.js";
+import "./terminal_ssh_dialog.js";
 
 /**
  * Path for pref with boolean crostini enabled.
  *
  * @type {string}
  */
-const PREF_PATH_ENABLED = 'crostini.enabled';
+const PREF_PATH_ENABLED = "crostini.enabled";
 
 /**
  * Path for pref with boolean ssh allowed.
  *
  * @type {string}
  */
-const PREF_PATH_SSH_ALLOWED = 'crostini.terminal_ssh_allowed_by_policy';
+const PREF_PATH_SSH_ALLOWED = "crostini.terminal_ssh_allowed_by_policy";
 
 /**
  * Path for pref with list of GuestOS containers.
  *
  * @type {string}
  */
-const PREF_PATH_CONTAINERS = 'crostini.containers';
+const PREF_PATH_CONTAINERS = "crostini.containers";
 
 /**
  * The vm_type for a Bruschetta VM.
@@ -223,8 +223,8 @@ export class TerminalHomeApp extends LitElement {
     this.crostiniEnabled = true;
     this.sshAllowed = true;
     this.settingsProfiles = [];
-    this.sshConnectionDeleteDialogTitle_ = '';
-    this.sshDeleteProfileId_ = '';
+    this.sshConnectionDeleteDialogTitle_ = "";
+    this.sshDeleteProfileId_ = "";
 
     this.sshConnectionMenuRef_ = createRef();
 
@@ -239,7 +239,7 @@ export class TerminalHomeApp extends LitElement {
       chrome.terminalPrivate.getPrefs(paths, prefsChanged);
     } else {
       // Fallback for dev / testing.
-      console.warn('chrome.terminalPrivate API not found.');
+      console.warn("chrome.terminalPrivate API not found.");
       const changed = () => window.storage.getItems(
         paths).then(prefsChanged);
       window.storage.addObserver(changed);
@@ -250,10 +250,10 @@ export class TerminalHomeApp extends LitElement {
   /** @return {!TemplateResult} */
   renderLinux() {
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
-    const sectionLabel = msg('TERMINAL_HOME_DEFAULT_LINUX_CONTAINER_LABEL');
+    const sectionLabel = msg("TERMINAL_HOME_DEFAULT_LINUX_CONTAINER_LABEL");
 
     const buttonText = this.crostiniEnabled
-      ? msg('TERMINAL_HOME_MANAGE') : msg('TERMINAL_HOME_SET_UP');
+      ? msg("TERMINAL_HOME_MANAGE") : msg("TERMINAL_HOME_SET_UP");
 
     const text = (c) => html`
       <span class="row-icon icon-fill-path">${
@@ -262,10 +262,10 @@ export class TerminalHomeApp extends LitElement {
       <div class="rowlabel">${containerLabel(c)}</div>
       ${c.terminal_policy_disabled ? html`
         <span class="row-icon icon-fill-path"
-            title="${msg(`TERMINAL_DISABLED_TOOLTIP`)}">
+            title="${msg("TERMINAL_DISABLED_TOOLTIP")}">
           ${ICON_DOMAIN}
         </span>
-      ` : ''}
+      ` : ""}
    `;
     const href = (c) => {
       const enc = encodeURIComponent;
@@ -282,7 +282,7 @@ export class TerminalHomeApp extends LitElement {
 
     return html`
       <section>
-        <div class="${this.containers.length ? 'line' : ''}">
+        <div class="${this.containers.length ? "line" : ""}">
           <div class="header row">
             <h3>${sectionLabel}</h3>
             <terminal-button autofocus @click="${this.onOpenSystemSettings}">
@@ -292,7 +292,7 @@ export class TerminalHomeApp extends LitElement {
           </div>
           ${when(!this.crostiniEnabled, () => html`
             <div class="sublabel">
-              ${msg('TERMINAL_HOME_LINUX_NOT_ENABLED')}
+              ${msg("TERMINAL_HOME_LINUX_NOT_ENABLED")}
             </div>
           `)}
         </div>
@@ -303,8 +303,8 @@ export class TerminalHomeApp extends LitElement {
               ${c.terminal_policy_disabled ? text(c) : link(c)}
               ${when(this.settingsProfiles.length > 1, () => html`
                 <mwc-icon-button
-                    title="${msg('TERMINAL_HOME_EDIT_LINUX')}"
-                    aria-label="${msg('TERMINAL_HOME_EDIT_LINUX')}"
+                    title="${msg("TERMINAL_HOME_EDIT_LINUX")}"
+                    aria-label="${msg("TERMINAL_HOME_EDIT_LINUX")}"
                     class="icon-fill-svg"
                     @click="${(e) => this.openLinuxDialog(
                                  c.vshProfileId, containerLabel(c))}">
@@ -322,13 +322,13 @@ export class TerminalHomeApp extends LitElement {
   /** @return {!TemplateResult} */
   renderSSH() {
     const msg = hterm.messageManager.get.bind(hterm.messageManager);
-    const sectionLabel = msg('TERMINAL_HOME_SSH');
+    const sectionLabel = msg("TERMINAL_HOME_SSH");
 
     let sublabel;
     if (!this.sshAllowed) {
-      sublabel = msg('TERMINAL_HOME_SSH_DISABLED_BY_POLICY');
+      sublabel = msg("TERMINAL_HOME_SSH_DISABLED_BY_POLICY");
     } else if (this.sshConnections.length === 0) {
-      sublabel = msg('TERMINAL_HOME_SSH_EMPTY');
+      sublabel = msg("TERMINAL_HOME_SSH_EMPTY");
     }
 
     const enc = encodeURIComponent;
@@ -346,12 +346,12 @@ export class TerminalHomeApp extends LitElement {
    `;
     return html`
       <section>
-        <div class="${this.sshConnections.length ? 'line' : ''}">
+        <div class="${this.sshConnections.length ? "line" : ""}">
           <div class="header row">
             <h3>${sectionLabel}</h3>
             <terminal-button @click="${(e) => this.openSSHDialog()}">
               <span class="button-icon">${ICON_PLUS}</span>
-              ${msg('TERMINAL_HOME_ADD_SSH')}
+              ${msg("TERMINAL_HOME_ADD_SSH")}
             </terminal-button>
           </div>
           ${when(!!sublabel, () => html`
@@ -368,8 +368,8 @@ export class TerminalHomeApp extends LitElement {
                 </a>
               `, () => text(c))}
               <mwc-icon-button
-                  title="${msg('HTERM_OPTIONS_BUTTON_LABEL')}"
-                  aria-label="${msg('HTERM_OPTIONS_BUTTON_LABEL')}"
+                  title="${msg("HTERM_OPTIONS_BUTTON_LABEL")}"
+                  aria-label="${msg("HTERM_OPTIONS_BUTTON_LABEL")}"
                   class="icon-fill-svg"
                   @click="${(e) => this.showSSHMore(c, e)}">
                 ${ICON_MORE_VERT}
@@ -401,7 +401,7 @@ export class TerminalHomeApp extends LitElement {
                   @click="${this.onOpenTerminalSettings}">
                 <span class="row-icon icon-fill-svg">${ICON_SETTINGS}</span>
                 <div class="full-width nowrap rowlabel">
-                  ${msg('TERMINAL_HOME_TERMINAL_SETTINGS')}
+                  ${msg("TERMINAL_HOME_TERMINAL_SETTINGS")}
                 </div>
               </button>
             </li>
@@ -410,7 +410,7 @@ export class TerminalHomeApp extends LitElement {
                   @click="${this.onOpenSystemSettings}">
                 <span class="row-icon icon-fill-svg">${ICON_CODE}</span>
                 <div class="full-width nowrap rowlabel">
-                  ${msg('TERMINAL_HOME_DEVELOPER_SETTINGS')}
+                  ${msg("TERMINAL_HOME_DEVELOPER_SETTINGS")}
                 </div>
                 <mwc-icon-button class="icon-fill-svg">
                   ${ICON_OPEN_IN_NEW}
@@ -440,13 +440,13 @@ export class TerminalHomeApp extends LitElement {
     window.storage.getItems(null).then(async (items) => {
       const sshConnections = [];
       const ids = /** @type {!Array<string>} */(
-          items['/nassh/profile-ids'] || []);
+          items["/nassh/profile-ids"] || []);
       for (const id of ids) {
         const description = items[`/nassh/profiles/${id}/description`];
         const settingsProfileId =
             items[`/nassh/profiles/${id}/terminal-profile`] ||
             hterm.Terminal.DEFAULT_PROFILE_ID;
-        const mountPath = items[`/nassh/profiles/${id}/mount-path`] || '';
+        const mountPath = items[`/nassh/profiles/${id}/mount-path`] || "";
         if (description) {
           sshConnections.push({id, description, settingsProfileId, mountPath});
         }
@@ -492,11 +492,11 @@ export class TerminalHomeApp extends LitElement {
       if (!profiles[key]) {
         profiles[key] = {};
       }
-      if (!profiles[key]['terminal-profile']) {
-        profiles[key]['terminal-profile'] = hterm.Terminal.DEFAULT_PROFILE_ID;
+      if (!profiles[key]["terminal-profile"]) {
+        profiles[key]["terminal-profile"] = hterm.Terminal.DEFAULT_PROFILE_ID;
       }
       c.vshProfileId = key;
-      c.settingsProfileId = profiles[key]['terminal-profile'];
+      c.settingsProfileId = profiles[key]["terminal-profile"];
     }
 
     // Delete any unused profiles.
@@ -524,7 +524,7 @@ export class TerminalHomeApp extends LitElement {
    * Open system settings page.
    */
   onOpenSystemSettings() {
-    chrome.terminalPrivate?.openSettingsSubpage('crostini', () => {});
+    chrome.terminalPrivate?.openSettingsSubpage("crostini", () => {});
   }
 
   /**
@@ -534,7 +534,7 @@ export class TerminalHomeApp extends LitElement {
    * @param {string} title
    */
   openLinuxDialog(vshProfileId, title) {
-    this.shadowRoot.querySelector('terminal-linux-dialog')
+    this.shadowRoot.querySelector("terminal-linux-dialog")
         .show(vshProfileId, title);
   }
 
@@ -543,8 +543,8 @@ export class TerminalHomeApp extends LitElement {
    *
    * @param {string=} nasshProfileId
    */
-  openSSHDialog(nasshProfileId = '') {
-    this.shadowRoot.querySelector('terminal-ssh-dialog').show(nasshProfileId);
+  openSSHDialog(nasshProfileId = "") {
+    this.shadowRoot.querySelector("terminal-ssh-dialog").show(nasshProfileId);
   }
 
   /**
@@ -555,9 +555,9 @@ export class TerminalHomeApp extends LitElement {
   openSSHDeleteDialog(sshConnection) {
     this.sshDeleteProfileId_ = sshConnection.id;
     this.sshConnectionDeleteDialogTitle_ = hterm.messageManager.get(
-        'TERMINAL_SETTINGS_PROFILE_DELETE_DIALOG_TITLE',
+        "TERMINAL_SETTINGS_PROFILE_DELETE_DIALOG_TITLE",
         [sshConnection.description]);
-    this.shadowRoot.querySelector('terminal-dialog').show();
+    this.shadowRoot.querySelector("terminal-dialog").show();
   }
 
   /**
@@ -588,30 +588,30 @@ export class TerminalHomeApp extends LitElement {
     });
 
     const items = [{
-      name: msg('TERMINAL_HOME_EDIT_SSH'),
+      name: msg("TERMINAL_HOME_EDIT_SSH"),
       action: () => this.openSSHDialog(sshConnection.id),
     }];
     if (this.sshAllowed) {
       items.push(
           {
-            name: msg('SFTP_CLIENT_BUTTON_LABEL'),
+            name: msg("SFTP_CLIENT_BUTTON_LABEL"),
             action: () => openTab({isSftp: true}),
           },
           {
-            name: msg('TERMINAL_HOME_MOUNT'),
+            name: msg("TERMINAL_HOME_MOUNT"),
             action: () => openTab({isMount: true}),
           });
     }
     items.push({
-      name: msg('REMOVE_LABEL'),
+      name: msg("REMOVE_LABEL"),
       action: () => this.openSSHDeleteDialog(sshConnection),
     });
 
-    this.sshConnectionMenuRef_.value.label = msg('HTERM_OPTIONS_BUTTON_LABEL');
+    this.sshConnectionMenuRef_.value.label = msg("HTERM_OPTIONS_BUTTON_LABEL");
     this.sshConnectionMenuRef_.value.items = items;
     const rect = event.target.getBoundingClientRect();
     this.sshConnectionMenuRef_.value.show({x: rect.left, y: rect.bottom});
   }
 }
 
-customElements.define('terminal-home-app', TerminalHomeApp);
+customElements.define("terminal-home-app", TerminalHomeApp);

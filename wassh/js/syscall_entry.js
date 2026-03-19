@@ -8,8 +8,8 @@
  * @suppress {checkTypes} module$__$wasi_js_bindings$js naming confusion.
  */
 
-import {SyscallEntry, util, WASI} from '../../wasi-js-bindings/index.js';
-import * as Constants from './constants.js';
+import {SyscallEntry, util, WASI} from "../../wasi-js-bindings/index.js";
+import * as Constants from "./constants.js";
 
 /**
  * WASSH syscall extensions.
@@ -17,7 +17,7 @@ import * as Constants from './constants.js';
 export class WasshExperimental extends SyscallEntry.Base {
   constructor(runtime) {
     super(runtime);
-    this.namespace = 'wassh_experimental';
+    this.namespace = "wassh_experimental";
   }
 
   /**
@@ -27,7 +27,7 @@ export class WasshExperimental extends SyscallEntry.Base {
    */
   sys_sock_accept(sock, newsock_ptr) {
     const ret = this.handle_sock_accept(sock);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -54,7 +54,7 @@ export class WasshExperimental extends SyscallEntry.Base {
         // integer to look up the real host later.
         address = dv.getUint32(0, true);
         if (address >= 0x1000000) {
-          address = bytes.join('.');
+          address = bytes.join(".");
         }
         break;
       }
@@ -68,8 +68,8 @@ export class WasshExperimental extends SyscallEntry.Base {
         } else {
           const dv = this.getView_(addr_ptr, 16);
           address = [...Array(8).keys()].map(
-              (i) => dv.getUint16(i << 1, false).toString(16).padStart(4, '0'),
-          ).join(':');
+              (i) => dv.getUint16(i << 1, false).toString(16).padStart(4, "0"),
+          ).join(":");
         }
         break;
       }
@@ -111,7 +111,7 @@ export class WasshExperimental extends SyscallEntry.Base {
    */
   sys_sock_create(sock_ptr, domain, type, protocol) {
     const ret = this.handle_sock_create(domain, type, protocol);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -152,7 +152,7 @@ export class WasshExperimental extends SyscallEntry.Base {
         // integer to look up the real host later.
         address = dv.getUint32(0, true);
         if (address >= 0x1000000) {
-          address = bytes.join('.');
+          address = bytes.join(".");
         }
         break;
       }
@@ -166,8 +166,8 @@ export class WasshExperimental extends SyscallEntry.Base {
         } else {
           const dv = this.getView_(addr_ptr, 16);
           address = [...Array(8).keys()].map(
-              (i) => dv.getUint16(i << 1, false).toString(16).padStart(4, '0'),
-          ).join(':');
+              (i) => dv.getUint16(i << 1, false).toString(16).padStart(4, "0"),
+          ).join(":");
         }
         break;
       }
@@ -188,7 +188,7 @@ export class WasshExperimental extends SyscallEntry.Base {
    */
   sys_sock_get_name(sock, family_ptr, port_ptr, addr_ptr, remote) {
     const ret = this.handle_sock_get_name(sock, remote);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -227,7 +227,7 @@ export class WasshExperimental extends SyscallEntry.Base {
    */
   sys_sock_get_opt(sock, level, name, value_ptr) {
     const ret = this.handle_sock_get_opt(sock, level, name);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -265,7 +265,7 @@ export class WasshExperimental extends SyscallEntry.Base {
     }
 
     const ret = this.handle_sock_recvfrom(sock, buf_len, flags);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -330,7 +330,7 @@ export class WasshExperimental extends SyscallEntry.Base {
         // integer to look up the real host later.
         address = dv.getUint32(0, true);
         if (address >= 0x1000000) {
-          address = bytes.join('.');
+          address = bytes.join(".");
         }
         break;
       }
@@ -344,8 +344,8 @@ export class WasshExperimental extends SyscallEntry.Base {
         } else {
           const dv = this.getView_(addr_ptr, 16);
           address = [...Array(8).keys()].map(
-              (i) => dv.getUint16(i << 1, false).toString(16).padStart(4, '0'),
-          ).join(':');
+              (i) => dv.getUint16(i << 1, false).toString(16).padStart(4, "0"),
+          ).join(":");
         }
         break;
       }
@@ -358,7 +358,7 @@ export class WasshExperimental extends SyscallEntry.Base {
 
     const ret = this.handle_sock_sendto(
         sock, buf, flags, domain, address, port);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -375,7 +375,7 @@ export class WasshExperimental extends SyscallEntry.Base {
    */
   sys_fd_dup(oldfd, newfd_ptr) {
     const ret = this.handle_fd_dup(oldfd);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -402,7 +402,7 @@ export class WasshExperimental extends SyscallEntry.Base {
    */
   sys_tty_get_window_size(fd, winsize_ptr) {
     const ret = this.handle_tty_get_window_size(fd);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 
@@ -439,7 +439,7 @@ export class WasshExperimental extends SyscallEntry.Base {
    * @return {!WASI_t.errno}
    */
   sys_readpassphrase(prompt_ptr, prompt_len, buf_ptr, buf_len, echo) {
-    let prompt = '';
+    let prompt = "";
     if (prompt_ptr) {
       const td = new TextDecoder();
       const prompt_buf = this.getMem_(prompt_ptr, prompt_ptr + prompt_len);
@@ -451,7 +451,7 @@ export class WasshExperimental extends SyscallEntry.Base {
     }
 
     const ret = this.handle_readpassphrase(prompt, buf_len - 1, !!echo);
-    if (typeof ret === 'number') {
+    if (typeof ret === "number") {
       return ret;
     }
 

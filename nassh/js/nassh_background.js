@@ -6,11 +6,11 @@
  * @fileoverview Utility code for the background page.
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {PreferenceManager as NasftpPreferenceManager} from './nasftp_cli.js';
-import {getSyncStorage} from './nassh.js';
-import {PreferenceManager} from './nassh_preference_manager.js';
+import {PreferenceManager as NasftpPreferenceManager} from "./nasftp_cli.js";
+import {getSyncStorage} from "./nassh.js";
+import {PreferenceManager} from "./nassh_preference_manager.js";
 
 /**
  * Export the current list of nassh connections, and any hterm profiles
@@ -24,7 +24,7 @@ import {PreferenceManager} from './nassh_preference_manager.js';
  */
 export async function exportPreferences() {
   const rv = {
-    magic: 'nassh-prefs',
+    magic: "nassh-prefs",
     version: 1,
   };
 
@@ -65,8 +65,8 @@ export async function exportPreferences() {
  * @return {!Promise<void>} A promise that resolves once the import completes.
  */
 export async function importPreferences(prefsObject) {
-  if (prefsObject.magic != 'nassh-prefs') {
-    throw new Error('Not a JSON object or bad value for \'magic\'.');
+  if (prefsObject.magic != "nassh-prefs") {
+    throw new Error("Not a JSON object or bad value for 'magic'.");
   }
 
   if (prefsObject.version != 1) {

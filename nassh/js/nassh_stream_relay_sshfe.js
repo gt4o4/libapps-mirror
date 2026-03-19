@@ -6,14 +6,14 @@
  * @fileoverview Stream for connecting to a ssh server via a SSH-FE relay.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {base64ToBase64Url, runtimeSendMessage} from './nassh.js';
-import {Message} from './nassh_agent_message.js';
+import {base64ToBase64Url, runtimeSendMessage} from "./nassh.js";
+import {Message} from "./nassh_agent_message.js";
 import {MessageNumbers, readMessage,
-        writeMessage} from './nassh_agent_message_types.js';
-import {newBuffer} from './nassh_buffer.js';
-import {Stream} from './nassh_stream.js';
+        writeMessage} from "./nassh_agent_message_types.js";
+import {newBuffer} from "./nassh_buffer.js";
+import {Stream} from "./nassh_stream.js";
 
 /**
  * @typedef {{
@@ -96,7 +96,7 @@ export class RelaySshfeWsStream extends Stream {
   getChallenge_() {
     // Send the current user to the relay to get the challenge.
     const uri = lib.f.replaceVars(this.challengeTemplate_, {
-      protocol: 'https',
+      protocol: "https",
       relayHost: this.relayHost_,
       relayPort: this.relayPort_,
       relayUser: this.relayUser_,
@@ -136,7 +136,7 @@ export class RelaySshfeWsStream extends Stream {
   sendAgentMessage_(data) {
     return /** @type {!Promise<!AgentResponse>} */ (
         runtimeSendMessage(
-            this.sshAgent_, {'type': 'auth-agent@openssh.com', 'data': data}));
+            this.sshAgent_, {"type": "auth-agent@openssh.com", "data": data}));
   }
 
   /**
@@ -210,11 +210,11 @@ export class RelaySshfeWsStream extends Stream {
    */
   connect_(challenge, signature) {
     if (this.socket_) {
-      throw new Error('stream already connected');
+      throw new Error("stream already connected");
     }
 
     const uri = lib.f.replaceVars(this.connectTemplate_, {
-      protocol: 'wss',
+      protocol: "wss",
       relayHost: this.relayHost_,
       relayPort: this.relayPort_,
       relayUser: this.relayUser_,
@@ -227,7 +227,7 @@ export class RelaySshfeWsStream extends Stream {
     });
 
     this.socket_ = new WebSocket(uri);
-    this.socket_.binaryType = 'arraybuffer';
+    this.socket_.binaryType = "arraybuffer";
     this.socket_.onopen = this.onSocketOpen_.bind(this);
     this.socket_.onmessage = this.onSocketData_.bind(this);
     this.socket_.onclose = this.onSocketClose_.bind(this);
@@ -270,7 +270,7 @@ export class RelaySshfeWsStream extends Stream {
    * @param {!CloseEvent} e The event details.
    */
   onSocketClose_(e) {
-    this.close_('server closed socket');
+    this.close_("server closed socket");
   }
 
   /**
@@ -279,7 +279,7 @@ export class RelaySshfeWsStream extends Stream {
    * @param {!Event} e The event details.
    */
   onSocketError_(e) {
-    this.close_('server sent an error');
+    this.close_("server sent an error");
   }
 
   /**
@@ -364,8 +364,8 @@ export class RelaySshfeWsStream extends Stream {
  * URI to get a new challenge for connecting through the relay.
  */
 RelaySshfeWsStream.prototype.challengeTemplate_ =
-    `%(protocol)://%(relayHost):%(relayPort)` +
-    `/ssh-fe/challenge?user=%encodeURIComponent(relayUser)`;
+    "%(protocol)://%(relayHost):%(relayPort)" +
+    "/ssh-fe/challenge?user=%encodeURIComponent(relayUser)";
 
 /**
  * Maximum length of message that can be sent to avoid request limits.
@@ -379,11 +379,11 @@ RelaySshfeWsStream.prototype.maxMessageLength = 64 * 1024;
  * with remote logging on the server.
  */
 RelaySshfeWsStream.prototype.connectTemplate_ =
-    `%(protocol)://%(relayHost):%(relayPort)/connect` +
-    `?ssh-fe-challenge=%encodeURIComponent(challenge)` +
-    `&ssh-fe-signature=%encodeURIComponent(signature)` +
-    `&host=%encodeURIComponent(host)` +
-    `&port=%encodeURIComponent(port)` +
-    `&user=%encodeURIComponent(relayUser)` +
-    `&ack=%(readCount)` +
-    `&pos=%(writeCount)`;
+    "%(protocol)://%(relayHost):%(relayPort)/connect" +
+    "?ssh-fe-challenge=%encodeURIComponent(challenge)" +
+    "&ssh-fe-signature=%encodeURIComponent(signature)" +
+    "&host=%encodeURIComponent(host)" +
+    "&port=%encodeURIComponent(port)" +
+    "&user=%encodeURIComponent(relayUser)" +
+    "&ack=%(readCount)" +
+    "&pos=%(writeCount)";

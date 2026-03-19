@@ -6,15 +6,15 @@
  * @fileoverview Test for <terminal-settings-row>
  */
 
-import './terminal_settings_row.js';
+import "./terminal_settings_row.js";
 
 beforeEach(async function() {
-  this.expandableRow = document.createElement('terminal-settings-row');
-  this.expandableRow.setAttribute('expandable', '');
+  this.expandableRow = document.createElement("terminal-settings-row");
+  this.expandableRow.setAttribute("expandable", "");
   document.body.appendChild(this.expandableRow);
 
   this.expandEvents = [];
-  this.expandableRow.addEventListener('expand', (e) => {
+  this.expandableRow.addEventListener("expand", (e) => {
     this.expandEvents.push(e);
   });
 
@@ -25,8 +25,8 @@ afterEach(function() {
   document.body.removeChild(this.expandableRow);
 });
 
-it('toggle expand state when clicked', async function() {
-  const main = this.expandableRow.shadowRoot.querySelector('#main');
+it("toggle expand state when clicked", async function() {
+  const main = this.expandableRow.shadowRoot.querySelector("#main");
 
   assert.isFalse(this.expandableRow.expanded_);
 

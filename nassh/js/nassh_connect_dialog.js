@@ -7,24 +7,24 @@
  * @suppress {moduleLoad}
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {cleanupChromeSockets} from '../wassh/js/sockets.js';
+import {cleanupChromeSockets} from "../wassh/js/sockets.js";
 
 import {
   getSyncStorage, loadWebFonts, localize, openOptionsPage,
   registerProtocolHandler, sendFeedback, setupForWebApp,
-} from './nassh.js';
-import {ColumnList} from './nassh_column_list.js';
+} from "./nassh.js";
+import {ColumnList} from "./nassh_column_list.js";
 import {
   deleteIdentityFiles, getIdentityFileNames, getIndexeddbFileSystem,
   importIdentityFiles,
-} from './nassh_fs.js';
+} from "./nassh_fs.js";
 import {
   LocalPreferenceManager, PreferenceManager,
-} from './nassh_preference_manager.js';
+} from "./nassh_preference_manager.js";
 
 /**
  * Constructor a new ConnectDialog instance.
@@ -57,7 +57,7 @@ function ConnectDialog() {
   // The 'new' profile is special in that it doesn't have a real id or
   // prefs object until it is saved for the first time.
   this.emptyProfileRecord_ = new ConnectDialog.ProfileRecord(
-      'new', null, localize('FIELD_NEW_CONNECTION'));
+      "new", null, localize("FIELD_NEW_CONNECTION"));
 
   // Map of id->ConnectDialog.ProfileRecord.
   this.profileMap_ = {};
@@ -66,11 +66,11 @@ function ConnectDialog() {
   this.profileList_ = [];
 
   // Cached DOM nodes.
-  this.form_ = lib.notNull(document.querySelector('form'));
-  this.connectButton_ = lib.notNull(document.querySelector('#connect'));
-  this.deleteButton_ = lib.notNull(document.querySelector('#delete'));
-  this.optionsButton_ = lib.notNull(document.querySelector('#options'));
-  this.feedbackButton_ = lib.notNull(document.querySelector('#feedback'));
+  this.form_ = lib.notNull(document.querySelector("form"));
+  this.connectButton_ = lib.notNull(document.querySelector("#connect"));
+  this.deleteButton_ = lib.notNull(document.querySelector("#delete"));
+  this.optionsButton_ = lib.notNull(document.querySelector("#options"));
+  this.feedbackButton_ = lib.notNull(document.querySelector("#feedback"));
 }
 
 /**
@@ -94,7 +94,7 @@ ConnectDialog.onWindowStartup = async function() {
     // Focus the connection dialog.
     if (dialog.profileList_.length == 1) {
       // Just one profile record?  It's the "New..." profile, focus the form.
-      dialog.$f('description').focus();
+      dialog.$f("description").focus();
     } else {
       dialog.shortcutList_.focus();
     }
@@ -106,7 +106,7 @@ ConnectDialog.onWindowStartup = async function() {
   loadWebFonts(document);
 };
 
-globalThis.addEventListener('DOMContentLoaded', ConnectDialog.onWindowStartup);
+globalThis.addEventListener("DOMContentLoaded", ConnectDialog.onWindowStartup);
 
 /**
  * Called by the preference manager when we've retrieved the current preference
@@ -115,14 +115,14 @@ globalThis.addEventListener('DOMContentLoaded', ConnectDialog.onWindowStartup);
 ConnectDialog.prototype.onPreferencesReady_ = function() {
   // Create and draw the shortcut list.
   this.shortcutList_ = new ColumnList(
-      lib.notNull(document.querySelector('#shortcut-list')),
+      lib.notNull(document.querySelector("#shortcut-list")),
       this.profileList_);
 
   // Install various (DOM and non-DOM) event handlers.
   this.installHandlers_();
 
   const lastProfileId = /** @type {string} */ (
-      this.localPrefs_.get('connectDialog/lastProfileId'));
+      this.localPrefs_.get("connectDialog/lastProfileId"));
   const profileIndex = lib.f.clamp(
       this.getProfileIndex_(lastProfileId), 0, this.profileList_.length);
 
@@ -150,7 +150,7 @@ ConnectDialog.prototype.onPreferencesReady_ = function() {
 ConnectDialog.ProfileRecord = function(id, prefs, textContent) {
   this.id = id;
   this.prefs = prefs;
-  this.textContent = textContent || prefs.get('description');
+  this.textContent = textContent || prefs.get("description");
 };
 
 /**
@@ -163,7 +163,7 @@ ConnectDialog.ProfileRecord = function(id, prefs, textContent) {
  * @return {string}
  */
 ConnectDialog.prototype.msg = function(name) {
-  return localize(name.toUpperCase().replace(/-/g, '_'));
+  return localize(name.toUpperCase().replace(/-/g, "_"));
 };
 
 /**
@@ -187,7 +187,7 @@ ConnectDialog.prototype.installHandlers_ = function() {
 
   // Observe global 'profile-ids' list so we can keep the ColumnList updated.
   this.prefs_.addObservers(null, {
-      'profile-ids': this.onProfileListChanged_.bind(this),
+      "profile-ids": this.onProfileListChanged_.bind(this),
     });
 
   // Same for the 'description' field of all known profiles.
@@ -201,7 +201,7 @@ ConnectDialog.prototype.installHandlers_ = function() {
   }
 
   // Watch for keypresses sent anywhere in this frame.
-  document.addEventListener('keydown',
+  document.addEventListener("keydown",
       /** @type {!EventListener} */ (this.onDocumentKeyDown_.bind(this)));
 
   // Watch for selection changes on the ColumnList so we can keep the
@@ -210,78 +210,78 @@ ConnectDialog.prototype.installHandlers_ = function() {
       this.onProfileIndexChanged.bind(this);
 
   // Register for keyboard shortcuts on the column list.
-  this.shortcutList_.addEventListener('keydown',
+  this.shortcutList_.addEventListener("keydown",
                                       this.onShortcutListKeyDown_.bind(this));
 
-  this.shortcutList_.addEventListener('dblclick',
+  this.shortcutList_.addEventListener("dblclick",
                                       this.onShortcutListDblClick_.bind(this));
 
-  this.form_.addEventListener('keyup', this.onFormKeyUp_.bind(this));
+  this.form_.addEventListener("keyup", this.onFormKeyUp_.bind(this));
 
-  this.connectButton_.addEventListener('keypress',
+  this.connectButton_.addEventListener("keypress",
                                        this.onButtonKeypress_.bind(this));
-  this.deleteButton_.addEventListener('keypress',
+  this.deleteButton_.addEventListener("keypress",
                                       this.onButtonKeypress_.bind(this));
 
-  this.connectButton_.addEventListener('click',
+  this.connectButton_.addEventListener("click",
                                        this.onConnectClick_.bind(this));
-  this.deleteButton_.addEventListener('click',
+  this.deleteButton_.addEventListener("click",
                                       this.onDeleteClick_.bind(this));
-  this.optionsButton_.addEventListener('click',
+  this.optionsButton_.addEventListener("click",
                                        this.onOptionsClick_.bind(this));
-  this.feedbackButton_.addEventListener('click',
+  this.feedbackButton_.addEventListener("click",
                                         this.onFeedbackClick_.bind(this));
 
   // Switching apps can change which settings are displayed.
-  addListeners(lib.notNull(document.querySelector('#field-app')), ['change'],
-               this.maybeDirty_.bind(this, 'app'),
+  addListeners(lib.notNull(document.querySelector("#field-app")), ["change"],
+               this.maybeDirty_.bind(this, "app"),
                this.syncButtons_.bind(this));
 
   // These fields interact with each-other's placeholder text.
-  ['description', 'username', 'hostname', 'port',
+  ["description", "username", "hostname", "port",
   ].forEach((name) => {
       const field = /** @type {!Element} */ (this.$f(name));
 
       // Alter description or detail placeholders, and commit the pref.
-      addListeners(field, ['change', 'keypress', 'keyup'],
+      addListeners(field, ["change", "keypress", "keyup"],
                    this.updatePlaceholders_.bind(this, name),
                    this.maybeDirty_.bind(this, name));
 
-      addListeners(field, ['focus'],
+      addListeners(field, ["focus"],
                    this.maybeCopyPlaceholder_.bind(this, name));
     });
 
-  this.$f('description').addEventListener(
-      'blur', this.maybeCopyPlaceholders_.bind(this));
+  this.$f("description").addEventListener(
+      "blur", this.maybeCopyPlaceholders_.bind(this));
 
   // These fields are plain text with no fancy properties.
-  ['argstr', 'terminal-profile', 'mount-path',
+  ["argstr", "terminal-profile", "mount-path",
   ].forEach((name) => {
       addListeners(/** @type {!Element} */ (this.$f(name)),
-                   ['change', 'keypress', 'keyup'],
+                   ["change", "keypress", "keyup"],
                    this.maybeDirty_.bind(this, name));
     });
 
-  ['app', 'description', 'username', 'hostname', 'port', 'nassh-options',
-   'identity', 'argstr', 'terminal-profile', 'mount-path',
+  ["app", "description", "username", "hostname", "port", "nassh-options",
+   "identity", "argstr", "terminal-profile", "mount-path",
   ].forEach((name) => {
-      addListeners(/** @type {!Element} */ (this.$f(name)), ['focus', 'blur'],
+      addListeners(/** @type {!Element} */ (this.$f(name)), ["focus", "blur"],
                    this.onFormFocusChange_.bind(this));
     });
 
   // Listen for DEL on the identity select box.
-  this.$f('identity').addEventListener('keyup', (e) => {
+  this.$f("identity").addEventListener("keyup", (e) => {
       if (e.keyCode == 46 && e.target.selectedIndex != 0) {
         this.deleteIdentity_(e.target.value);
       }
     });
 
-  this.importFileInput_ = document.querySelector('#import-file-input');
+  this.importFileInput_ = document.querySelector("#import-file-input");
   this.importFileInput_.addEventListener(
-      'change', this.onImportFiles_.bind(this));
+      "change", this.onImportFiles_.bind(this));
 
-  const importLink = document.querySelector('#import-link');
-  importLink.addEventListener('click', (e) => {
+  const importLink = document.querySelector("#import-link");
+  importLink.addEventListener("click", (e) => {
       this.importFileInput_.click();
       e.preventDefault();
     });
@@ -296,16 +296,16 @@ ConnectDialog.prototype.installHandlers_ = function() {
  * @return {!Element|string|undefined}
  */
 ConnectDialog.prototype.$f = function(name, attrName, attrValue) {
-  const node = document.querySelector('#field-' + name);
+  const node = document.querySelector("#field-" + name);
   if (!node) {
-    throw new Error('Can\'t find: #field-' + name);
+    throw new Error("Can't find: #field-" + name);
   }
 
   if (!attrName) {
     return node;
   }
 
-  if (typeof attrValue == 'undefined') {
+  if (typeof attrValue == "undefined") {
     return node.getAttribute(attrName);
   }
 
@@ -319,7 +319,7 @@ ConnectDialog.prototype.$f = function(name, attrName, attrValue) {
  */
 ConnectDialog.prototype.setCurrentProfileRecord = function(profileRecord) {
   if (!profileRecord) {
-    throw new Error('null profileRecord.');
+    throw new Error("null profileRecord.");
   }
 
   this.currentProfileRecord_ = profileRecord;
@@ -340,11 +340,11 @@ ConnectDialog.prototype.setCurrentProfileRecord = function(profileRecord) {
  */
 ConnectDialog.prototype.enableButton_ = function(button, state) {
   if (state) {
-    button.removeAttribute('disabled');
-    button.setAttribute('tabindex', '0');
+    button.removeAttribute("disabled");
+    button.setAttribute("tabindex", "0");
   } else {
-    button.setAttribute('disabled', 'disabled');
-    button.setAttribute('tabindex', '-1');
+    button.setAttribute("disabled", "disabled");
+    button.setAttribute("tabindex", "-1");
   }
 };
 
@@ -356,13 +356,13 @@ ConnectDialog.prototype.enableButton_ = function(button, state) {
  * @param {string=} style
  */
 ConnectDialog.prototype.displayButton_ = function(
-    button, state, style = 'inline') {
+    button, state, style = "inline") {
   if (state) {
     button.style.display = style;
-    button.setAttribute('tabindex', '0');
+    button.setAttribute("tabindex", "0");
   } else {
-    button.style.display = 'none';
-    button.setAttribute('tabindex', '-1');
+    button.style.display = "none";
+    button.setAttribute("tabindex", "-1");
   }
 };
 
@@ -373,16 +373,16 @@ ConnectDialog.prototype.displayButton_ = function(
  */
 ConnectDialog.prototype.displayMountButton_ = function(state) {
   this.displayButton_(
-      lib.notNull(document.querySelector('#mount-path')),
+      lib.notNull(document.querySelector("#mount-path")),
       state,
-      'revert');
+      "revert");
 };
 
 /**
  * Persist the current form to prefs, even if it's invalid.
  */
 ConnectDialog.prototype.save = function() {
-  if (!this.$f('description').value) {
+  if (!this.$f("description").value) {
     return;
   }
 
@@ -391,8 +391,8 @@ ConnectDialog.prototype.save = function() {
 
   let prefs = this.currentProfileRecord_.prefs;
 
-  ['app', 'description', 'username', 'hostname', 'port', 'nassh-options',
-   'identity', 'argstr', 'terminal-profile', 'mount-path',
+  ["app", "description", "username", "hostname", "port", "nassh-options",
+   "identity", "argstr", "terminal-profile", "mount-path",
   ].forEach((name) => {
        let value = this.$f(name).value;
 
@@ -400,11 +400,11 @@ ConnectDialog.prototype.save = function() {
        // trim them automatically.  This could cause confusion in some fields
        // like the ssh argstr.  We leave it in username since it is technically
        // valid even if most users would get confused by it.
-       if (name != 'username') {
+       if (name != "username") {
          value = value.trim();
        }
 
-       if (name == 'port') {
+       if (name == "port") {
          value = parseInt(value, 10);
          if (!value) {
            // If parsing failed for any reason, reset it to the default.
@@ -425,7 +425,7 @@ ConnectDialog.prototype.save = function() {
       prefs = this.prefs_.createProfile();
       this.localPrefs_.createProfile(prefs.id);
       const rec = new ConnectDialog.ProfileRecord(
-          prefs.id, prefs, changedFields['description']);
+          prefs.id, prefs, changedFields["description"]);
       this.currentProfileRecord_ = rec;
 
       prefs.addObservers(null, {
@@ -451,13 +451,13 @@ ConnectDialog.prototype.connect = function() {
   this.save();
 
   let proto;
-  switch (this.currentProfileRecord_.prefs.get('app')) {
-    case 'ssh':
-      proto = 'ssh';
+  switch (this.currentProfileRecord_.prefs.get("app")) {
+    case "ssh":
+      proto = "ssh";
       break;
-    case 'nasftp':
-    case 'sftp':
-      proto = 'sftp';
+    case "nasftp":
+    case "sftp":
+      proto = "sftp";
       break;
   }
 
@@ -467,10 +467,10 @@ ConnectDialog.prototype.connect = function() {
   }
 
   const id = this.currentProfileRecord_.id;
-  this.localPrefs_.set('connectDialog/lastProfileId', id);
+  this.localPrefs_.set("connectDialog/lastProfileId", id);
 
   if (this.form_.checkValidity()) {
-    const uri = lib.f.getURL('/html/nassh.html');
+    const uri = lib.f.getURL("/html/nassh.html");
     this.location_.replace(`${uri}?profile-id=${id}`);
   } else {
     this.form_.reportValidity();
@@ -501,7 +501,7 @@ ConnectDialog.prototype.maybeDirty_ = function(fieldName) {
  * to bulk-default.
  */
 ConnectDialog.prototype.maybeCopyPlaceholders_ = function() {
-  ['description', 'username', 'hostname', 'port', 'nassh-options',
+  ["description", "username", "hostname", "port", "nassh-options",
   ].forEach(this.maybeCopyPlaceholder_.bind(this));
   this.syncButtons_();
 };
@@ -514,7 +514,7 @@ ConnectDialog.prototype.maybeCopyPlaceholders_ = function() {
  */
 ConnectDialog.prototype.maybeCopyPlaceholder_ = function(fieldName) {
   const field = this.$f(fieldName);
-  const placeholder = field.getAttribute('placeholder');
+  const placeholder = field.getAttribute("placeholder");
   if (!field.value &&
       placeholder != this.msg(`FIELD_${fieldName}_PLACEHOLDER`)) {
     field.value = placeholder;
@@ -527,7 +527,7 @@ ConnectDialog.prototype.maybeCopyPlaceholder_ = function(fieldName) {
  * @param {string} fieldName
  */
 ConnectDialog.prototype.updatePlaceholders_ = function(fieldName) {
-  if (fieldName == 'description') {
+  if (fieldName == "description") {
     // If the description changed, update the username/host/etc placeholders.
     this.updateDetailPlaceholders_();
   } else {
@@ -547,7 +547,7 @@ ConnectDialog.prototype.updateDetailPlaceholders_ = function() {
   // Try to split the description up into the sub-fields.
   // This supports basic user[@hostname[:port]] strings, and the hostname match
   // is a best effort will remaining simple.
-  let ary = this.$f('description').value.match(
+  let ary = this.$f("description").value.match(
       /^([^@]+)@([^:@\s]+)?(?:(?::)(\d+))?/);
 
   // Set a blank array if the match failed.
@@ -559,14 +559,14 @@ ConnectDialog.prototype.updateDetailPlaceholders_ = function() {
   // Copy the remaining match elements into the appropriate placeholder
   // attribute.  Set the default placeholder text from this.str.placeholders
   // for any field that was not matched.
-  ['username', 'hostname', 'port',
+  ["username", "hostname", "port",
   ].forEach((name) => {
     let value = ary.shift();
     if (!value) {
       value = this.msg(`FIELD_${name}_PLACEHOLDER`);
     }
 
-    this.$f(name, 'placeholder', value);
+    this.$f(name, "placeholder", value);
   });
 };
 
@@ -576,58 +576,58 @@ ConnectDialog.prototype.updateDetailPlaceholders_ = function() {
 ConnectDialog.prototype.updateNasshOptionsPlaceholder_ = function() {
   // Google-specific relay hack.  This feels dirty.  We can revert this once
   // we support managed default configs.  http://b/28205376 & related docs.
-  let value = this.msg('FIELD_NASSH_OPTIONS_PLACEHOLDER');
-  if (!this.$f('nassh-options').value) {
-    let hostname = this.$f('hostname').value;
+  let value = this.msg("FIELD_NASSH_OPTIONS_PLACEHOLDER");
+  if (!this.$f("nassh-options").value) {
+    let hostname = this.$f("hostname").value;
     if (!hostname) {
-      hostname = this.$f('hostname').placeholder;
+      hostname = this.$f("hostname").placeholder;
     }
 
     const googleHostRegexp = new RegExp(
-        '\\.(' +
-        'corp\\.google\\.com|' +
-        'c\\.googlers\\.com|' +
-        'cloud\\.googlecorp\\.com|' +
-        '(internal|proxy)\\.gcpnode\\.com' +
-        ')$');
+        "\\.(" +
+        "corp\\.google\\.com|" +
+        "c\\.googlers\\.com|" +
+        "cloud\\.googlecorp\\.com|" +
+        "(internal|proxy)\\.gcpnode\\.com" +
+        ")$");
     if (hostname.match(googleHostRegexp)) {
-      value = '--config=google';
+      value = "--config=google";
     }
   }
-  this.$f('nassh-options', 'placeholder', value);
+  this.$f("nassh-options", "placeholder", value);
 };
 
 /**
  * Update the description placeholder.
  */
 ConnectDialog.prototype.updateDescriptionPlaceholder_ = function() {
-  const username = this.$f('username').value;
-  const hostname = this.$f('hostname').value;
+  const username = this.$f("username").value;
+  const hostname = this.$f("hostname").value;
 
   let placeholder;
 
   if (username && hostname) {
-    placeholder = username + '@' + hostname;
+    placeholder = username + "@" + hostname;
 
-    const v = this.$f('port').value;
+    const v = this.$f("port").value;
     if (v) {
-      placeholder += ':' + v;
+      placeholder += ":" + v;
     }
   } else {
-    placeholder = this.msg('FIELD_DESCRIPTION_PLACEHOLDER');
+    placeholder = this.msg("FIELD_DESCRIPTION_PLACEHOLDER");
   }
 
-  this.$f('description', 'placeholder', placeholder);
+  this.$f("description", "placeholder", placeholder);
 };
 
 /**
  * Sync the form with the current profile record.
  */
 ConnectDialog.prototype.syncForm_ = function() {
-  ['app', 'description', 'username', 'hostname', 'port', 'argstr',
-   'nassh-options', 'identity', 'terminal-profile', 'mount-path',
+  ["app", "description", "username", "hostname", "port", "argstr",
+   "nassh-options", "identity", "terminal-profile", "mount-path",
   ].forEach((n) => {
-      const emptyValue = '';
+      const emptyValue = "";
 
       if (this.currentProfileRecord_.prefs) {
         this.$f(n).value =
@@ -635,8 +635,8 @@ ConnectDialog.prototype.syncForm_ = function() {
       } else {
         // Would be nice if we could reuse the preference defaults.
         switch (n) {
-          case 'app':
-            this.$f(n).value = 'ssh';
+          case "app":
+            this.$f(n).value = "ssh";
             break;
           default:
             this.$f(n).value = emptyValue;
@@ -646,8 +646,8 @@ ConnectDialog.prototype.syncForm_ = function() {
     });
 
   // If the profile settings point to a key that no longer exists, reset it.
-  if (this.$f('identity').selectedIndex == -1) {
-    this.$f('identity').selectedIndex = 0;
+  if (this.$f("identity").selectedIndex == -1) {
+    this.$f("identity").selectedIndex = 0;
   }
 
   this.updateDetailPlaceholders_();
@@ -673,7 +673,7 @@ ConnectDialog.prototype.syncButtons_ = function() {
       this.shortcutList_.activeIndex != 0);
 
   this.displayMountButton_(this.checkMountable_() &&
-                           this.$f('app').value === 'mount');
+                           this.$f("app").value === "mount");
 };
 
 /**
@@ -683,11 +683,11 @@ ConnectDialog.prototype.syncButtons_ = function() {
  * @return {!Promise}
  */
 ConnectDialog.prototype.syncIdentityDropdown_ = async function(onSuccess) {
-  const identitySelect = this.$f('identity');
+  const identitySelect = this.$f("identity");
 
   let selectedName;
   if (this.currentProfileRecord_.prefs) {
-    selectedName = this.currentProfileRecord_.prefs.get('identity');
+    selectedName = this.currentProfileRecord_.prefs.get("identity");
   } else {
     selectedName = identitySelect.value;
   }
@@ -696,7 +696,7 @@ ConnectDialog.prototype.syncIdentityDropdown_ = async function(onSuccess) {
   try {
     keyfileNames = await getIdentityFileNames(this.fileSystem_);
   } catch (e) {
-    console.error('Loading keys failed', e);
+    console.error("Loading keys failed", e);
   }
 
   // Reset the list with the current set of keys.
@@ -704,14 +704,14 @@ ConnectDialog.prototype.syncIdentityDropdown_ = async function(onSuccess) {
     identitySelect.removeChild(identitySelect.firstChild);
   }
 
-  const option = document.createElement('option');
-  option.textContent = '[default]';
-  option.value = '';
+  const option = document.createElement("option");
+  option.textContent = "[default]";
+  option.value = "";
   identitySelect.appendChild(option);
 
   keyfileNames.sort().forEach((keyfileName) => {
-    const option = document.createElement('option');
-    const idx = keyfileName.lastIndexOf('/');
+    const option = document.createElement("option");
+    const idx = keyfileName.lastIndexOf("/");
     const key = keyfileName.substr(idx + 1);
     option.textContent = key;
     option.value = keyfileName;
@@ -784,7 +784,7 @@ ConnectDialog.prototype.getProfileIndex_ = function(id) {
  * @param {function()=} callback
  */
 ConnectDialog.prototype.syncProfiles_ = function(callback) {
-  const ids = this.prefs_.get('profile-ids');
+  const ids = this.prefs_.get("profile-ids");
 
   this.profileList_.length = 0;
   let currentProfileExists = false;
@@ -813,7 +813,7 @@ ConnectDialog.prototype.syncProfiles_ = function(callback) {
       p = this.profileMap_[id] = new ConnectDialog.ProfileRecord(
           id, this.prefs_.getProfile(id));
     } else if (p.prefs) {
-      p.textContent = p.prefs.get('description');
+      p.textContent = p.prefs.get("description");
     }
 
     this.profileList_.push(p);
@@ -842,7 +842,7 @@ ConnectDialog.prototype.syncProfiles_ = function(callback) {
   let initialized = 1;
 
   const onRead = function(profile) {
-    profile.textContent = profile.prefs.get('description');
+    profile.textContent = profile.prefs.get("description");
 
     if ((++initialized == this.profileList_.length) && callback) {
       callback();
@@ -885,7 +885,7 @@ ConnectDialog.prototype.onImportFiles_ = function(e) {
     .finally(() => {
       // If the import doesn't fully work (skip files/etc...), reset the UI
       // back to whatever the user has currently selected.
-      const select = this.$f('identity');
+      const select = this.$f("identity");
       const selectedIndex = select.selectedIndex;
 
       this.syncIdentityDropdown_(() => {
@@ -904,7 +904,7 @@ ConnectDialog.prototype.onImportFiles_ = function(e) {
         }
 
         // Clear the files list so the next import always works.
-        input.value = '';
+        input.value = "";
       });
     });
 
@@ -925,27 +925,27 @@ ConnectDialog.prototype.onDocumentKeyDown_ = function(e) {
   // Swallow common shortcuts that don't make sense in this app.
   switch (lowerKey) {
     // Shortcuts where we kill both the non-shift and shift variants.
-    case 'n':  // New window (!shift) and new incognito window (shift).
-    case 'p':  // Chrome print (!shift) and OS print (shift).
-    case 'o':  // Open (!shift) and bookmark manager (shift).
-    case 't':  // New tab (!shift) and new incognito tab (shift).
+    case "n":  // New window (!shift) and new incognito window (shift).
+    case "p":  // Chrome print (!shift) and OS print (shift).
+    case "o":  // Open (!shift) and bookmark manager (shift).
+    case "t":  // New tab (!shift) and new incognito tab (shift).
       // macOS puts these shortcuts behind the command (meta) key.
-      if (((hterm.os !== 'mac' && e.ctrlKey && !e.metaKey) ||
-           (hterm.os === 'mac' && !e.ctrlKey && e.metaKey)) &&
+      if (((hterm.os !== "mac" && e.ctrlKey && !e.metaKey) ||
+           (hterm.os === "mac" && !e.ctrlKey && e.metaKey)) &&
           !e.altKey) {
         cancel = true;
       }
       break;
 
     // Shortcuts where we only kill non-shift variants (and allow shift).
-    case 'j':  // Downloads.
-    case 'h':  // History.
-    case 's':  // Save.
-    case 'u':  // View source.
+    case "j":  // Downloads.
+    case "h":  // History.
+    case "s":  // Save.
+    case "u":  // View source.
       // These are the shortcuts on most platforms, but not macOS.  Since the
       // macOS versions are much more complicated, don't bother trying to block
       // them as it's much less likely they pressed them by accident.
-      if (hterm.os !== 'mac' && e.ctrlKey &&
+      if (hterm.os !== "mac" && e.ctrlKey &&
           !e.altKey && !e.metaKey && !e.shiftKey) {
         cancel = true;
       }
@@ -977,12 +977,12 @@ ConnectDialog.prototype.onShortcutListKeyDown_ = function(e) {
       // Otherwise the user is deleting the placeholder profile.  All we
       // do here is reset the form.
       this.syncForm_();
-      this.$f('description').focus();
+      this.$f("description").focus();
     }
 
   } else if (e.keyCode == 13) {
     if (isNewConnection) {
-      this.$f('description').focus();
+      this.$f("description").focus();
     } else {
       this.onConnectClick_();
     }
@@ -1019,7 +1019,7 @@ ConnectDialog.prototype.onButtonKeypress_ = function(e) {
  * Someone clicked on the connect button.
  */
 ConnectDialog.prototype.onConnectClick_ = function() {
-  if (this.connectButton_.getAttribute('disabled')) {
+  if (this.connectButton_.getAttribute("disabled")) {
     return;
   }
 
@@ -1032,11 +1032,11 @@ ConnectDialog.prototype.onConnectClick_ = function() {
  * @param {!Event} e
  */
 ConnectDialog.prototype.onDeleteClick_ = function(e) {
-  if (this.deleteButton_.getAttribute('disabled')) {
+  if (this.deleteButton_.getAttribute("disabled")) {
     return;
   }
 
-  if (document.activeElement.getAttribute('id') == 'field-identity') {
+  if (document.activeElement.getAttribute("id") == "field-identity") {
     this.deleteIdentity_(e.target.value);
   } else {
     this.deleteProfile_(this.currentProfileRecord_.id);

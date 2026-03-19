@@ -18,7 +18,7 @@
  */
 export function MockTerminalMouseEvent(type, options = {}) {
   let ret;
-  if (type == 'wheel') {
+  if (type == "wheel") {
     ret = new WheelEvent(type, options);
   } else {
     ret = new MouseEvent(type, options);

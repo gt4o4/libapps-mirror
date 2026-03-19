@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
 /**
  * A general packet. Utilizes an offset to keep track of data being
@@ -88,7 +88,7 @@ Packet.prototype.setUint64 = function(uint64) {
  *     to the packet.
  */
 Packet.prototype.setString = function(binaryString) {
-  if (typeof binaryString == 'string') {
+  if (typeof binaryString == "string") {
     binaryString = lib.codec.stringToCodeUnitArray(binaryString);
   }
   this.setUint32(binaryString.length);

@@ -8,20 +8,20 @@
  *                only.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {localize, sgrSequence} from './nassh.js';
-import {CommandInstance, splitCommandLine} from './nassh_command_instance.js';
-import {storageQuotasAreHigh} from './nassh_preference_manager.js';
-import {Client as sftpClient} from './nassh_sftp_client.js';
-import {SftpFsp} from './nassh_sftp_fsp.js';
+import {localize, sgrSequence} from "./nassh.js";
+import {CommandInstance, splitCommandLine} from "./nassh_command_instance.js";
+import {storageQuotasAreHigh} from "./nassh_preference_manager.js";
+import {Client as sftpClient} from "./nassh_sftp_client.js";
+import {SftpFsp} from "./nassh_sftp_fsp.js";
 import {
   bitsToUnixModeLine, epochToLocal, File, FileAttrs, FileXferAttrs, OpenFlags,
   StatusCodes,
-} from './nassh_sftp_packet_types.js';
-import {StatusError} from './nassh_sftp_status.js';
+} from "./nassh_sftp_packet_types.js";
+import {StatusError} from "./nassh_sftp_status.js";
 
 /**
  * Progress bar helper.
@@ -111,19 +111,19 @@ export class ProgressBar {
     const secs = Math.round(delta) / 1000;
     const rate = Math.round(max / delta * 1000);
     this.io_.println(localize(
-        'NASFTP_PROGRESS_SUMMARY', [max, secs, Cli.format_(rate)]));
+        "NASFTP_PROGRESS_SUMMARY", [max, secs, Cli.format_(rate)]));
   }
 }
 
 /**
  * Progress is tracked as a random spinner.
  */
-ProgressBar.prototype.RANDOM = Symbol('Random');
+ProgressBar.prototype.RANDOM = Symbol("Random");
 
 /**
  * Progress is tracked as a percentage output.
  */
-ProgressBar.prototype.PERCENTAGE = Symbol('Percentage');
+ProgressBar.prototype.PERCENTAGE = Symbol("Percentage");
 
 /**
  * Global nasftp preferences.
@@ -135,7 +135,7 @@ export class PreferenceManager extends lib.PreferenceManager {
    * @param {!lib.Storage} storage
    */
   constructor(storage) {
-    super(storage, '/nasftp/', {
+    super(storage, "/nasftp/", {
       // Condense only if underlying storage has quota limits.
       finegrain: storageQuotasAreHigh(storage),
     });
@@ -144,12 +144,12 @@ export class PreferenceManager extends lib.PreferenceManager {
       /**
        * The shell prompt.
        */
-      ['prompt', null],
+      ["prompt", null],
 
       /**
        * Whether to use colors.
        */
-      ['color', true],
+      ["color", true],
     ]);
   }
 }
@@ -164,7 +164,7 @@ export class LocalPreferenceManager extends lib.PreferenceManager {
    * @param {!lib.Storage} storage
    */
   constructor(storage) {
-    super(storage, '/nasftp/');
+    super(storage, "/nasftp/");
 
     this.definePreferences([
       /**
@@ -175,12 +175,12 @@ export class LocalPreferenceManager extends lib.PreferenceManager {
        * - a: Use <a> tags.
        * - fsapi: Use FileSystem APIs.
        */
-      ['downloadMode', null],
+      ["downloadMode", null],
 
       /**
        * Previous commands run.
        */
-      ['history', []],
+      ["history", []],
     ]);
   }
 }
@@ -252,10 +252,10 @@ class AnchorTagFileWriter extends FileWriter {
    */
   async init(resume) {
     if (resume) {
-      return Promise.reject('unimplemented');
+      return Promise.reject("unimplemented");
     }
 
-    this.a = this.document.createElement('a');
+    this.a = this.document.createElement("a");
     this.a.download = this.name;
 
     // Need to add to the DOM to process events properly.
@@ -323,11 +323,11 @@ class FileSystemApiFileWriter extends FileWriter {
    */
   async init(resume) {
     if (this.cli.lcwd === null) {
-      await this.cli.dispatchCommand_(['lcd']);
+      await this.cli.dispatchCommand_(["lcd"]);
     }
     if (this.cli.lcwd === null) {
       // If it's still null, the user aborted selection, so give up here too.
-      throw new DOMException('lcd aborted', 'AbortError');
+      throw new DOMException("lcd aborted", "AbortError");
     }
 
     const fsDirHandle = this.cli.lcwd;
@@ -341,8 +341,8 @@ class FileSystemApiFileWriter extends FileWriter {
         // them to pick the filename explicitly in this case.
         this.cli.showError_(e.toString());
         fsFileHandle = await globalThis.showSaveFilePicker({
-          id: 'lcd',
-          startIn: 'downloads',
+          id: "lcd",
+          startIn: "downloads",
           suggestedName: this.name,
         });
       } else {
@@ -406,7 +406,7 @@ class FileSystemApiFileWriter extends FileWriter {
  */
 function getFileWriter(name, options) {
   if (globalThis.showDirectoryPicker === undefined ||
-      options.prefs.get('downloadMode') === 'a') {
+      options.prefs.get("downloadMode") === "a") {
     return new AnchorTagFileWriter(name, options);
   } else {
     return new FileSystemApiFileWriter(name, options);
@@ -442,7 +442,7 @@ export function Cli(commandInstance, {localStorage} = {}) {
 
   // The initial remote path for the sftp client.  The user can change at
   // runtime via the `cd` command.
-  this.cwd = './';
+  this.cwd = "./";
 
   // The initial local path for the sftp client.  The user can change at
   // runtime via the `lcd` command.
@@ -450,10 +450,10 @@ export function Cli(commandInstance, {localStorage} = {}) {
   this.lcwd = null;
 
   // The pending user line buffer.
-  this.stdin_ = '';
+  this.stdin_ = "";
 
   // The undisplayed user input.
-  this.buffered_ = '';
+  this.buffered_ = "";
   this.holdInput_ = false;
 
   // Used to manually break a connection.
@@ -465,7 +465,7 @@ export function Cli(commandInstance, {localStorage} = {}) {
   // Command line history.
   this.history_ = [];
   this.historyPosition_ = -1;
-  this.historyStash_ = '';
+  this.historyStash_ = "";
 
   // The color settings for this session.  Enabled by default.
   this.colorMap_ = {};
@@ -484,27 +484,27 @@ export function Cli(commandInstance, {localStorage} = {}) {
 
   // Set up keyboard shortcuts.
   this.terminal.keyboard.bindings.addBindings({
-    'Ctrl+C': this.onCtrlCKey_.bind(this),
-    'Ctrl+D': this.onCtrlDKey_.bind(this),
-    'Ctrl+H': this.onBackspaceKey_.bind(this),
-    'Ctrl+I': this.onTabKey_.bind(this),
+    "Ctrl+C": this.onCtrlCKey_.bind(this),
+    "Ctrl+D": this.onCtrlDKey_.bind(this),
+    "Ctrl+H": this.onBackspaceKey_.bind(this),
+    "Ctrl+I": this.onTabKey_.bind(this),
     // Open the brower's downloads page.
-    'Ctrl+J': hterm.Keyboard.KeyActions.PASS,
-    'Ctrl+L': this.onCtrlLKey_.bind(this),
-    'Ctrl+U': this.onCtrlUKey_.bind(this),
-    'Ctrl+W': this.onCtrlWKey_.bind(this),
-    'Ctrl+220': this.onCtrlBackslashKey_.bind(this),
-    'Backspace': this.onBackspaceKey_.bind(this),
-    'Delete': hterm.Keyboard.KeyActions.CANCEL,
-    'Tab': this.onTabKey_.bind(this),
-    'Up': this.onUpArrowKey_.bind(this),
-    'Down': this.onDownArrowKey_.bind(this),
-    'Left': hterm.Keyboard.KeyActions.CANCEL,
-    'Right': hterm.Keyboard.KeyActions.CANCEL,
-    'PgDown': hterm.Keyboard.KeyActions.CANCEL,
-    'PgUp': hterm.Keyboard.KeyActions.CANCEL,
-    'Home': hterm.Keyboard.KeyActions.CANCEL,
-    'End': hterm.Keyboard.KeyActions.CANCEL,
+    "Ctrl+J": hterm.Keyboard.KeyActions.PASS,
+    "Ctrl+L": this.onCtrlLKey_.bind(this),
+    "Ctrl+U": this.onCtrlUKey_.bind(this),
+    "Ctrl+W": this.onCtrlWKey_.bind(this),
+    "Ctrl+220": this.onCtrlBackslashKey_.bind(this),
+    "Backspace": this.onBackspaceKey_.bind(this),
+    "Delete": hterm.Keyboard.KeyActions.CANCEL,
+    "Tab": this.onTabKey_.bind(this),
+    "Up": this.onUpArrowKey_.bind(this),
+    "Down": this.onDownArrowKey_.bind(this),
+    "Left": hterm.Keyboard.KeyActions.CANCEL,
+    "Right": hterm.Keyboard.KeyActions.CANCEL,
+    "PgDown": hterm.Keyboard.KeyActions.CANCEL,
+    "PgUp": hterm.Keyboard.KeyActions.CANCEL,
+    "Home": hterm.Keyboard.KeyActions.CANCEL,
+    "End": hterm.Keyboard.KeyActions.CANCEL,
   });
 
   // Take care of translating the available commands.
@@ -518,24 +518,24 @@ Cli.prototype.run = async function() {
   await this.prefs_.readStorage();
   await this.localPrefs_.readStorage();
 
-  const prompt = this.prefs_.get('prompt');
-  if (typeof prompt === 'string') {
+  const prompt = this.prefs_.get("prompt");
+  if (typeof prompt === "string") {
     this.prompt_ = prompt;
   } else {
-    this.prefs_.reset('prompt');
+    this.prefs_.reset("prompt");
   }
 
-  if (!this.prefs_.getBoolean('color')) {
+  if (!this.prefs_.getBoolean("color")) {
     // Assume colors default to on, so we only have to turn them off.
     this.toggleColors_(false);
   }
 
-  const history = this.localPrefs_.get('history');
+  const history = this.localPrefs_.get("history");
   if (Array.isArray(history)) {
     // Create a copy so we don't mutate the value in storage.
     this.history_ = [...history];
   } else {
-    this.localPrefs_.reset('history');
+    this.localPrefs_.reset("history");
   }
 
   // Now that we're ready, show the user the prompt.
@@ -550,7 +550,7 @@ Cli.prototype.run = async function() {
  * @param {string=} string The string to filter.
  * @return {string} The escaped string for printing.
  */
-Cli.prototype.escapeString_ = function(string = '') {
+Cli.prototype.escapeString_ = function(string = "") {
   const map = (ch) => {
     const cp = ch.codePointAt(0);
     return String.fromCodePoint(cp == 0x7f ? 0x2421 : cp + 0x2400);
@@ -566,7 +566,7 @@ Cli.prototype.escapeString_ = function(string = '') {
  * @return {string} The formatted number.
  */
 Cli.format_ = function(number) {
-  const sfx = 'BKMGTPEZY';
+  const sfx = "BKMGTPEZY";
   let i = 1;
   while (i < sfx.length && Math.pow(1024, i) < number) {
     ++i;
@@ -587,7 +587,7 @@ Cli.format_ = function(number) {
  *
  * @param {string=} string The string to filter and display.
  */
-Cli.prototype.rawprint_ = function(string = '') {
+Cli.prototype.rawprint_ = function(string = "") {
   this.io.print(this.escapeString_(string));
 };
 
@@ -598,7 +598,7 @@ Cli.prototype.rawprint_ = function(string = '') {
  */
 Cli.prototype.rawprintln_ = function(string) {
   this.rawprint_(string);
-  this.io.println('');
+  this.io.println("");
 };
 
 /**
@@ -609,7 +609,7 @@ Cli.prototype.rawprintln_ = function(string) {
  */
 Cli.prototype.dispatchCommand_ = function(userArgs) {
   let args;
-  if (typeof userArgs == 'string') {
+  if (typeof userArgs == "string") {
     // The existing func isn't great, but it's better than nothing.
     const cmdline = splitCommandLine(userArgs);
     args = cmdline.args;
@@ -625,7 +625,7 @@ Cli.prototype.dispatchCommand_ = function(userArgs) {
   const handler = this.commands_[cmd];
 
   const showCrash = (e) => {
-    this.showError_(localize('NASFTP_ERROR_INTERNAL', [e]));
+    this.showError_(localize("NASFTP_ERROR_INTERNAL", [e]));
     const lines = e.stack.split(/[\r\n]/);
     lines.forEach((line) => this.rawprintln_(line));
   };
@@ -667,12 +667,12 @@ Cli.prototype.onInputChar_ = function(ch) {
   this.killCount_ = 0;
 
   // Wait for the command to commit (hit enter).
-  if (ch == '\n' || ch == '\r') {
-    this.io.println('');
+  if (ch == "\n" || ch == "\r") {
+    this.io.println("");
 
     // Strip leading & trailing whitespace before processing.
-    let data = this.stdin_.replace(/^\s*/, '');
-    data = data.replace(/\s*$/, '');
+    let data = this.stdin_.replace(/^\s*/, "");
+    data = data.replace(/\s*$/, "");
 
     return new Promise((resolve) => {
       /**
@@ -682,14 +682,14 @@ Cli.prototype.onInputChar_ = function(ch) {
        *     the event with the uncaught promise that we need to handle.
        */
       const finishCommand = (e) => {
-        globalThis.removeEventListener('unhandledrejection', finishCommand);
+        globalThis.removeEventListener("unhandledrejection", finishCommand);
         resolve();
 
         if (e) {
           if (e.reason instanceof StatusError) {
             this.showSftpStatusError_(e.reason, data);
           } else {
-            this.showError_(localize('NASFTP_ERROR_INTERNAL', [e.reason]));
+            this.showError_(localize("NASFTP_ERROR_INTERNAL", [e.reason]));
           }
         }
 
@@ -700,10 +700,10 @@ Cli.prototype.onInputChar_ = function(ch) {
             this.history_.length = 100;
           }
           // Create a copy so we don't mutate the value in storage.
-          this.localPrefs_.set('history', [...this.history_]);
+          this.localPrefs_.set("history", [...this.history_]);
         }
         this.historyPosition_ = -1;
-        this.stdin_ = '';
+        this.stdin_ = "";
 
         // If we've exited, don't show anything more.
         if (this.commandInstance_.exited_) {
@@ -714,21 +714,21 @@ Cli.prototype.onInputChar_ = function(ch) {
         this.showPrompt_();
         // If the user interrupted us, clear all queued/pending data too.
         if (this.userInterrupted_) {
-          this.buffered_ = '';
+          this.buffered_ = "";
         }
         this.userInterrupted_ = false;
       };
 
       // If the subcommand uses an async handler that rejects or crashes,
       // catch it and recover gracefully.
-      globalThis.addEventListener('unhandledrejection', finishCommand);
+      globalThis.addEventListener("unhandledrejection", finishCommand);
 
       // Dispatch the command and wait for it to finish.
       return this.dispatchCommand_(data)
         .catch((cmd) => {
           // Don't warn when the user just hits enter w/out a command.
           if (cmd) {
-            this.showError_(localize('NASFTP_ERROR_UNKNOWN_CMD', [cmd]));
+            this.showError_(localize("NASFTP_ERROR_UNKNOWN_CMD", [cmd]));
           }
         })
         .finally(finishCommand);
@@ -788,13 +788,13 @@ Cli.prototype.onCtrlCKey_ = function() {
   // If we're processing a command still, don't do anything.
   if (this.holdInput_) {
     this.userInterrupted_ = true;
-    this.io.println('^C');
+    this.io.println("^C");
 
     return hterm.Keyboard.KeyActions.CANCEL;
   }
 
-  this.stdin_ = '';
-  this.io.println('^C');
+  this.stdin_ = "";
+  this.io.println("^C");
   this.showPrompt_();
 
   return hterm.Keyboard.KeyActions.CANCEL;
@@ -811,8 +811,8 @@ Cli.prototype.onCtrlDKey_ = function() {
     return hterm.Keyboard.KeyActions.CANCEL;
   }
 
-  if (this.stdin_ == '') {
-    this.io.println('');
+  if (this.stdin_ == "") {
+    this.io.println("");
     Cli.commandQuit_.call(this, []);
   }
 
@@ -848,7 +848,7 @@ Cli.prototype.onCtrlUKey_ = function() {
     return hterm.Keyboard.KeyActions.CANCEL;
   }
 
-  this.stdin_ = '';
+  this.stdin_ = "";
   this.terminal.eraseToLeft();
   this.terminal.setCursorColumn(0);
   this.showPrompt_();
@@ -869,7 +869,7 @@ Cli.prototype.onCtrlWKey_ = function() {
 
   // Delete the last word and any whitespace after it.
   // If there are no words left, eat all the whitespace.
-  this.stdin_ = this.stdin_.replace(/(^\s+|[^\s]+)\s*$/, '');
+  this.stdin_ = this.stdin_.replace(/(^\s+|[^\s]+)\s*$/, "");
 
   this.terminal.eraseToLeft();
   this.terminal.setCursorColumn(0);
@@ -887,7 +887,7 @@ Cli.prototype.onCtrlWKey_ = function() {
 Cli.prototype.onCtrlBackslashKey_ = function() {
   if (this.holdInput_) {
     if (++this.killCount_ > 2) {
-      this.io.println(localize('NASFTP_FORCE_QUIT'));
+      this.io.println(localize("NASFTP_FORCE_QUIT"));
       Cli.commandQuit_.call(this, []);
     }
   }
@@ -908,7 +908,7 @@ Cli.prototype.onBackspaceKey_ = function() {
 
   if (this.stdin_.length) {
     this.stdin_ = this.stdin_.slice(0, -1);
-    this.io.print('\b \b');
+    this.io.print("\b \b");
   }
 
   return hterm.Keyboard.KeyActions.CANCEL;
@@ -936,7 +936,7 @@ Cli.prototype.completeCommand_ = function(input) {
   const matches = [];
   for (const command in this.commands_) {
     // Hack: don't expand internal commands unless explicitly requested.
-    if (input.length == 0 && command.startsWith('_')) {
+    if (input.length == 0 && command.startsWith("_")) {
       continue;
     }
 
@@ -962,22 +962,22 @@ Cli.prototype.completeCommand_ = function(input) {
  */
 Cli.prototype.completeCommandOptions_ = function(args, opts) {
   // Walk the args the user has already provided and pull out options.
-  const matches = new Set(opts.split(''));
+  const matches = new Set(opts.split(""));
 
   for (let i = 1; i < args.length; ++i) {
     const arg = args[i];
     // Stop parsing at -- to delimit options from arguments.
-    if (arg == '--') {
+    if (arg == "--") {
       return null;
     }
 
     // If this isn't an option, assume everything remaining is also not.
-    if (arg[0] != '-') {
+    if (arg[0] != "-") {
       return null;
     }
 
     // Record these options so we don't suggest them as completions.
-    arg.substr(1).split('').forEach((c) => matches.delete(c));
+    arg.substr(1).split("").forEach((c) => matches.delete(c));
   }
 
   return /** @type {!Cli.Completion} */ ({
@@ -997,7 +997,7 @@ Cli.prototype.completeCommandOptions_ = function(args, opts) {
 Cli.prototype.completeRemotePath_ = async function(
     args, filter = undefined) {
   const input = args[args.length - 1];
-  const lastSlash = input.lastIndexOf('/') + 1;
+  const lastSlash = input.lastIndexOf("/") + 1;
   const parent = input.substr(0, lastSlash);
   const lastpath = input.substr(lastSlash);
   const expandedParent = this.makePath_(parent);
@@ -1012,7 +1012,7 @@ Cli.prototype.completeRemotePath_ = async function(
           }
 
           // Skip dot paths unless input starts with an explicit dot.
-          if (!lastpath && entry.filename[0] === '.') {
+          if (!lastpath && entry.filename[0] === ".") {
             return false;
           } else if (!entry.filename.startsWith(lastpath)) {
             return false;
@@ -1026,7 +1026,7 @@ Cli.prototype.completeRemotePath_ = async function(
   const fullPaths = matches.map((entry) => {
     let ret = parent + entry.filename;
     if (entry.isDirectory) {
-      ret += '/';
+      ret += "/";
     }
     return ret;
   });
@@ -1204,8 +1204,8 @@ Cli.prototype.completeFinishMatches_ = async function(
       // allows quick completion of subdirs by pressing Tab multiple times.
       // This is a bit of a heuristic, but we don't use / for anything else
       // atm, so it's OK.
-      if (!complete.endsWith('/')) {
-        complete += ' ';
+      if (!complete.endsWith("/")) {
+        complete += " ";
       }
       this.io.print(complete);
       this.stdin_ += complete;
@@ -1225,7 +1225,7 @@ Cli.prototype.completeFinishMatches_ = async function(
 
       // Show all the completions.
       this.terminal.ringBell();
-      this.io.println('');
+      this.io.println("");
       // Figure out the max width of the matches so we can print them all in
       // tidy columns.  They're currently sorted left-to-right rather than
       // top-to-bottom as it's easier (read: lazier) to do it this way.
@@ -1240,15 +1240,15 @@ Cli.prototype.completeFinishMatches_ = async function(
         }
         this.io.print(complete.substr(skip_).padEnd(maxWidth));
         if (color) {
-          this.io.print(this.colorMap_['reset']);
+          this.io.print(this.colorMap_["reset"]);
         }
         if (++lineCount >= perLine) {
-          this.io.println('');
+          this.io.println("");
           lineCount = 0;
         }
       });
       if (lineCount) {
-        this.io.println('');
+        this.io.println("");
       }
       this.showPrompt_();
       this.io.print(this.stdin_);
@@ -1324,18 +1324,18 @@ Cli.prototype.onDownArrowKey_ = function() {
  * Color settings for the interface.
  */
 export const defaultColorMap = {
-  'reset': {},
-  'bold': {bold: true},
-  'prompt': {bold: true, fg: 30},
-  'error': {bold: true, fg: 31},
-  'warning': {bold: true, fg: 33},
+  "reset": {},
+  "bold": {bold: true},
+  "prompt": {bold: true, fg: 30},
+  "error": {bold: true, fg: 31},
+  "warning": {bold: true, fg: 33},
   // File types.
-  'dir': {bold: true, fg: 34},
-  'sym': {bold: true, fg: 36},
-  'fifo': {bold: true, fg: 33, bg: 40},
-  'socket': {bold: true, fg: 35},
-  'char': {bold: true, fg: 33, bg: 40},
-  'block': {bold: true, fg: 33, bg: 40},
+  "dir": {bold: true, fg: 34},
+  "sym": {bold: true, fg: 36},
+  "fifo": {bold: true, fg: 33, bg: 40},
+  "socket": {bold: true, fg: 35},
+  "char": {bold: true, fg: 33, bg: 40},
+  "block": {bold: true, fg: 33, bg: 40},
 };
 
 /**
@@ -1345,19 +1345,19 @@ export const defaultColorMap = {
  */
 Cli.prototype.toggleColors_ = function(state = undefined) {
   if (state === undefined) {
-    state = !this.colorMap_['prompt'];
+    state = !this.colorMap_["prompt"];
   }
 
   if (!state) {
     Object.keys(defaultColorMap).forEach((key) => {
-      this.colorMap_[key] = '';
+      this.colorMap_[key] = "";
     });
   } else {
     this.colorMap_ = Object.assign({}, defaultColorMap);
   }
 
   // Always keep 'reset' working for the prompt.
-  this.colorMap_['reset'] = defaultColorMap['reset'];
+  this.colorMap_["reset"] = defaultColorMap["reset"];
 };
 
 /**
@@ -1376,17 +1376,17 @@ Object.entries(defaultColorMap).forEach(([key, setting]) => {
 Cli.prototype.getColorForAttrs_ = function(attrs) {
   // NB: Check link before others.
   if (attrs.isLink) {
-    return this.colorMap_['sym'];
+    return this.colorMap_["sym"];
   } else if (attrs.isDirectory) {
-    return this.colorMap_['dir'];
+    return this.colorMap_["dir"];
   } else if (attrs.isCharacterDevice) {
-    return this.colorMap_['char'];
+    return this.colorMap_["char"];
   } else if (attrs.isBlockDevice) {
-    return this.colorMap_['block'];
+    return this.colorMap_["block"];
   } else if (attrs.isFifo) {
-    return this.colorMap_['fifo'];
+    return this.colorMap_["fifo"];
   } else if (attrs.isSocket) {
-    return this.colorMap_['socket'];
+    return this.colorMap_["socket"];
   } else {
     return null;
   }
@@ -1399,26 +1399,26 @@ Cli.prototype.getColorForAttrs_ = function(attrs) {
  */
 Cli.prototype.showPrompt_ = function() {
   let prompt = this.prompt_;
-  const defaultPrompt = localize('NASFTP_PROMPT', ['%(cwd)']);
+  const defaultPrompt = localize("NASFTP_PROMPT", ["%(cwd)"]);
   if (prompt === null) {
     // Normally one should not mess with translation text.  But it's a bit hard
     // to preserve colorization settings.  So hand insert it if possible.
-    prompt = defaultPrompt.replace('nasftp', '%(prompt)nasftp%(reset)');
-  } else if (this.prompt_ == '') {
+    prompt = defaultPrompt.replace("nasftp", "%(prompt)nasftp%(reset)");
+  } else if (this.prompt_ == "") {
     prompt = defaultPrompt.replace(
-        'nasftp',
-        '%(bold)' +
-        sgrSequence({fg: '38:2:51:105:232'}) + 'n' +
-        sgrSequence({fg: '38:2:213:15:37'}) + 'a' +
-        sgrSequence({fg: '38:2:238:178:17'}) + 's' +
-        sgrSequence({fg: '38:2:51:105:232'}) + 'f' +
-        sgrSequence({fg: '38:2:0:153:37'}) + 't' +
-        sgrSequence({fg: '38:2:213:15:37'}) + 'p' +
-        '%(reset)');
+        "nasftp",
+        "%(bold)" +
+        sgrSequence({fg: "38:2:51:105:232"}) + "n" +
+        sgrSequence({fg: "38:2:213:15:37"}) + "a" +
+        sgrSequence({fg: "38:2:238:178:17"}) + "s" +
+        sgrSequence({fg: "38:2:51:105:232"}) + "f" +
+        sgrSequence({fg: "38:2:0:153:37"}) + "t" +
+        sgrSequence({fg: "38:2:213:15:37"}) + "p" +
+        "%(reset)");
   }
 
   const vars = Object.assign({}, this.colorMap_, {
-    'cwd': this.escapeString_(this.cwd),
+    "cwd": this.escapeString_(this.cwd),
   });
 
   this.io.print(lib.f.replaceVars(prompt, vars));
@@ -1430,7 +1430,7 @@ Cli.prototype.showPrompt_ = function() {
  * @param {string} msg The message to show.
  */
 Cli.prototype.showError_ = function(msg) {
-  this.io.println(localize('NASFTP_ERROR_MESSAGE', [msg]));
+  this.io.println(localize("NASFTP_ERROR_MESSAGE", [msg]));
 };
 
 /**
@@ -1444,16 +1444,16 @@ Cli.prototype.showSftpStatusError_ = function(response, cmd) {
   const msgArgs = [cmd];
   switch (response.code) {
     case StatusCodes.EOF:
-      msgId = 'NASFTP_ERROR_END_OF_FILE';
+      msgId = "NASFTP_ERROR_END_OF_FILE";
       break;
     case StatusCodes.NO_SUCH_FILE:
-      msgId = 'NASFTP_ERROR_FILE_NOT_FOUND';
+      msgId = "NASFTP_ERROR_FILE_NOT_FOUND";
       break;
     case StatusCodes.PERMISSION_DENIED:
-      msgId = 'NASFTP_ERROR_PERMISSION_DENIED';
+      msgId = "NASFTP_ERROR_PERMISSION_DENIED";
       break;
     default:
-      msgId = 'NASFTP_ERROR_SERVER_ERROR';
+      msgId = "NASFTP_ERROR_SERVER_ERROR";
       msgArgs.push(response.message);
       break;
   }
@@ -1478,20 +1478,20 @@ Cli.prototype.parseInt_ = function(
 
   let ret = parseInt(argValue, radix);
   if (!isFinite(ret)) {
-    this.showError_(localize('NASFTP_ERROR_INVALID_NUMBER', [
+    this.showError_(localize("NASFTP_ERROR_INVALID_NUMBER", [
       cmd, argName, argValue,
     ]));
     return null;
   }
 
   // Handle optional size units.
-  const knownSuffix = 'KMGTPEZY';
+  const knownSuffix = "KMGTPEZY";
   let scale = 1;
   let offset;
-  if (argValue.endsWith('iB')) {
+  if (argValue.endsWith("iB")) {
     scale = 1024;
     offset = 3;
-  } else if (argValue.endsWith('B')) {
+  } else if (argValue.endsWith("B")) {
     scale = 1000;
     offset = 2;
   } else if (knownSuffix.includes(argValue[argValue.length - 1])) {
@@ -1501,7 +1501,7 @@ Cli.prototype.parseInt_ = function(
   if (offset !== undefined) {
     const sfx = argValue[argValue.length - offset];
     if (!knownSuffix.includes(sfx)) {
-      this.showError_(localize('NASFTP_ERROR_INVALID_NUMBER', [
+      this.showError_(localize("NASFTP_ERROR_INVALID_NUMBER", [
         cmd, argName, argValue,
       ]));
       return null;
@@ -1536,16 +1536,16 @@ Cli.prototype.parseOpts_ = function(args, optstring) {
   while (args.length) {
     const arg = args[0];
 
-    if (arg == '--') {
+    if (arg == "--") {
       args.shift();
       break;
-    } else if (arg.startsWith('-')) {
+    } else if (arg.startsWith("-")) {
       const flags = arg.substr(1);
       for (let f = 0; f < flags.length; ++f) {
         const opt = flags[f];
         if (optstring.indexOf(opt) == -1) {
           this.showError_(localize(
-              'NASFTP_ERROR_UNKNOWN_OPTION', [args.cmd, opt]));
+              "NASFTP_ERROR_UNKNOWN_OPTION", [args.cmd, opt]));
           return null;
         } else {
           opts[opt] = true;
@@ -1567,7 +1567,7 @@ Cli.prototype.parseOpts_ = function(args, optstring) {
  * @return {string} The absolute path.
  */
 Cli.prototype.basename = function(path) {
-  const ary = path.replace(/\/+$/, '').split('/');
+  const ary = path.replace(/\/+$/, "").split("/");
   return ary[ary.length - 1];
 };
 
@@ -1578,7 +1578,7 @@ Cli.prototype.basename = function(path) {
  * @return {string} The absolute path.
  */
 Cli.prototype.makePath_ = function(path) {
-  return path.startsWith('/') ? path : this.cwd + path;
+  return path.startsWith("/") ? path : this.cwd + path;
 };
 
 /**
@@ -1607,7 +1607,7 @@ Cli.prototype.translateCommands = function(commands) {
     }
 
     // Add the help translation text if available.
-    msgId += '_HELP';
+    msgId += "_HELP";
     msg = localize(msgId);
     if (msg != msgId) {
       obj.help = msg;
@@ -1662,12 +1662,12 @@ Cli.addCommand_ = function(
 
       // Now check the set of arguments.
       if (args.length < minArgs) {
-        this.showError_(localize('NASFTP_ERROR_NOT_ENOUGH_ARGS', [args.cmd]));
+        this.showError_(localize("NASFTP_ERROR_NOT_ENOUGH_ARGS", [args.cmd]));
         return Promise.resolve();
       }
 
       if (maxArgs !== null && args.length > maxArgs) {
-        this.showError_(localize('NASFTP_ERROR_TOO_MANY_ARGS', [args.cmd]));
+        this.showError_(localize("NASFTP_ERROR_TOO_MANY_ARGS", [args.cmd]));
         return Promise.resolve();
       }
 
@@ -1693,8 +1693,8 @@ Cli.addCommand_ = function(
  */
 Cli.commandCat_ = function(args) {
   const path = args.shift();
-  const offset = this.parseInt_(args.cmd, 'offset', args.shift());
-  let length = this.parseInt_(args.cmd, 'length', args.shift(), -1);
+  const offset = this.parseInt_(args.cmd, "offset", args.shift());
+  let length = this.parseInt_(args.cmd, "length", args.shift(), -1);
 
   if (length === null || offset === null) {
     return Promise.resolve();
@@ -1717,7 +1717,7 @@ Cli.commandCat_ = function(args) {
     let start = 0;
 
     while (start < chunk.length) {
-      const pos = chunk.indexOf('\n', start);
+      const pos = chunk.indexOf("\n", start);
       if (pos == -1) {
         // We've hit the end of the newlines.
         if (start < chunk.length) {
@@ -1729,7 +1729,7 @@ Cli.commandCat_ = function(args) {
 
       let dispPos = pos;
       // Strip off DOS line endings if they exist.
-      if (chunk[dispPos - 1] == '\r') {
+      if (chunk[dispPos - 1] == "\r") {
         dispPos -= 1;
       }
       finalNewline = true;
@@ -1742,7 +1742,7 @@ Cli.commandCat_ = function(args) {
   return this.client.readFile(this.makePath_(path), handleChunk, offset, length)
     .then(() => {
       if (!finalNewline) {
-        this.io.println('');
+        this.io.println("");
       }
     });
 };
@@ -1760,7 +1760,7 @@ Cli.completeCat_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['cat'], 1, 3, '', '<path> [offset] [length]',
+Cli.addCommand_(["cat"], 1, 3, "", "<path> [offset] [length]",
                 Cli.commandCat_, Cli.completeCat_);
 
 /**
@@ -1772,12 +1772,12 @@ Cli.addCommand_(['cat'], 1, 3, '', '<path> [offset] [length]',
  */
 Cli.commandCd_ = function(args) {
   // Make sure the path ends in a slash to make logic simpler.
-  const normalize = (path) => path.replace(/\/*$/, '') + '/';
+  const normalize = (path) => path.replace(/\/*$/, "") + "/";
 
   let cwd = args.shift();
   if (cwd === undefined) {
-    cwd = '.';
-  } else if (cwd == '~' || cwd.startsWith('~/')) {
+    cwd = ".";
+  } else if (cwd == "~" || cwd.startsWith("~/")) {
     // We don't support ~user/ syntax since SFTPv3 offers no way of looking up
     // a user homedir based on username or uid.  Only the current user.
     cwd = `.${cwd.slice(1)}`;
@@ -1816,7 +1816,7 @@ Cli.completeCd_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['chdir', 'cd'], 0, 1, '', '[path]',
+Cli.addCommand_(["chdir", "cd"], 0, 1, "", "[path]",
                 Cli.commandCd_, Cli.completeCd_);
 
 /**
@@ -1827,15 +1827,15 @@ Cli.addCommand_(['chdir', 'cd'], 0, 1, '', '[path]',
  * @return {!Promise<void>}
  */
 Cli.commandChmod_ = function(args) {
-  const mode = this.parseInt_(args.cmd, 'mode', args.shift(), 0, 8);
+  const mode = this.parseInt_(args.cmd, "mode", args.shift(), 0, 8);
 
   if (mode === null) {
     return Promise.resolve();
   }
 
   const attrs = {
-    'flags': FileXferAttrs.PERMISSIONS,
-    'permissions': mode,
+    "flags": FileXferAttrs.PERMISSIONS,
+    "permissions": mode,
   };
 
   // Create a chain of promises by processing each path in serial.
@@ -1857,7 +1857,7 @@ Cli.completeChmod_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['chmod'], 2, null, '', '<mode> <paths...>',
+Cli.addCommand_(["chmod"], 2, null, "", "<mode> <paths...>",
                 Cli.commandChmod_, Cli.completeChmod_);
 
 /**
@@ -1868,7 +1868,7 @@ Cli.addCommand_(['chmod'], 2, null, '', '<mode> <paths...>',
  * @return {!Promise<void>}
  */
 Cli.commandChown_ = function(args) {
-  const account = this.parseInt_(args.cmd, 'account', args.shift());
+  const account = this.parseInt_(args.cmd, "account", args.shift());
 
   if (account === null) {
     return Promise.resolve();
@@ -1881,9 +1881,9 @@ Cli.commandChown_ = function(args) {
         // Need the lib.notNull again as closure compiler is unable to handle
         // the check above for some reason.
         const /** @type {!FileAttrs} */ newAttrs = {
-          'flags': FileXferAttrs.UIDGID,
-          'uid': args.cmd === 'chown' ? lib.notNull(account) : attrs.uid,
-          'gid': args.cmd !== 'chown' ? lib.notNull(account) : attrs.gid,
+          "flags": FileXferAttrs.UIDGID,
+          "uid": args.cmd === "chown" ? lib.notNull(account) : attrs.uid,
+          "gid": args.cmd !== "chown" ? lib.notNull(account) : attrs.gid,
         };
         return this.client.setFileStatus(this.makePath_(path), newAttrs);
       });
@@ -1903,7 +1903,7 @@ Cli.completeChown_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['chgrp', 'chown'], 2, null, '', '<account> <paths...>',
+Cli.addCommand_(["chgrp", "chown"], 2, null, "", "<account> <paths...>",
                 Cli.commandChown_, Cli.completeChown_);
 
 /**
@@ -1917,7 +1917,7 @@ Cli.commandClear_ = function(_args) {
   this.terminal.clearHome();
   return Promise.resolve();
 };
-Cli.addCommand_(['clear'], 0, 0, '', '',
+Cli.addCommand_(["clear"], 0, 0, "", "",
                 Cli.commandClear_);
 
 /**
@@ -1929,8 +1929,8 @@ Cli.addCommand_(['clear'], 0, 0, '', '',
  */
 Cli.commandClip_ = function(args) {
   const path = args.shift();
-  const offset = this.parseInt_(args.cmd, 'offset', args.shift());
-  const length = this.parseInt_(args.cmd, 'length', args.shift(),
+  const offset = this.parseInt_(args.cmd, "offset", args.shift());
+  const length = this.parseInt_(args.cmd, "length", args.shift(),
                                 10 * 1024 * 1024);
 
   if (length === null || offset === null) {
@@ -1953,7 +1953,7 @@ Cli.commandClip_ = function(args) {
   return this.client.readFile(this.makePath_(path), handleChunk, offset, length)
     .then(() => (new Blob(chunks)).text())
     .then((string) => {
-      this.io.println(localize('NASFTP_CMD_CLIP_SUMMARY', [string.length]));
+      this.io.println(localize("NASFTP_CMD_CLIP_SUMMARY", [string.length]));
       this.terminal.copyStringToClipboard(string);
     });
 };
@@ -1971,8 +1971,8 @@ Cli.completeClip_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['clip', 'clipboard'], 1, 3, '',
-                       '<path> [offset] [length]',
+Cli.addCommand_(["clip", "clipboard"], 1, 3, "",
+                       "<path> [offset] [length]",
                 Cli.commandClip_, Cli.completeClip_);
 
 /**
@@ -1984,9 +1984,9 @@ Cli.addCommand_(['clip', 'clipboard'], 1, 3, '',
  */
 Cli.commandColor_ = async function(_args) {
   this.toggleColors_();
-  this.prefs_.set('color', !!this.colorMap_['prompt']);
+  this.prefs_.set("color", !!this.colorMap_["prompt"]);
 };
-Cli.addCommand_(['color'], 0, 0, '', '',
+Cli.addCommand_(["color"], 0, 0, "", "",
                 Cli.commandColor_);
 
 /**
@@ -2000,9 +2000,9 @@ Cli.commandCopy_ = function(args) {
   const src = this.makePath_(args.shift());
   const dst = this.makePath_(args.shift());
 
-  if (this.client.protocolServerExtensions['copy-data'] === undefined) {
+  if (this.client.protocolServerExtensions["copy-data"] === undefined) {
     this.showError_(localize(
-        'NASFTP_ERROR_MISSING_PROTOCOL_EXTENSION', [args.cmd, 'copy-data']));
+        "NASFTP_ERROR_MISSING_PROTOCOL_EXTENSION", [args.cmd, "copy-data"]));
     return Promise.resolve();
   }
 
@@ -2012,7 +2012,7 @@ Cli.commandCopy_ = function(args) {
       // Only copy regular files.
       if (attrs.isRegularFile !== true) {
         this.showError_(localize(
-            'NASFTP_ERROR_NON_REG_FILE', [args.cmd, src]));
+            "NASFTP_ERROR_NON_REG_FILE", [args.cmd, src]));
         return;
       }
 
@@ -2060,7 +2060,7 @@ Cli.completeCopy_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['copy', 'cp'], 2, 2, '', '<src> <dst>',
+Cli.addCommand_(["copy", "cp"], 2, 2, "", "<src> <dst>",
                 Cli.commandCopy_, Cli.completeCopy_);
 
 /**
@@ -2078,7 +2078,7 @@ Cli.commandDiskFree_ = function(args, opts) {
 
   // If no args, default to the cwd.
   if (args.length == 0) {
-    args.unshift('');
+    args.unshift("");
   }
 
   // Create a chain of promises by processing each path in serial.
@@ -2114,7 +2114,7 @@ Cli.commandDiskFree_ = function(args, opts) {
           ravail = Math.floor(st.frsize * st.bfree / 1024);
           percent = (st.blocks - st.bfree) / st.blocks;
         }
-        this.io.println(localize('NASFTP_CMD_DF_SUMMARY', [
+        this.io.println(localize("NASFTP_CMD_DF_SUMMARY", [
           this.escapeString_(fullpath),
           `${st.fsid_hi.toString(16)}${st.fsid_lo.toString(16)}`,
           total,
@@ -2136,7 +2136,7 @@ Cli.commandDiskFree_ = function(args, opts) {
 Cli.completeDiskFree_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['df'], 0, null, 'hi', '[paths...]',
+Cli.addCommand_(["df"], 0, null, "hi", "[paths...]",
                 Cli.commandDiskFree_, Cli.completeDiskFree_);
 
 /**
@@ -2148,12 +2148,12 @@ Cli.addCommand_(['df'], 0, null, 'hi', '[paths...]',
  * @return {!Promise<void>}
  */
 Cli.commandGet_ = async function(args, opts) {
-  opts.resume = opts.a || args.cmd === 'reget';
+  opts.resume = opts.a || args.cmd === "reget";
 
   const src = args.shift();
   const dst = args.length == 0 ? this.basename(src) : args.shift();
 
-  this.io.println(localize('NASFTP_CMD_GET_DOWNLOAD_FILE', [
+  this.io.println(localize("NASFTP_CMD_GET_DOWNLOAD_FILE", [
     this.escapeString_(src),
     this.escapeString_(dst),
   ]));
@@ -2189,8 +2189,8 @@ Cli.commandGet_ = async function(args, opts) {
           if (e instanceof DOMException && e.code === DOMException.ABORT_ERR) {
             // User canceled things.  This is not an error.
             if (writer instanceof FileSystemApiFileWriter) {
-              this.io.println(localize('NASFTP_TIP_FILE_WRTIER_API_PREF', [
-                `${localize('NASFTP_CMD_PREFERENCES')} downloadMode a`,
+              this.io.println(localize("NASFTP_TIP_FILE_WRTIER_API_PREF", [
+                `${localize("NASFTP_CMD_PREFERENCES")} downloadMode a`,
               ]));
             }
           } else {
@@ -2209,12 +2209,12 @@ Cli.commandGet_ = async function(args, opts) {
  */
 Cli.completeGet_ = async function(args) {
   // Only complete the first argument.
-  if (args.length <= 2 || (args.length === 3 && args[1] === '-a')) {
+  if (args.length <= 2 || (args.length === 3 && args[1] === "-a")) {
     return this.completeResolvedRemotePath_(args);
   }
   return null;
 };
-Cli.addCommand_(['get', 'reget'], 1, 2, 'a', '<remote name> [local name]',
+Cli.addCommand_(["get", "reget"], 1, 2, "a", "<remote name> [local name]",
                 Cli.commandGet_, Cli.completeGet_);
 
 /**
@@ -2226,7 +2226,7 @@ Cli.addCommand_(['get', 'reget'], 1, 2, 'a', '<remote name> [local name]',
  */
 Cli.commandHelp_ = function(args) {
   const lhs = (command) => {
-    return localize('NASFTP_CMD_HELP_LHS', [command.command, command.usage]);
+    return localize("NASFTP_CMD_HELP_LHS", [command.command, command.usage]);
   };
   let pad = 0;
 
@@ -2238,7 +2238,7 @@ Cli.commandHelp_ = function(args) {
   // Calculate the length of commands to align the final output.
   for (const command of args) {
     if (!this.commands_.hasOwnProperty(command)) {
-      this.showError_(localize('NASFTP_ERROR_UNKNOWN_CMD', [command]));
+      this.showError_(localize("NASFTP_ERROR_UNKNOWN_CMD", [command]));
       return Promise.resolve();
     }
 
@@ -2249,12 +2249,12 @@ Cli.commandHelp_ = function(args) {
   // Display each command now.
   for (const command of args) {
     // Omit internal commands.
-    if (command.startsWith('_')) {
+    if (command.startsWith("_")) {
       continue;
     }
 
     const obj = this.commands_[command];
-    this.io.println(localize('NASFTP_CMD_HELP_LINE', [
+    this.io.println(localize("NASFTP_CMD_HELP_LINE", [
       lhs(obj).padEnd(pad), obj.help,
     ]));
   }
@@ -2272,7 +2272,7 @@ Cli.completeHelp_ = async function(args) {
   const input = args[args.length - 1];
   return this.completeCommand_(input);
 };
-Cli.addCommand_(['help', '?'], 0, null, '', '[commands]',
+Cli.addCommand_(["help", "?"], 0, null, "", "[commands]",
                 Cli.commandHelp_, Cli.completeHelp_);
 
 /**
@@ -2286,7 +2286,7 @@ Cli.addCommand_(['help', '?'], 0, null, '', '[commands]',
 Cli.commandHistory_ = async function(args, opts) {
   if (opts.c) {
     this.history_.length = 0;
-    await this.localPrefs_.reset('history');
+    await this.localPrefs_.reset("history");
     return;
   }
 
@@ -2295,7 +2295,7 @@ Cli.commandHistory_ = async function(args, opts) {
     this.io.println(`${i + 1}  ${this.history_[len - i - 1]}`);
   }
 };
-Cli.addCommand_(['history'], 0, 0, 'c', '',
+Cli.addCommand_(["history"], 0, 0, "c", "",
                 Cli.commandHistory_);
 
 /**
@@ -2307,25 +2307,25 @@ Cli.addCommand_(['history'], 0, 0, 'c', '',
  */
 Cli.commandLcd_ = async function(args) {
   if (globalThis.showDirectoryPicker === undefined) {
-    this.showError_(localize('NASFTP_ERROR_MISSING_FILE_SYSTEM_ACCESS_API'));
+    this.showError_(localize("NASFTP_ERROR_MISSING_FILE_SYSTEM_ACCESS_API"));
     return;
   }
 
   try {
     this.lcwd = await globalThis.showDirectoryPicker({
-      id: 'lcd',
-      mode: 'readwrite',
-      startIn: 'downloads',
+      id: "lcd",
+      mode: "readwrite",
+      startIn: "downloads",
     });
   } catch (e) {
     if (e instanceof DOMException && e.code === DOMException.ABORT_ERR) {
       // User canceled picker action.  This is not an error, so ignore it.
     } else {
-      this.showError_(localize('NASFTP_ERROR_PERMISSION_DENIED', [args.cmd]));
+      this.showError_(localize("NASFTP_ERROR_PERMISSION_DENIED", [args.cmd]));
     }
   }
 };
-Cli.addCommand_(['lchdir', 'lcd'], 0, 0, '', '',
+Cli.addCommand_(["lchdir", "lcd"], 0, 0, "", "",
                 Cli.commandLcd_);
 
 /**
@@ -2340,7 +2340,7 @@ Cli.commandList_ = function(args, opts) {
   // Translate short options into something more readable.
   opts.all = opts.a;
   opts.long = opts.l;
-  opts.one = opts['1'];
+  opts.one = opts["1"];
   opts.reverse = opts.r;
   opts.recursive = opts.R;
   opts.sort = !opts.f || opts.S || opts.t;
@@ -2349,7 +2349,7 @@ Cli.commandList_ = function(args, opts) {
 
   // If no args, default to the cwd.
   if (args.length == 0) {
-    args.unshift('');
+    args.unshift("");
   }
 
   const spinner = new ProgressBar(this.terminal);
@@ -2426,7 +2426,7 @@ Cli.commandList_ = function(args, opts) {
         if (opts.long || opts.one) {
           // One entry per line.
           entries.forEach((file) => {
-            if (opts.all || !file.filename.startsWith('.')) {
+            if (opts.all || !file.filename.startsWith(".")) {
               this.rawprintln_(opts.long ? file.longFilename : file.filename);
             }
           });
@@ -2434,7 +2434,7 @@ Cli.commandList_ = function(args, opts) {
           // Pack multiple entries per line.
           let minWidth = 10;
           entries.forEach((file) => {
-            if (opts.all || !file.filename.startsWith('.')) {
+            if (opts.all || !file.filename.startsWith(".")) {
               // We +1 for trailing / and another +1 for trailing space.
               minWidth = Math.max(minWidth, file.filename.length + 2);
             }
@@ -2444,35 +2444,35 @@ Cli.commandList_ = function(args, opts) {
           let cnt = 0;
           entries.forEach((entry) => {
             let filename = entry.filename;
-            if (opts.all || !filename.startsWith('.')) {
+            if (opts.all || !filename.startsWith(".")) {
               const color = this.getColorForAttrs_(entry);
               if (color) {
                 this.io.print(color);
               }
               if (entry.isDirectory) {
-                filename += '/';
+                filename += "/";
               }
               this.rawprint_(filename);
               if (color) {
-                this.io.print(this.colorMap_['reset']);
+                this.io.print(this.colorMap_["reset"]);
               }
-              this.io.print(' '.repeat(minWidth - filename.length));
+              this.io.print(" ".repeat(minWidth - filename.length));
 
               if (++cnt == perLine) {
-                this.io.println('');
+                this.io.println("");
                 cnt = 0;
               }
             }
           });
           if (cnt) {
-            this.io.println('');
+            this.io.println("");
           }
         }
 
         // In recursive mode, show all the dirs we found here.
         if (opts.recursive) {
           // Strip off trailing / if it exists so we can add it below.
-          path = path.replace(/\/+$/, '');
+          path = path.replace(/\/+$/, "");
 
           // Create a chain of promises by processing each dir in serial.
           return entries.reduce((chain, entry) => chain.then(() => {
@@ -2482,10 +2482,10 @@ Cli.commandList_ = function(args, opts) {
 
             // Skip filtered paths.
             const filename = entry.filename;
-            if (filename != '.' && filename != '..') {
-              if (opts.all || !filename.startsWith('.')) {
+            if (filename != "." && filename != "..") {
+              if (opts.all || !filename.startsWith(".")) {
                 if (entry.isDirectory) {
-                  this.io.println(' ');
+                  this.io.println(" ");
                   return listDir(`${path}/${entry.filename}`, true);
                 }
               }
@@ -2504,7 +2504,7 @@ Cli.commandList_ = function(args, opts) {
 
     // When showing more than one path, add a padding line.
     if (!first) {
-      this.io.println(' ');
+      this.io.println(" ");
     } else {
       first = false;
     }
@@ -2522,7 +2522,7 @@ Cli.commandList_ = function(args, opts) {
 Cli.completeList_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['list', 'ls', 'dir'], 0, null, '1aflrRSt', '[dirs...]',
+Cli.addCommand_(["list", "ls", "dir"], 0, null, "1aflrRSt", "[dirs...]",
                 Cli.commandList_, Cli.completeList_);
 
 /**
@@ -2545,7 +2545,7 @@ Cli.commandLocalList_ = async function(args) {
   paths.sort();
   paths.map((path) => this.io.println(path));
 };
-Cli.addCommand_(['llist', 'lls', 'ldir'], 0, 0, '', '',
+Cli.addCommand_(["llist", "lls", "ldir"], 0, 0, "", "",
                 Cli.commandLocalList_);
 
 /**
@@ -2562,7 +2562,7 @@ Cli.commandLink_ = function(args, opts) {
 
   const target = args.shift();
   const path = args.shift();
-  const func = opts.symlink ? 'symLink' : 'hardLink';
+  const func = opts.symlink ? "symLink" : "hardLink";
   return this.client[func](this.makePath_(target), this.makePath_(path));
 };
 /**
@@ -2579,7 +2579,7 @@ Cli.completeLink_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['ln'], 2, 2, 's', '<target> <path>',
+Cli.addCommand_(["ln"], 2, 2, "s", "<target> <path>",
                 Cli.commandLink_, Cli.completeLink_);
 
 /**
@@ -2590,11 +2590,11 @@ Cli.addCommand_(['ln'], 2, 2, 's', '<target> <path>',
  * @return {!Promise<void>}
  */
 Cli.commandLpwd_ = async function(args) {
-  this.io.println(localize('NASFTP_CMD_LPWD_OUTPUT', [
-    this.escapeString_(this.lcwd?.name ?? ''),
+  this.io.println(localize("NASFTP_CMD_LPWD_OUTPUT", [
+    this.escapeString_(this.lcwd?.name ?? ""),
   ]));
 };
-Cli.addCommand_(['lpwd'], 0, 0, '', '',
+Cli.addCommand_(["lpwd"], 0, 0, "", "",
                 Cli.commandLpwd_);
 
 /**
@@ -2606,12 +2606,12 @@ Cli.addCommand_(['lpwd'], 0, 0, '', '',
  * @return {!Promise<void>}
  */
 Cli.commandMget_ = async function(args, opts) {
-  opts.resume = opts.a || args.cmd === 'mreget';
+  opts.resume = opts.a || args.cmd === "mreget";
 
   // Construct base command for chaining.
   const basecmd = [args.cmd.slice(1)];
   if (opts.resume) {
-    basecmd.push('-a');
+    basecmd.push("-a");
   }
 
   // Create a chain of promises by processing each path in serial.
@@ -2630,7 +2630,7 @@ Cli.commandMget_ = async function(args, opts) {
 Cli.completeMget_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['mget', 'mreget'], 1, null, 'a', '<remote paths...>',
+Cli.addCommand_(["mget", "mreget"], 1, null, "a", "<remote paths...>",
                 Cli.commandMget_, Cli.completeMget_);
 
 /**
@@ -2657,7 +2657,7 @@ Cli.completeMkdir_ = async function(args) {
   // Can't mkdir files, so only allow completing (through) dirs.
   return this.completeResolvedRemotePath_(args, true);
 };
-Cli.addCommand_(['mkdir'], 1, null, '', '<paths...>',
+Cli.addCommand_(["mkdir"], 1, null, "", "<paths...>",
                 Cli.commandMkdir_, Cli.completeMkdir_);
 
 /**
@@ -2687,7 +2687,7 @@ Cli.completeMove_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['move', 'mv', 'ren', 'rename'], 2, 2, '', '<src> <dst>',
+Cli.addCommand_(["move", "mv", "ren", "rename"], 2, 2, "", "<src> <dst>",
                 Cli.commandMove_, Cli.completeMove_);
 
 /**
@@ -2699,16 +2699,16 @@ Cli.addCommand_(['move', 'mv', 'ren', 'rename'], 2, 2, '', '<src> <dst>',
  * @return {!Promise<void>}
  */
 Cli.commandMput_ = async function(args, opts) {
-  opts.resume = opts.a || args.cmd === 'mreput';
+  opts.resume = opts.a || args.cmd === "mreput";
   opts.fsync = opts.f;
 
   // Construct base command for chaining.
   const basecmd = [args.cmd.slice(1)];
   if (opts.resume) {
-    basecmd.push('-a');
+    basecmd.push("-a");
   }
   if (opts.fsync) {
-    basecmd.push('-f');
+    basecmd.push("-f");
   }
 
   // Pretend the user typed in 'put' without any arguments.
@@ -2717,14 +2717,14 @@ Cli.commandMput_ = async function(args, opts) {
   // people used to OpenSSH sftp that has a dedicated mput command.
   return this.dispatchCommand_(basecmd);
 };
-Cli.addCommand_(['mput', 'mreput'], 0, 0, 'af', '',
+Cli.addCommand_(["mput", "mreput"], 0, 0, "af", "",
                 Cli.commandMput_);
 
 /**
  * The set of known preferences the user may interact with.
  */
 const knownUserPreferences = new Set([
-  'downloadMode',
+  "downloadMode",
 ]);
 
 /**
@@ -2748,7 +2748,7 @@ Cli.commandPreferences_ = async function(args, opts) {
       // Show current preferences.
       Array.from(knownUserPreferences).sort().forEach((key) => {
         const value = this.localPrefs_.get(key);
-        this.io.println(localize('NASFTP_CMD_PREFERENCES_LINE', [key, value]));
+        this.io.println(localize("NASFTP_CMD_PREFERENCES_LINE", [key, value]));
       });
     }
     return;
@@ -2756,14 +2756,14 @@ Cli.commandPreferences_ = async function(args, opts) {
 
   const key = args.shift();
   if (!knownUserPreferences.has(key)) {
-    this.showError_(localize('NASFTP_ERROR_UNKNOWN_ARGUMENT', [args.cmd, key]));
+    this.showError_(localize("NASFTP_ERROR_UNKNOWN_ARGUMENT", [args.cmd, key]));
     return;
   }
 
   if (opts.unset) {
     // Unset the preference.
     if (args.length !== 0) {
-      this.showError_(localize('NASFTP_ERROR_TOO_MANY_ARGS', [args.cmd]));
+      this.showError_(localize("NASFTP_ERROR_TOO_MANY_ARGS", [args.cmd]));
       return;
     }
 
@@ -2771,15 +2771,15 @@ Cli.commandPreferences_ = async function(args, opts) {
   } else {
     // Set the preference.
     if (args.length === 0) {
-      this.showError_(localize('NASFTP_ERROR_NOT_ENOUGH_ARGS', [args.cmd]));
+      this.showError_(localize("NASFTP_ERROR_NOT_ENOUGH_ARGS", [args.cmd]));
       return;
     } else if (args.length !== 1) {
-      this.showError_(localize('NASFTP_ERROR_TOO_MANY_ARGS', [args.cmd]));
+      this.showError_(localize("NASFTP_ERROR_TOO_MANY_ARGS", [args.cmd]));
       return;
     }
 
     let value = args.shift();
-    if (value === 'null') {
+    if (value === "null") {
       value = null;
     }
     this.localPrefs_.set(key, value);
@@ -2809,8 +2809,8 @@ Cli.completePreferences_ = async function(args) {
     // Complete the preference value.
     let values = [];
     switch (key) {
-      case 'downloadMode':
-        values = ['null', 'a', 'fsapi'];
+      case "downloadMode":
+        values = ["null", "a", "fsapi"];
         break;
     }
 
@@ -2824,7 +2824,7 @@ Cli.completePreferences_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['preferences', 'cfg', 'config'], 0, 2, 'u', '[key] [value]',
+Cli.addCommand_(["preferences", "cfg", "config"], 0, 2, "u", "[key] [value]",
                 Cli.commandPreferences_, Cli.completePreferences_);
 
 /**
@@ -2839,15 +2839,15 @@ Cli.commandPrompt_ = async function(args) {
     this.prompt_ = args.shift();
   } else {
     if (this.prompt_ === null) {
-      this.prompt_ = '';
+      this.prompt_ = "";
     } else {
       this.prompt_ = null;
     }
   }
 
-  await this.prefs_.set('prompt', this.prompt_);
+  await this.prefs_.set("prompt", this.prompt_);
 };
-Cli.addCommand_(['prompt'], 0, 1, '', '[prompt]',
+Cli.addCommand_(["prompt"], 0, 1, "", "[prompt]",
                 Cli.commandPrompt_);
 
 /**
@@ -2860,12 +2860,12 @@ Cli.addCommand_(['prompt'], 0, 1, '', '[prompt]',
  */
 Cli.commandPut_ = function(args, opts) {
   // Translate short options into something more readable.
-  opts.resume = opts.a || args.cmd === 'reput';
+  opts.resume = opts.a || args.cmd === "reput";
   opts.fsync = opts.f;
 
   const doc = this.terminal.getDocument();
-  const input = doc.createElement('input');
-  input.type = 'file';
+  const input = doc.createElement("input");
+  input.type = "file";
 
   const dst = args.shift();
   input.multiple = dst === undefined;
@@ -2888,7 +2888,7 @@ Cli.commandPut_ = function(args, opts) {
     cancelPoller = setTimeout(cancelCheck, 1000);
 
     // First promise waits for the user to select files to upload.
-    input.addEventListener('change', () => {
+    input.addEventListener("change", () => {
       // Since the user has selected some files, we can stop polling.
       clearTimeout(cancelPoller);
 
@@ -2902,7 +2902,7 @@ Cli.commandPut_ = function(args, opts) {
         // If the user specified a name, use it.
         const name = dst === undefined ? file.name : dst;
 
-        this.io.println(localize('NASFTP_CMD_PUT_UPLOAD_FILE', [
+        this.io.println(localize("NASFTP_CMD_PUT_UPLOAD_FILE", [
           this.escapeString_(file.name),
           this.escapeString_(name),
           Cli.format_(file.size),
@@ -3005,7 +3005,7 @@ Cli.completePut_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['put', 'reput'], 0, 1, 'af', '[remote name]',
+Cli.addCommand_(["put", "reput"], 0, 1, "af", "[remote name]",
                 Cli.commandPut_, Cli.completePut_);
 
 /**
@@ -3016,12 +3016,12 @@ Cli.addCommand_(['put', 'reput'], 0, 1, 'af', '[remote name]',
  * @return {!Promise<void>}
  */
 Cli.commandPwd_ = function(_args) {
-  this.io.println(localize('NASFTP_CMD_PWD_OUTPUT', [
+  this.io.println(localize("NASFTP_CMD_PWD_OUTPUT", [
     this.escapeString_(this.cwd),
   ]));
   return Promise.resolve();
 };
-Cli.addCommand_(['pwd'], 0, 0, '', '',
+Cli.addCommand_(["pwd"], 0, 0, "", "",
                 Cli.commandPwd_);
 
 /**
@@ -3036,7 +3036,7 @@ Cli.commandQuit_ = function(_args) {
   this.commandInstance_.exit(0, /* noReconnect= */ false);
   return Promise.resolve();
 };
-Cli.addCommand_(['exit', 'quit', 'bye'], 0, 0, '', '',
+Cli.addCommand_(["exit", "quit", "bye"], 0, 0, "", "",
                 Cli.commandQuit_);
 
 /**
@@ -3066,7 +3066,7 @@ Cli.commandReadlink_ = function(args) {
 Cli.completeReadlink_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['readlink'], 1, null, '', '<paths...>',
+Cli.addCommand_(["readlink"], 1, null, "", "<paths...>",
                 Cli.commandReadlink_, Cli.completeReadlink_);
 
 /**
@@ -3096,7 +3096,7 @@ Cli.commandRealpath_ = function(args) {
 Cli.completeRealpath_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['realpath'], 1, null, '', '<paths...>',
+Cli.addCommand_(["realpath"], 1, null, "", "<paths...>",
                 Cli.commandRealpath_, Cli.completeRealpath_);
 
 /**
@@ -3144,7 +3144,7 @@ Cli.commandRemove_ = function(args, opts) {
 Cli.completeRemove_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['rm', 'del'], 1, null, 'rRfv', '<paths...>',
+Cli.addCommand_(["rm", "del"], 1, null, "rRfv", "<paths...>",
                 Cli.commandRemove_, Cli.completeRemove_);
 
 /**
@@ -3171,7 +3171,7 @@ Cli.completeRmdir_ = async function(args) {
   // Can't rmdir files, so only allow dirs.
   return this.completeResolvedRemotePath_(args, true);
 };
-Cli.addCommand_(['rmdir'], 1, null, '', '<paths...>',
+Cli.addCommand_(["rmdir"], 1, null, "", "<paths...>",
                 Cli.commandRmdir_, Cli.completeRmdir_);
 
 /**
@@ -3216,7 +3216,7 @@ Cli.commandShow_ = function(args) {
 Cli.completeShow_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['show'], 1, null, '', '<paths...>',
+Cli.addCommand_(["show"], 1, null, "", "<paths...>",
                 Cli.commandShow_, Cli.completeShow_);
 
 /**
@@ -3227,13 +3227,13 @@ Cli.addCommand_(['show'], 1, null, '', '<paths...>',
  * @return {!Promise<void>}
  */
 Cli.commandStat_ = function(args) {
-  const func = args.cmd == 'stat' ? 'fileStatus' : 'linkStatus';
+  const func = args.cmd == "stat" ? "fileStatus" : "linkStatus";
 
   // Create a chain of promises by processing each path in serial.
   return args.reduce((chain, path) => chain.then(() => {
     return this.client[func](this.makePath_(path))
       .then((attrs) => {
-        this.io.println(localize('NASFTP_CMD_STAT_SUMMARY', [
+        this.io.println(localize("NASFTP_CMD_STAT_SUMMARY", [
           this.escapeString_(path),
           attrs.size,
           attrs.uid,
@@ -3246,9 +3246,9 @@ Cli.commandStat_ = function(args) {
           `${epochToLocal(attrs.lastModified)})`,
         ]));
         if (attrs.extensions) {
-          this.io.println(localize('NASFTP_CMD_STAT_EXTENSIONS_HEADER'));
+          this.io.println(localize("NASFTP_CMD_STAT_EXTENSIONS_HEADER"));
           attrs.extensions.forEach((ele) => {
-            this.io.println(localize('NASFTP_CMD_STAT_EXTENSIONS_LINE', [
+            this.io.println(localize("NASFTP_CMD_STAT_EXTENSIONS_LINE", [
               this.escapeString_(ele.type),
               this.escapeString_(ele.data),
             ]));
@@ -3267,7 +3267,7 @@ Cli.commandStat_ = function(args) {
 Cli.completeStat_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['stat', 'lstat'], 1, null, '', '<paths...>',
+Cli.addCommand_(["stat", "lstat"], 1, null, "", "<paths...>",
                 Cli.commandStat_, Cli.completeStat_);
 
 /**
@@ -3313,7 +3313,7 @@ Cli.commandTouch_ = function(args, opts) {
 Cli.completeTouch_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['touch'], 1, null, 'c', '<paths...>',
+Cli.addCommand_(["touch"], 1, null, "c", "<paths...>",
                 Cli.commandTouch_, Cli.completeTouch_);
 
 /**
@@ -3328,7 +3328,7 @@ Cli.commandTruncate_ = function(args, opts) {
   // Peel off the first positional argument if using the -s option.
   let size = 0;
   if (opts.s) {
-    size = this.parseInt_(args.cmd, 'size', args.shift());
+    size = this.parseInt_(args.cmd, "size", args.shift());
   }
 
   // Create a chain of promises by processing each path in serial.
@@ -3370,7 +3370,7 @@ Cli.commandTruncate_ = function(args, opts) {
 Cli.completeTruncate_ = async function(args) {
   return this.completeResolvedRemotePath_(args);
 };
-Cli.addCommand_(['truncate'], 1, null, 's', '[-s <size>] <paths...>',
+Cli.addCommand_(["truncate"], 1, null, "s", "[-s <size>] <paths...>",
                 Cli.commandTruncate_, Cli.completeTruncate_);
 
 /**
@@ -3401,7 +3401,7 @@ Cli.completeSymlink_ = async function(args) {
   }
   return null;
 };
-Cli.addCommand_(['symlink'], 2, 2, '', '<target> <path>',
+Cli.addCommand_(["symlink"], 2, 2, "", "<target> <path>",
                 Cli.commandSymlink_, Cli.completeSymlink_);
 
 /**
@@ -3412,23 +3412,23 @@ Cli.addCommand_(['symlink'], 2, 2, '', '<target> <path>',
  * @return {!Promise<void>}
  */
 Cli.commandVersion_ = function(_args) {
-  this.io.println(localize('NASFTP_CMD_VERSION_SUMMARY', [
+  this.io.println(localize("NASFTP_CMD_VERSION_SUMMARY", [
     this.client.protocolClientVersion,
     this.client.protocolServerVersion,
   ]));
-  this.io.println(localize('NASFTP_CMD_VERSION_EXTENSIONS_HEADER'));
+  this.io.println(localize("NASFTP_CMD_VERSION_EXTENSIONS_HEADER"));
 
   const names = Object.keys(this.client.protocolServerExtensions).sort();
   names.forEach((name) => {
     const data = this.client.protocolServerExtensions[name];
-    this.io.println(localize('NASFTP_CMD_VERSION_EXTENSIONS_LINE', [
+    this.io.println(localize("NASFTP_CMD_VERSION_EXTENSIONS_LINE", [
       name, data,
     ]));
   });
 
   return Promise.resolve();
 };
-Cli.addCommand_(['version'], 0, 0, '', '',
+Cli.addCommand_(["version"], 0, 0, "", "",
                 Cli.commandVersion_);
 
 /**
@@ -3439,71 +3439,71 @@ Cli.addCommand_(['version'], 0, 0, '', '',
  * @return {!Promise<void>}
  */
 Cli.commandTestCli_ = function(_args) {
-  const base = '/tmp/.nasftp-tests';
+  const base = "/tmp/.nasftp-tests";
   this.io.println(`cli: starting test under ${base}`);
 
   // Wrapper for commands to provide good API.
   const wrap = (...argv) => {
-    this.rawprintln_(`> ${argv.join(' ')}`);
+    this.rawprintln_(`> ${argv.join(" ")}`);
     return this.dispatchCommand_(argv);
   };
 
   // Make sure some fields we tweak are saved & restored regardless of failures.
   const oldCwd = this.cwd;
-  return wrap('version')
-    .then(() => wrap('help'))
-    .then(() => wrap('help', 'cd', 'version'))
-    .then(() => wrap('help', 'xxxxxxx'))
-    .then(() => wrap('color'))
-    .then(() => wrap('color'))
-    .then(() => wrap('preferences'))
-    .then(() => wrap('chdir', '/tmp'))
-    .then(() => wrap('rm', '-Rf', base))
-    .then(() => wrap('mkdir', base))
-    .then(() => wrap('list', base))
-    .then(() => wrap('cd', base))
-    .then(() => wrap('df'))
-    .then(() => wrap('df', '-i', '.'))
-    .then(() => wrap('df', '-h', '/'))
-    .then(() => wrap('pwd'))
-    .then(() => wrap('touch', 'touch'))
-    .then(() => wrap('chmod', '750', '.'))
-    .then(() => wrap('mkdir', 'subdir', 'subdir2', 'subdir3', 'emptydir'))
-    .then(() => wrap('rmdir', 'emptydir'))
-    .then(() => wrap('truncate', 'x', 'subdir/x1', 'subdir/üñïçödë'))
-    .then(() => wrap('truncate', '-s', '10KB', 'x'))
-    .then(() => wrap('ln', 'x', 'hard'))
-    .then(() => wrap('ln', '-s', 'x', 'soft'))
-    .then(() => wrap('symlink', 'x', 'sym'))
-    .then(() => wrap('chmod', '600', 'x', 'sym'))
-    .then(() => wrap('readlink', 'sym'))
-    .then(() => wrap('lstat', '.', 'sym', 'soft', 'x'))
-    .then(() => wrap('stat', '.', 'sym', 'hard', 'x', 'subdir/üñïçödë'))
-    .then(() => wrap('cat', 'subdir/üñïçödë'))
-    .then(() => wrap('cat', 'x', '0'))
-    .then(() => wrap('cat', 'x', '10'))
-    .then(() => wrap('cat', 'x', '10', '10'))
-    .then(() => wrap('cat', '/dev/zero', '1', '10'))
-    .then(() => wrap('clip', '/dev/urandom', '10', '10'))
-    .then(() => wrap('clip', 'x'))
-    .then(() => wrap('realpath', '.', 'sym', 'subdir'))
-    .then(() => wrap('mv', 'x', 'xmv'))
-    .then(() => wrap('rename', 'xmv', 'xren'))
-    .then(() => wrap('move', 'xren', 'xmove'))
-    .then(() => wrap('rm', '-v', 'xmove'))
-    .then(() => wrap('ls', '-lrS'))
-    .then(() => wrap('ls', '-1af', '.'))
-    .then(() => wrap('ls', '-R', '', '.', 'subdir'))
-    .then(() => wrap('dir', '-t', 'subdir'))
-    .then(() => wrap('cd', '/tmp'))
-    .then(() => wrap('rm', '-rf', base))
+  return wrap("version")
+    .then(() => wrap("help"))
+    .then(() => wrap("help", "cd", "version"))
+    .then(() => wrap("help", "xxxxxxx"))
+    .then(() => wrap("color"))
+    .then(() => wrap("color"))
+    .then(() => wrap("preferences"))
+    .then(() => wrap("chdir", "/tmp"))
+    .then(() => wrap("rm", "-Rf", base))
+    .then(() => wrap("mkdir", base))
+    .then(() => wrap("list", base))
+    .then(() => wrap("cd", base))
+    .then(() => wrap("df"))
+    .then(() => wrap("df", "-i", "."))
+    .then(() => wrap("df", "-h", "/"))
+    .then(() => wrap("pwd"))
+    .then(() => wrap("touch", "touch"))
+    .then(() => wrap("chmod", "750", "."))
+    .then(() => wrap("mkdir", "subdir", "subdir2", "subdir3", "emptydir"))
+    .then(() => wrap("rmdir", "emptydir"))
+    .then(() => wrap("truncate", "x", "subdir/x1", "subdir/üñïçödë"))
+    .then(() => wrap("truncate", "-s", "10KB", "x"))
+    .then(() => wrap("ln", "x", "hard"))
+    .then(() => wrap("ln", "-s", "x", "soft"))
+    .then(() => wrap("symlink", "x", "sym"))
+    .then(() => wrap("chmod", "600", "x", "sym"))
+    .then(() => wrap("readlink", "sym"))
+    .then(() => wrap("lstat", ".", "sym", "soft", "x"))
+    .then(() => wrap("stat", ".", "sym", "hard", "x", "subdir/üñïçödë"))
+    .then(() => wrap("cat", "subdir/üñïçödë"))
+    .then(() => wrap("cat", "x", "0"))
+    .then(() => wrap("cat", "x", "10"))
+    .then(() => wrap("cat", "x", "10", "10"))
+    .then(() => wrap("cat", "/dev/zero", "1", "10"))
+    .then(() => wrap("clip", "/dev/urandom", "10", "10"))
+    .then(() => wrap("clip", "x"))
+    .then(() => wrap("realpath", ".", "sym", "subdir"))
+    .then(() => wrap("mv", "x", "xmv"))
+    .then(() => wrap("rename", "xmv", "xren"))
+    .then(() => wrap("move", "xren", "xmove"))
+    .then(() => wrap("rm", "-v", "xmove"))
+    .then(() => wrap("ls", "-lrS"))
+    .then(() => wrap("ls", "-1af", "."))
+    .then(() => wrap("ls", "-R", "", ".", "subdir"))
+    .then(() => wrap("dir", "-t", "subdir"))
+    .then(() => wrap("cd", "/tmp"))
+    .then(() => wrap("rm", "-rf", base))
     // Make it clear we're all done.
-    .then(() => this.io.println('cli: all tests passed!'))
+    .then(() => this.io.println("cli: all tests passed!"))
     .finally(() => {
       this.cwd = oldCwd;
     });
 };
-Cli.addCommand_(['_run_test_cli'], 0, 0, '', '',
+Cli.addCommand_(["_run_test_cli"], 0, 0, "", "",
                 Cli.commandTestCli_);
 
 /**
@@ -3517,8 +3517,8 @@ Cli.commandTestFsp_ = function(_args) {
   // The actual test logic.
   const runTest = () => {
     const fsp = new SftpFsp();
-    const fsid = 'fsid';
-    const base = '/tmp/.nasftp-tests';
+    const fsid = "fsid";
+    const base = "/tmp/.nasftp-tests";
     const options = {fileSystemId: fsid};
     let opts;
     const newopts = (obj) => Object.assign(options, obj);
@@ -3533,7 +3533,7 @@ Cli.commandTestFsp_ = function(_args) {
     this.client.writeChunkSize = 200;
 
     // Helpers for displaying pass/fail status.
-    const pass = (test, msg = '-') => this.rawprintln_(`PASS: ${test}: ${msg}`);
+    const pass = (test, msg = "-") => this.rawprintln_(`PASS: ${test}: ${msg}`);
     const failed = (test, msg) => this.rawprintln_(`FAIL: ${test}: ${msg}`);
 
     /**
@@ -3564,129 +3564,129 @@ Cli.commandTestFsp_ = function(_args) {
 
       // Initialize the base test tree.
       .then(() => {
-        this.client.basePath_ = '/';
+        this.client.basePath_ = "/";
         opts = newopts({directoryPath: base});
         return wrap(fsp.onCreateDirectoryRequested, opts);
       })
       .then(() => {
         this.client.basePath_ = `${base}/`;
-        opts = newopts({directoryPath: '/subdir'});
+        opts = newopts({directoryPath: "/subdir"});
         return wrap(fsp.onCreateDirectoryRequested, opts);
       })
       .then(() => {
-        opts = newopts({directoryPath: '/subdir/subdir'});
+        opts = newopts({directoryPath: "/subdir/subdir"});
         return wrap(fsp.onCreateDirectoryRequested, opts);
       })
 
       // Symlink "sym" to "subdir".
-      .then(() => this.client.symLink('subdir', '/sym'))
+      .then(() => this.client.symLink("subdir", "/sym"))
       // Copy "sym" to "newsym".
       .then(() => {
-        opts = newopts({sourcePath: '/sym', targetPath: '/newsym'});
+        opts = newopts({sourcePath: "/sym", targetPath: "/newsym"});
         return wrap(fsp.onCopyEntryRequested, opts);
       })
       // Delete the "sym" symlink.
       .then(() => {
-        opts = newopts({entryPath: '/sym', recursive: true});
+        opts = newopts({entryPath: "/sym", recursive: true});
         return wrap(fsp.onDeleteEntryRequested, opts);
       })
       // Delete the "newsym" symlink.
       .then(() => {
-        opts = newopts({entryPath: '/newsym', recursive: true});
+        opts = newopts({entryPath: "/newsym", recursive: true});
         return wrap(fsp.onDeleteEntryRequested, opts);
       })
       // Verify "subdir" exists.
       .then(() => {
-        opts = newopts({entryPath: '/subdir', name: true, isDirectory: true});
+        opts = newopts({entryPath: "/subdir", name: true, isDirectory: true});
         return wrap(fsp.onGetMetadataRequested, opts);
       })
 
       // Create "x" file.
       .then(() => {
-        opts = newopts({filePath: '/x'});
+        opts = newopts({filePath: "/x"});
         return wrap(fsp.onTruncateRequested, opts);
       })
       // Rename "x" to "new".
       .then(() => {
-        opts = newopts({sourcePath: '/x', targetPath: '/new'});
+        opts = newopts({sourcePath: "/x", targetPath: "/new"});
         return wrap(fsp.onMoveEntryRequested, opts);
       })
       // Symlink "sym" to "new".
-      .then(() => this.client.symLink('new', '/sym'))
+      .then(() => this.client.symLink("new", "/sym"))
       // Delete the "sym" symlink.
       .then(() => {
-        opts = newopts({entryPath: '/sym', recursive: false});
+        opts = newopts({entryPath: "/sym", recursive: false});
         return wrap(fsp.onDeleteEntryRequested, opts);
       })
       // Verify "new" exists.
       .then(() => {
-        opts = newopts({entryPath: '/new', name: true, isDirectory: true});
+        opts = newopts({entryPath: "/new", name: true, isDirectory: true});
         return wrap(fsp.onGetMetadataRequested, opts);
       })
       // Delete the "new" file.
       .then((_entries) => {
-        opts = newopts({entryPath: '/new', recursive: false});
+        opts = newopts({entryPath: "/new", recursive: false});
         return wrap(fsp.onDeleteEntryRequested, opts);
       })
 
       // Create the broken "brok" symlink, then delete it.
-      .then(() => this.client.symLink('brok', '/brok'))
+      .then(() => this.client.symLink("brok", "/brok"))
       .then(() => {
-        opts = newopts({entryPath: '/brok', recursive: false});
+        opts = newopts({entryPath: "/brok", recursive: false});
         return wrap(fsp.onDeleteEntryRequested, opts);
       })
 
       // Create some files in subdirs for copying later.
       .then(() => {
-        opts = newopts({filePath: '/subdir/x2'});
+        opts = newopts({filePath: "/subdir/x2"});
         return wrap(fsp.onTruncateRequested, opts);
       })
       .then(() => {
-        opts = newopts({filePath: '/subdir/subdir/x3'});
+        opts = newopts({filePath: "/subdir/subdir/x3"});
         return wrap(fsp.onTruncateRequested, opts);
       })
 
       // Create the "file" file.
       .then(() => {
-        opts = newopts({filePath: '/subdir/file', requestId: 'req'});
+        opts = newopts({filePath: "/subdir/file", requestId: "req"});
         return wrap(fsp.onCreateFileRequested, opts);
       })
       .then(() => {
-        opts = newopts({openRequestId: 'req'});
+        opts = newopts({openRequestId: "req"});
         return wrap(fsp.onCloseFileRequested, opts);
       })
 
       // Write data to "file" file.
       .then(() => {
         opts = newopts({
-          filePath: '/subdir/file',
-          requestId: 'write',
-          mode: 'WRITE',
+          filePath: "/subdir/file",
+          requestId: "write",
+          mode: "WRITE",
         });
         return wrap(fsp.onOpenFileRequested, opts);
       })
       .then(() => {
         // Write out more data than a single write chunk can handle.
         const encoder = new TextEncoder();
-        const data = 'abß1½3'.repeat(1000);
+        const data = "abß1½3".repeat(1000);
         opts = newopts({
-          openRequestId: 'write',
+          openRequestId: "write",
           offset: 0,
           data: encoder.encode(data),
         });
         return wrap(fsp.onWriteFileRequested, opts);
       })
       .then(() => {
-        opts = newopts({openRequestId: 'write'});
+        opts = newopts({openRequestId: "write"});
         return wrap(fsp.onCloseFileRequested, opts);
       })
 
       // Read data back from "file" file.
       .then(() => {
         opts = newopts({
-          filePath: '/subdir/file',
-          requestId: 'read',
-          mode: 'READ',
+          filePath: "/subdir/file",
+          requestId: "read",
+          mode: "READ",
         });
         return wrap(fsp.onOpenFileRequested, opts);
       })
@@ -3694,7 +3694,7 @@ Cli.commandTestFsp_ = function(_args) {
       .then(() => {
         const offset = 1;
         const length = 500;
-        opts = newopts({openRequestId: 'read', offset: offset, length: length});
+        opts = newopts({openRequestId: "read", offset: offset, length: length});
         // Can't use wrap() helper because onSuccess is called multiple times.
         const method = fsp.onReadFileRequested.bind(fsp);
         const chunks = [];
@@ -3719,91 +3719,91 @@ Cli.commandTestFsp_ = function(_args) {
         // Turn the UTF-8 data into a JS string.
         const decoder = new TextDecoder();
         const data = chunks.reduce(
-            (acc, chunk) => acc + decoder.decode(chunk, {stream: true}), '');
+            (acc, chunk) => acc + decoder.decode(chunk, {stream: true}), "");
 
         // The length is in terms of UTF-8 codeunits, not characters.
         const encoder = new TextEncoder();
-        const src = encoder.encode('abß1½3'.repeat(100));
+        const src = encoder.encode("abß1½3".repeat(100));
         const exp = decoder.decode(src.subarray(offset, offset + length));
 
         if (data != exp) {
-          failed('data corruption', data);
+          failed("data corruption", data);
           return Promise.reject();
         }
       })
       .then(() => {
-        opts = newopts({openRequestId: 'read'});
+        opts = newopts({openRequestId: "read"});
         return wrap(fsp.onCloseFileRequested, opts);
       })
 
       // Create some symlinks to read back later.
       .then(() => {
-        return this.client.symLink('.', '/subdir/symdir')
-          .then(() => this.client.symLink('brok', '/subdir/brok'))
-          .then(() => this.client.symLink('file', '/subdir/symfile'));
+        return this.client.symLink(".", "/subdir/symdir")
+          .then(() => this.client.symLink("brok", "/subdir/brok"))
+          .then(() => this.client.symLink("file", "/subdir/symfile"));
       })
 
       // Copy the directory tree.
       .then(() => {
-        opts = newopts({sourcePath: '/subdir', targetPath: '/newdir'});
+        opts = newopts({sourcePath: "/subdir", targetPath: "/newdir"});
         return wrap(fsp.onCopyEntryRequested, opts);
       })
       // Check the contents of the source tree.
       .then(() => {
-        opts = newopts({entryPath: '/newdir/subdir/x3', name: true});
+        opts = newopts({entryPath: "/newdir/subdir/x3", name: true});
         return wrap(fsp.onGetMetadataRequested, opts);
       })
       .then(() => {
-        opts = newopts({directoryPath: '/subdir'});
+        opts = newopts({directoryPath: "/subdir"});
         return wrap(fsp.onReadDirectoryRequested, opts);
       })
       .then((entries) => {
         const names = entries.map((entry) => entry.name).sort();
         // Broken symlinks should be filtered.
-        if (names[0] != 'file' || names[1] != 'subdir' || names[2] != 'symdir'
-            || names[3] != 'symfile' || names[4] != 'x2') {
-          failed('/subdir dir listing is incorrect', names);
+        if (names[0] != "file" || names[1] != "subdir" || names[2] != "symdir"
+            || names[3] != "symfile" || names[4] != "x2") {
+          failed("/subdir dir listing is incorrect", names);
           return Promise.reject();
         }
       })
       // Make sure the symlinks were copied as symlinks.
       .then(() => {
-        opts = newopts({directoryPath: '/newdir'});
+        opts = newopts({directoryPath: "/newdir"});
         return wrap(fsp.onReadDirectoryRequested, opts);
       })
       .then((entries) => {
         const names = entries.map((entry) => entry.name).sort();
         // Broken symlinks should be filtered from the read.
-        if (names[0] != 'file' || names[1] != 'subdir' || names[2] != 'symdir'
-            || names[3] != 'symfile' || names[4] != 'x2') {
-          failed('/newdir dir listing is incorrect', names);
+        if (names[0] != "file" || names[1] != "subdir" || names[2] != "symdir"
+            || names[3] != "symfile" || names[4] != "x2") {
+          failed("/newdir dir listing is incorrect", names);
           return Promise.reject();
         }
       })
       .then(() => {
-        return this.client.linkStatus('/newdir/symdir')
+        return this.client.linkStatus("/newdir/symdir")
           .then((metadata) => {
             if (!metadata.isLink) {
-              failed('/newdir/symdir is not a symlink', metadata);
+              failed("/newdir/symdir is not a symlink", metadata);
               return Promise.reject();
             }
           });
       })
       .then(() => {
-        return this.client.linkStatus('/newdir/symfile')
+        return this.client.linkStatus("/newdir/symfile")
           .then((metadata) => {
             if (!metadata.isLink) {
-              failed('/newdir/symfile is not a symlink', metadata);
+              failed("/newdir/symfile is not a symlink", metadata);
               return Promise.reject();
             }
           });
       })
       // We should even copy broken symlinks.
       .then(() => {
-        return this.client.linkStatus('/newdir/brok')
+        return this.client.linkStatus("/newdir/brok")
           .then((metadata) => {
             if (!metadata.isLink) {
-              failed('/newdir/brok is not a symlink', metadata);
+              failed("/newdir/brok is not a symlink", metadata);
               return Promise.reject();
             }
           });
@@ -3811,13 +3811,13 @@ Cli.commandTestFsp_ = function(_args) {
 
       // Clean up the scratch dir.
       .then(() => {
-        this.client.basePath_ = '/';
+        this.client.basePath_ = "/";
         opts = newopts({entryPath: base, recursive: true});
         return wrap(fsp.onDeleteEntryRequested, opts);
       })
 
       // Make it clear we're all done.
-      .then(() => this.io.println('fsp: all tests passed!'));
+      .then(() => this.io.println("fsp: all tests passed!"));
   };
 
   // Make sure some fields we tweak are saved & restored regardless of failures.
@@ -3831,5 +3831,5 @@ Cli.commandTestFsp_ = function(_args) {
       this.client.writeChunkSize = oldWriteSize;
     });
 };
-Cli.addCommand_(['_run_test_fsp'], 0, 0, '', '',
+Cli.addCommand_(["_run_test_fsp"], 0, 0, "", "",
                 Cli.commandTestFsp_);

@@ -18,8 +18,8 @@ createFs$$module$js$deps_indexeddb_js_rollup.createFs = function(options) {};
 
 /** @enum {string} */
 var IndexeddbFsEntryType = {
-  DIRECTORY: 'directory',
-  FILE: 'file',
+  DIRECTORY: "directory",
+  FILE: "file",
 };
 
 class IndexeddbFsDirectoryEntry {

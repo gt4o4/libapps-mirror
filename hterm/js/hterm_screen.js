@@ -32,9 +32,9 @@
  * hterm.ScrollPort.
  */
 
-import {lib} from '../../libdot/index.js';
+import {lib} from "../../libdot/index.js";
 
-import {hterm} from './hterm.js';
+import {hterm} from "./hterm.js";
 
 /**
  * Create a new screen instance.
@@ -264,17 +264,17 @@ hterm.Screen.prototype.invalidateCursorPosition = function() {
  * Clear the contents of the cursor row.
  */
 hterm.Screen.prototype.clearCursorRow = function() {
-  this.cursorRowNode_.innerText = '';
-  this.cursorRowNode_.removeAttribute('line-overflow');
+  this.cursorRowNode_.innerText = "";
+  this.cursorRowNode_.removeAttribute("line-overflow");
   this.cursorOffset_ = 0;
   this.cursorPosition.column = 0;
   this.cursorPosition.overflow = false;
 
   let text;
   if (this.textAttributes.isDefault()) {
-    text = '';
+    text = "";
   } else {
-    text = ' '.repeat(this.columnCount_);
+    text = " ".repeat(this.columnCount_);
   }
 
   // We shouldn't honor inverse colors when clearing an area, to match
@@ -304,7 +304,7 @@ hterm.Screen.prototype.clearCursorRow = function() {
  * to a non-overflow state.
  */
 hterm.Screen.prototype.commitLineOverflow = function() {
-  this.cursorRowNode_.setAttribute('line-overflow', true);
+  this.cursorRowNode_.setAttribute("line-overflow", true);
 };
 
 /**
@@ -315,23 +315,23 @@ hterm.Screen.prototype.commitLineOverflow = function() {
  */
 hterm.Screen.prototype.setCursorPosition = function(row, column) {
   if (!this.rowsArray.length) {
-    console.warn('Attempt to set cursor position on empty screen.');
+    console.warn("Attempt to set cursor position on empty screen.");
     return;
   }
 
   if (row >= this.rowsArray.length) {
-    console.error('Row out of bounds: ' + row);
+    console.error("Row out of bounds: " + row);
     row = this.rowsArray.length - 1;
   } else if (row < 0) {
-    console.error('Row out of bounds: ' + row);
+    console.error("Row out of bounds: " + row);
     row = 0;
   }
 
   if (column >= this.columnCount_) {
-    console.error('Column out of bounds: ' + column);
+    console.error("Column out of bounds: " + column);
     column = this.columnCount_ - 1;
   } else if (column < 0) {
-    console.error('Column out of bounds: ' + column);
+    console.error("Column out of bounds: " + column);
     column = 0;
   }
 
@@ -341,7 +341,7 @@ hterm.Screen.prototype.setCursorPosition = function(row, column) {
   let node = rowNode.firstChild;
 
   if (!node) {
-    node = rowNode.ownerDocument.createTextNode('');
+    node = rowNode.ownerDocument.createTextNode("");
     rowNode.appendChild(node);
   }
 
@@ -486,7 +486,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth = undefined) {
   let cursorNode = this.cursorNode_;
   let cursorNodeText = cursorNode.textContent;
 
-  this.cursorRowNode_.removeAttribute('line-overflow');
+  this.cursorRowNode_.removeAttribute("line-overflow");
 
   // We may alter the width of the string by prepending some missing
   // whitespaces, so we need to record the string width ahead of time.
@@ -509,7 +509,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth = undefined) {
     // A negative reverse offset means the cursor is positioned past the end
     // of the characters on this line.  We'll need to insert the missing
     // whitespace.
-    const ws = ' '.repeat(-reverseOffset);
+    const ws = " ".repeat(-reverseOffset);
 
     // This whitespace should be completely unstyled.  Underline, background
     // color, and strikethrough would be visible on whitespace, so we can't use
@@ -696,9 +696,9 @@ hterm.Screen.prototype.deleteChars = function(count) {
       // No characters were deleted when there should be.  We're probably trying
       // to delete one column width from a wide character node.  We remove the
       // wide character node here and replace it with a single space.
-      const spaceNode = this.textAttributes.createContainer(' ');
+      const spaceNode = this.textAttributes.createContainer(" ");
       node.parentNode.insertBefore(spaceNode, offset ? node : node.nextSibling);
-      node.textContent = '';
+      node.textContent = "";
       endLength = 0;
       count -= 1;
     } else {
@@ -725,7 +725,7 @@ hterm.Screen.prototype.deleteChars = function(count) {
       this.cursorNode_ = cursorNode.nextSibling;
       this.cursorOffset_ = 0;
     } else {
-      const emptyNode = this.cursorRowNode_.ownerDocument.createTextNode('');
+      const emptyNode = this.cursorRowNode_.ownerDocument.createTextNode("");
       this.cursorRowNode_.appendChild(emptyNode);
       this.cursorNode_ = emptyNode;
       this.cursorOffset_ = 0;
@@ -745,7 +745,7 @@ hterm.Screen.prototype.deleteChars = function(count) {
  */
 hterm.Screen.prototype.getLineStartRow_ = function(row) {
   while (row.previousSibling &&
-         row.previousSibling.hasAttribute('line-overflow')) {
+         row.previousSibling.hasAttribute("line-overflow")) {
     row = row.previousSibling;
   }
   return row;
@@ -759,11 +759,11 @@ hterm.Screen.prototype.getLineStartRow_ = function(row) {
  * @return {string} Text content of line.
  */
 hterm.Screen.prototype.getLineText_ = function(row) {
-  let rowText = '';
+  let rowText = "";
   let rowOrNull = row;
   while (rowOrNull) {
     rowText += rowOrNull.textContent;
-    if (rowOrNull.hasAttribute('line-overflow')) {
+    if (rowOrNull.hasAttribute("line-overflow")) {
       rowOrNull = rowOrNull.nextSibling;
     } else {
       break;
@@ -781,7 +781,7 @@ hterm.Screen.prototype.getLineText_ = function(row) {
 hterm.Screen.prototype.getXRowAncestor_ = function(node) {
   let nodeOrNull = node;
   while (nodeOrNull) {
-    if (nodeOrNull.nodeName === 'X-ROW') {
+    if (nodeOrNull.nodeName === "X-ROW") {
       break;
     }
     nodeOrNull = nodeOrNull.parentNode;
@@ -809,7 +809,7 @@ hterm.Screen.prototype.getPositionWithOverflow_ = function(row, node, offset) {
   let position = 0;
   while (ancestorRow != row) {
     position += hterm.TextAttributes.nodeWidth(row);
-    if (row.hasAttribute('line-overflow') && row.nextSibling) {
+    if (row.hasAttribute("line-overflow") && row.nextSibling) {
       row = row.nextSibling;
     } else {
       return -1;
@@ -858,7 +858,7 @@ hterm.Screen.prototype.getPositionWithinRow_ = function(row, node, offset) {
  */
 hterm.Screen.prototype.getNodeAndOffsetWithOverflow_ = function(row, position) {
   while (row && position > hterm.TextAttributes.nodeWidth(row)) {
-    if (row.hasAttribute('line-overflow') && row.nextSibling) {
+    if (row.hasAttribute("line-overflow") && row.nextSibling) {
       position -= hterm.TextAttributes.nodeWidth(row);
       row = row.nextSibling;
     } else {
@@ -881,7 +881,7 @@ hterm.Screen.prototype.getNodeAndOffsetWithinRow_ = function(row, position) {
     const node = row.childNodes[i];
     const nodeTextWidth = hterm.TextAttributes.nodeWidth(node);
     if (position <= nodeTextWidth) {
-      if (node.nodeName === 'SPAN') {
+      if (node.nodeName === "SPAN") {
         // Drill down to node contained by SPAN.
         return this.getNodeAndOffsetWithinRow_(node, position);
       } else {
@@ -957,7 +957,7 @@ hterm.Screen.prototype.expandSelectionWithWordBreakMatches_ =
   // Move start to the left.
   const rowText = this.getLineText_(row);
   const lineUpToRange = hterm.wc.substring(rowText, 0, endPosition);
-  const leftRegularExpression = new RegExp(leftMatch + insideMatch + '$');
+  const leftRegularExpression = new RegExp(leftMatch + insideMatch + "$");
   const expandedStart = lineUpToRange.search(leftRegularExpression);
   if (expandedStart == -1 || expandedStart > startPosition) {
     return;
@@ -966,7 +966,7 @@ hterm.Screen.prototype.expandSelectionWithWordBreakMatches_ =
   // Move end to the right.
   const lineFromRange = hterm.wc.substring(rowText, startPosition,
                                          hterm.wc.strWidth(rowText));
-  const rightRegularExpression = new RegExp('^' + insideMatch + rightMatch);
+  const rightRegularExpression = new RegExp("^" + insideMatch + rightMatch);
   const found = lineFromRange.match(rightRegularExpression);
   if (!found) {
     return;

@@ -6,7 +6,7 @@
  * @fileoverview Unit tests for the hterm.Screen class.
  */
 
-import {hterm} from '../index.js';
+import {hterm} from "../index.js";
 
 /**
  * Clear out the current document and create a new hterm.Screen object for
@@ -22,11 +22,11 @@ beforeEach(function() {
 /**
  * Test the push and pop functionality of the hterm.Screen.
  */
-it('push-pop', function() {
+it("push-pop", function() {
   // Push one at a time.
   const ary = [];
   for (let i = 0; i < 10; i++) {
-    ary[i] = document.createElement('div');
+    ary[i] = document.createElement("div");
     ary[i].textContent = i;
     this.screen.pushRow(ary[i]);
   }
@@ -35,7 +35,7 @@ it('push-pop', function() {
 
   // Pop one at a time.
   for (let i = ary.length - 1; i >= 0; i--) {
-    assert.equal(ary[i], this.screen.popRow(), 'i:' + i);
+    assert.equal(ary[i], this.screen.popRow(), "i:" + i);
   }
 
   // Bulk push.
@@ -48,7 +48,7 @@ it('push-pop', function() {
   assert.equal(ary.length, popary.length);
 
   for (let i = ary.length - 1; i >= 0; i--) {
-    assert.equal(ary[i], popary[i], 'i:' + i);
+    assert.equal(ary[i], popary[i], "i:" + i);
   }
 
   // Reset, then partial bulk pop.
@@ -57,18 +57,18 @@ it('push-pop', function() {
 
   popary = this.screen.popRows(5);
   for (let i = 0; i < 5; i++) {
-    assert.equal(ary[i + 5], popary[i], 'i:' + i);
+    assert.equal(ary[i + 5], popary[i], "i:" + i);
   }
 });
 
 /**
  * Test the unshift and shift functionality of the hterm.Screen.
  */
-it('unshift-shift', function() {
+it("unshift-shift", function() {
   // Unshift one at a time.
   const ary = [];
   for (let i = 0; i < 10; i++) {
-    ary[i] = document.createElement('div');
+    ary[i] = document.createElement("div");
     ary[i].textContent = i;
     this.screen.unshiftRow(ary[i]);
   }
@@ -77,7 +77,7 @@ it('unshift-shift', function() {
 
   // Shift one at a time.
   for (let i = ary.length - 1; i >= 0; i--) {
-    assert.equal(ary[i], this.screen.shiftRow(), 'i:' + i);
+    assert.equal(ary[i], this.screen.shiftRow(), "i:" + i);
   }
 
   // Bulk unshift.
@@ -90,7 +90,7 @@ it('unshift-shift', function() {
   assert.equal(ary.length, shiftary.length);
 
   for (let i = ary.length - 1; i >= 0; i--) {
-    assert.equal(ary[i], shiftary[i], 'i:' + i);
+    assert.equal(ary[i], shiftary[i], "i:" + i);
   }
 
   // Reset, then partial bulk shift.
@@ -99,18 +99,18 @@ it('unshift-shift', function() {
 
   shiftary = this.screen.shiftRows(5);
   for (let i = 0; i < 5; i++) {
-    assert.equal(ary[i], shiftary[i], 'i:' + i);
+    assert.equal(ary[i], shiftary[i], "i:" + i);
   }
 });
 
 /**
  * Test cursor positioning functionality.
  */
-it('cursor-movement', function() {
+it("cursor-movement", function() {
   const ary = [];
 
   for (let i = 0; i < 3; i++) {
-    ary[i] = document.createElement('div');
+    ary[i] = document.createElement("div");
     ary[i].textContent = i;
     this.screen.pushRow(ary[i]);
   }
@@ -140,7 +140,7 @@ it('cursor-movement', function() {
   assert.strictEqual(this.screen.cursorNode_, ary[1].firstChild);
   assert.equal(this.screen.cursorOffset_, 10);
 
-  ary[2].innerHTML = '01<div>23</div>45<div>67</div>89';
+  ary[2].innerHTML = "01<div>23</div>45<div>67</div>89";
 
   this.screen.setCursorPosition(2, 0);
   assert.strictEqual(this.screen.cursorRowNode_, ary[2]);
@@ -201,8 +201,8 @@ it('cursor-movement', function() {
 /**
  * Test character removal.
  */
-it('delete-chars', function() {
-  const row = document.createElement('div');
+it("delete-chars", function() {
+  const row = document.createElement("div");
   row.innerHTML = 'hello<div id="1"> </div><div id="2">world</div>';
   this.screen.pushRow(row);
 
@@ -212,19 +212,19 @@ it('delete-chars', function() {
   assert.equal(row.innerHTML, 'hel<div id="2">rld</div>');
 
   const createWidecharNode = function(c) {
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     span.textContent = c;
-    span.className = 'wc-node';
+    span.className = "wc-node";
     span.wcNode = true;
     span.asciiNode = false;
     return span;
   };
 
-  const wc_row = document.createElement('div');
-  wc_row.appendChild(createWidecharNode('\u4E2D'));
-  wc_row.appendChild(createWidecharNode('\u6587'));
-  wc_row.appendChild(createWidecharNode('\u5B57'));
-  wc_row.appendChild(createWidecharNode('\u4E32'));
+  const wc_row = document.createElement("div");
+  wc_row.appendChild(createWidecharNode("\u4E2D"));
+  wc_row.appendChild(createWidecharNode("\u6587"));
+  wc_row.appendChild(createWidecharNode("\u5B57"));
+  wc_row.appendChild(createWidecharNode("\u4E32"));
   this.screen.pushRow(wc_row);
 
   this.screen.setCursorPosition(1, 2);
@@ -238,106 +238,106 @@ it('delete-chars', function() {
   this.screen.setCursorPosition(1, 0);
   this.screen.deleteChars(6);
 
-  assert.equal(wc_row.innerHTML, '');
+  assert.equal(wc_row.innerHTML, "");
 });
 
 /**
  * Test replacing the start of a wide character with a narrow char.
  * https://crbug.com/577691
  */
-it('wide-to-narrow-char-start', function() {
-  const row = document.createElement('div');
+it("wide-to-narrow-char-start", function() {
+  const row = document.createElement("div");
   this.screen.pushRow(row);
 
   this.screen.setCursorPosition(0, 0);
-  this.screen.overwriteString('abcdef');
-  assert.equal('abcdef', row.textContent);
+  this.screen.overwriteString("abcdef");
+  assert.equal("abcdef", row.textContent);
 
   this.screen.setCursorPosition(0, 2);
   this.screen.textAttributes.wcNode = true;
   this.screen.textAttributes.asciiNode = false;
-  this.screen.overwriteString('\u{30c0}');
+  this.screen.overwriteString("\u{30c0}");
   this.screen.textAttributes.wcNode = false;
   this.screen.textAttributes.asciiNode = true;
-  assert.equal('ab\u{30c0}ef', row.textContent);
+  assert.equal("ab\u{30c0}ef", row.textContent);
 
   this.screen.setCursorPosition(0, 2);
-  this.screen.overwriteString('x');
-  assert.equal('abx ef', row.textContent);
+  this.screen.overwriteString("x");
+  assert.equal("abx ef", row.textContent);
 });
 
 /**
  * Test replacing the end of a wide character with a narrow char.
  * https://crbug.com/577691
  */
-it('wide-to-narrow-char-end', function() {
-  const row = document.createElement('div');
+it("wide-to-narrow-char-end", function() {
+  const row = document.createElement("div");
   this.screen.pushRow(row);
 
   this.screen.setCursorPosition(0, 0);
-  this.screen.overwriteString('abcdef');
-  assert.equal('abcdef', row.textContent);
+  this.screen.overwriteString("abcdef");
+  assert.equal("abcdef", row.textContent);
 
   this.screen.setCursorPosition(0, 2);
   this.screen.textAttributes.wcNode = true;
   this.screen.textAttributes.asciiNode = false;
-  this.screen.overwriteString('\u{30c0}');
+  this.screen.overwriteString("\u{30c0}");
   this.screen.textAttributes.wcNode = false;
   this.screen.textAttributes.asciiNode = true;
-  assert.equal('ab\u{30c0}ef', row.textContent);
+  assert.equal("ab\u{30c0}ef", row.textContent);
 
   this.screen.setCursorPosition(0, 3);
-  this.screen.overwriteString('x');
-  assert.equal('ab xef', row.textContent);
+  this.screen.overwriteString("x");
+  assert.equal("ab xef", row.textContent);
 });
 
 /**
  * Test the ability to insert text in a line.
  */
-it('insert', function() {
+it("insert", function() {
   // Sample rows.  Row 0 is a simple, empty row.  Row 1 simulates rows with
   // mixed text attributes.
-  const ary = [document.createElement('div'), document.createElement('div'),
-               document.createElement('div')];
+  const ary = [document.createElement("div"), document.createElement("div"),
+               document.createElement("div")];
   ary[1].innerHTML = 'hello<div id="1"> </div><div id="2">world</div>';
   this.screen.pushRows(ary);
 
   // Basic insert.
   this.screen.setCursorPosition(0, 0);
-  this.screen.insertString('XXXXX');
-  assert.equal(ary[0].innerHTML, 'XXXXX');
+  this.screen.insertString("XXXXX");
+  assert.equal(ary[0].innerHTML, "XXXXX");
 
   // Test that positioning the cursor beyond the end of the current text does
   // not cause spaces to be printed.
   this.screen.clearCursorRow();
   this.screen.setCursorPosition(0, 3);
-  assert.equal(ary[0].innerHTML, '');
+  assert.equal(ary[0].innerHTML, "");
 
   // Print some text at this cursor position and make sure the spaces show up.
-  this.screen.insertString('XXXXX');
-  assert.equal(ary[0].innerHTML, '   XXXXX');
+  this.screen.insertString("XXXXX");
+  assert.equal(ary[0].innerHTML, "   XXXXX");
 
   // Fetch enough whitespace to ensure that the row is full.
-  const ws = ' '.repeat(this.screen.getWidth());
+  const ws = " ".repeat(this.screen.getWidth());
 
   // Check text clipping and cursor clamping.
   this.screen.clearCursorRow();
-  this.screen.insertString('XXXX');
+  this.screen.insertString("XXXX");
   this.screen.setCursorPosition(0, 2);
   this.screen.insertString(ws);
   this.screen.maybeClipCurrentRow();
-  assert.equal(ary[0].innerHTML, 'XX' + ws.substr(2));
+  assert.equal(ary[0].innerHTML, "XX" + ws.substr(2));
   assert.equal(this.screen.cursorPosition.column, 79);
 
   // Insert into a more complicated row.
   this.screen.setCursorPosition(1, 3);
-  this.screen.insertString('XXXXX');
+  this.screen.insertString("XXXXX");
   assert.equal(ary[1].innerHTML,
                'helXXXXXlo<div id="1"> </div>' +
                '<div id="2">world</div>');
 
   // Test inserting widechar string.
-  const wideCharString = '\u4E2D\u6587\u5B57\u4E32';
+  const wideCharString = "\u4E2D\u6587\u5B57\u4E32";
   this.screen.setCursorPosition(2, 0);
   this.screen.textAttributes.wcNode = true;
   this.screen.textAttributes.asciiNode = false;
@@ -368,16 +368,16 @@ it('insert', function() {
                '<span class="wc-node">\u4E32</span>');
 
   this.screen.setCursorPosition(2, 7);
-  this.screen.insertString('XXXXX');
+  this.screen.insertString("XXXXX");
   assert.equal(ary[2].innerHTML,
                '   <span class="wc-node">\u4E2D</span>' +
                '<span class="wc-node">\u6587</span>' +
-               'XXXXX' +
+               "XXXXX" +
                '<span class="wc-node">\u5B57</span>' +
                '<span class="wc-node">\u4E32</span>');
 
   this.screen.clearCursorRow();
-  this.screen.insertString('XXXXX');
+  this.screen.insertString("XXXXX");
   this.screen.setCursorPosition(2, 3);
   this.screen.textAttributes.wcNode = true;
   this.screen.textAttributes.asciiNode = false;
@@ -396,26 +396,26 @@ it('insert', function() {
 /**
  * Test the ability to overwrite test.
  */
-it('overwrite', function() {
+it("overwrite", function() {
   const ary = [];
-  ary[0] = document.createElement('div');
+  ary[0] = document.createElement("div");
   ary[0].innerHTML = 'hello<div id="1"> </div><div id="2">world</div>';
-  ary[1] = document.createElement('div');
-  ary[2] = document.createElement('div');
+  ary[1] = document.createElement("div");
+  ary[2] = document.createElement("div");
   this.screen.pushRows(ary);
 
   this.screen.setCursorPosition(0, 3);
-  this.screen.overwriteString('XXXXX');
+  this.screen.overwriteString("XXXXX");
 
   assert.equal(ary[0].innerHTML, 'helXXXXX<div id="2">rld</div>');
 
   this.screen.setCursorPosition(1, 0);
-  this.screen.overwriteString('XXXXX');
+  this.screen.overwriteString("XXXXX");
 
-  assert.equal(ary[1].innerHTML, 'XXXXX');
+  assert.equal(ary[1].innerHTML, "XXXXX");
 
   // Test overwriting widechar string.
-  const wideCharString = '\u4E2D\u6587\u5B57\u4E32';
+  const wideCharString = "\u4E2D\u6587\u5B57\u4E32";
   this.screen.setCursorPosition(2, 0);
   this.screen.textAttributes.wcNode = true;
   this.screen.textAttributes.asciiNode = false;
@@ -431,7 +431,7 @@ it('overwrite', function() {
                '<span class="wc-node">\u4E32</span>');
 
   this.screen.clearCursorRow();
-  this.screen.insertString('XXXXX');
+  this.screen.insertString("XXXXX");
   this.screen.setCursorPosition(2, 3);
   this.screen.textAttributes.wcNode = true;
   this.screen.textAttributes.asciiNode = false;
@@ -447,11 +447,11 @@ it('overwrite', function() {
                '<span class="wc-node">\u4E32</span>');
 
   this.screen.setCursorPosition(2, 7);
-  this.screen.overwriteString('OO');
+  this.screen.overwriteString("OO");
   assert.equal(ary[2].innerHTML,
                'XXX<span class="wc-node">\u4E2D</span>' +
                '<span class="wc-node">\u6587</span>' +
-               'OO' +
+               "OO" +
                '<span class="wc-node">\u4E32</span>');
 
   this.screen.clearCursorRow();
@@ -487,9 +487,9 @@ it('overwrite', function() {
   this.screen.textAttributes.wcNode = false;
   this.screen.textAttributes.asciiNode = true;
   this.screen.setCursorPosition(2, 0);
-  this.screen.overwriteString('    ');
+  this.screen.overwriteString("    ");
   assert.equal(ary[2].innerHTML,
-               '    ' +
+               "    " +
                '<span class="wc-node">\u5B57</span>' +
                '<span class="wc-node">\u4E32</span>');
 });
@@ -497,15 +497,15 @@ it('overwrite', function() {
 /**
  * Check whitespace insertion handling.
  */
-it('whitespace-fill', function() {
+it("whitespace-fill", function() {
   const ta = this.screen.textAttributes;
-  const row = document.createElement('div');
+  const row = document.createElement("div");
   this.screen.pushRow(row);
 
   // Plain text everywhere.
   this.screen.setCursorPosition(0, 3);
-  this.screen.insertString('hi');
-  assert.equal(row.innerHTML, '   hi');
+  this.screen.insertString("hi");
+  assert.equal(row.innerHTML, "   hi");
   ta.reset();
   this.screen.clearCursorRow();
 
@@ -513,15 +513,15 @@ it('whitespace-fill', function() {
   this.screen.setCursorPosition(0, 3);
   ta.wcNode = true;
   ta.asciiNode = false;
-  this.screen.insertString('\u5B57');
+  this.screen.insertString("\u5B57");
   assert.equal(row.innerHTML, '   <span class="wc-node">\u5B57</span>');
   ta.reset();
   this.screen.clearCursorRow();
 
   // Insert underline text.
   this.screen.setCursorPosition(0, 3);
-  ta.underline = 'solid';
-  this.screen.insertString('hi');
+  ta.underline = "solid";
+  this.screen.insertString("hi");
   assert.equal(row.innerHTML,
                '   <span style="text-decoration-style: solid; text-' +
                'decoration-line: underline;">hi</span>');
@@ -531,20 +531,20 @@ it('whitespace-fill', function() {
   // Insert strike-through text.
   this.screen.setCursorPosition(0, 3);
   ta.strikethrough = true;
-  this.screen.insertString('hi');
+  this.screen.insertString("hi");
   assert.equal(row.innerHTML,
                '   <span style="text-decoration-line: line-through;">' +
-               'hi</span>');
+               "hi</span>");
   ta.reset();
   this.screen.clearCursorRow();
 
   // Insert plain text, but after double underline text.
   this.screen.setCursorPosition(0, 0);
-  ta.underline = 'double';
-  this.screen.insertString('hi');
+  ta.underline = "double";
+  this.screen.insertString("hi");
   ta.reset();
   this.screen.setCursorPosition(0, 5);
-  this.screen.insertString('bye');
+  this.screen.insertString("bye");
   assert.equal(row.innerHTML,
                '<span style="text-decoration-style: double; text-' +
                'decoration-line: underline;">hi</span>   bye');
@@ -554,24 +554,24 @@ it('whitespace-fill', function() {
   // Insert plain text, but after strike-through text.
   this.screen.setCursorPosition(0, 0);
   ta.strikethrough = true;
-  this.screen.insertString('hi');
+  this.screen.insertString("hi");
   ta.reset();
   this.screen.setCursorPosition(0, 5);
-  this.screen.insertString('bye');
+  this.screen.insertString("bye");
   assert.equal(row.innerHTML,
                '<span style="text-decoration-line: line-through;">hi' +
-               '</span>   bye');
+               "</span>   bye");
   ta.reset();
   this.screen.clearCursorRow();
 
   // Do styled text with gaps between.
   this.screen.setCursorPosition(0, 0);
-  this.screen.insertString('start ');
-  ta.underline = 'wavy';
-  this.screen.insertString('hi');
+  this.screen.insertString("start ");
+  ta.underline = "wavy";
+  this.screen.insertString("hi");
   this.screen.maybeClipCurrentRow();
   this.screen.setCursorPosition(0, 15);
-  this.screen.insertString('bye');
+  this.screen.insertString("bye");
   assert.equal(
       row.innerHTML,
       'start <span style="text-decoration-style: wavy; text-decoration-' +
@@ -584,13 +584,13 @@ it('whitespace-fill', function() {
 /**
  * Test expanding strings when selecting.
  */
-it('expand-selection', function() {
+it("expand-selection", function() {
   const document = globalThis.document;
-  const row = document.createElement('x-row');
+  const row = document.createElement("x-row");
   document.body.appendChild(row);
 
   // Test basic text selection.
-  row.innerText = 'start this_is_a_testing_string|end';
+  row.innerText = "start this_is_a_testing_string|end";
   this.screen.pushRow(row);
 
   const range = document.createRange();
@@ -600,15 +600,15 @@ it('expand-selection', function() {
   selection.removeAllRanges();
   selection.addRange(range);
 
-  this.screen.wordBreakMatchLeft = '[^\\s\\|]';
-  this.screen.wordBreakMatchRight = '[^\\s\\|]';
-  this.screen.wordBreakMatchMiddle = '[^\\s\\|]*';
+  this.screen.wordBreakMatchLeft = "[^\\s\\|]";
+  this.screen.wordBreakMatchRight = "[^\\s\\|]";
+  this.screen.wordBreakMatchMiddle = "[^\\s\\|]*";
   this.screen.expandSelection(selection);
 
-  assert.equal('this_is_a_testing_string', selection.toString());
+  assert.equal("this_is_a_testing_string", selection.toString());
 
   // Now test URL selection.
-  row.innerText = 'start https://www.google.com/(end)';
+  row.innerText = "start https://www.google.com/(end)";
 
   this.screen.setRange_(row, 7, 9, range);
   selection.removeAllRanges();
@@ -616,7 +616,7 @@ it('expand-selection', function() {
 
   this.screen.expandSelectionForUrl(selection);
 
-  assert.equal('https://www.google.com/', selection.toString());
+  assert.equal("https://www.google.com/", selection.toString());
 
   document.body.removeChild(row);
 });

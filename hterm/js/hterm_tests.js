@@ -7,8 +7,8 @@
  * @suppress {deprecated} execCommand
  */
 
-import {hterm} from '../index.js';
-import {MockNotification} from './hterm_mock_notification.js';
+import {hterm} from "../index.js";
+import {MockNotification} from "./hterm_mock_notification.js";
 
 /**
  * Mock out notifications.
@@ -31,36 +31,36 @@ afterEach(() => {
 /**
  * Test that basic notifications work.
  */
-it('default-notification', () => {
+it("default-notification", () => {
   // Create a default notification.
   assert.equal(0, Notification.count);
   const n = hterm.notify();
   assert.equal(1, Notification.count);
 
   // Check the parameters.
-  assert.equal(typeof n.title, 'string');
-  assert.notEqual(n.title, '');
-  assert.equal(n.body, '');
+  assert.equal(typeof n.title, "string");
+  assert.notEqual(n.title, "");
+  assert.equal(n.body, "");
 });
 
 /**
  * Test that various notifications arguments work.
  */
-it('notification-fields', () => {
+it("notification-fields", () => {
   // Create the notification.
   assert.equal(0, Notification.count);
-  const n = hterm.notify({'title': 'title', 'body': 'body'});
+  const n = hterm.notify({"title": "title", "body": "body"});
   assert.equal(1, Notification.count);
 
   // Check the parameters.
-  assert.include(n.title, 'title');
-  assert.equal(n.body, 'body');
+  assert.include(n.title, "title");
+  assert.equal(n.body, "body");
 });
 
 /**
  * Test copying content via execCommand.
  */
-xit('copy-execCommand', (done) => {
+xit("copy-execCommand", (done) => {
   const doc = globalThis.document;
 
   // Mock out newer clipboard API to make sure we don't use it.
@@ -78,15 +78,15 @@ xit('copy-execCommand', (done) => {
       navigator.clipboard.writeText = oldClipboardWrite;
     }
 
-    assert.equal('copy', cmd);
+    assert.equal("copy", cmd);
 
     const s = doc.getSelection();
-    assert.equal('copypasta!', s.toString());
+    assert.equal("copypasta!", s.toString());
     done();
   };
 
   // Mock the newer API too.
   delete navigator.clipboard.writeText;
 
-  hterm.copySelectionToClipboard(doc, 'copypasta!');
+  hterm.copySelectionToClipboard(doc, "copypasta!");
 });

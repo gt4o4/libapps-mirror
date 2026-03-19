@@ -8,14 +8,14 @@
  * @suppress {moduleLoad}
  */
 
-import {hterm} from '../../hterm/index.js';
+import {hterm} from "../../hterm/index.js";
 
-import {css, html, LitElement} from './lit.js';
-import './terminal_button.js';
-import {backgroundImageLocalStorageKey} from './terminal_common.js';
+import {css, html, LitElement} from "./lit.js";
+import "./terminal_button.js";
+import {backgroundImageLocalStorageKey} from "./terminal_common.js";
 
 export class TerminalSettingsBackgroundImageElement extends LitElement {
-  static get is() { return 'terminal-settings-background-image'; }
+  static get is() { return "terminal-settings-background-image"; }
 
   /**
    * @return {!Object<string, !PropertyDeclaration>}
@@ -70,11 +70,11 @@ export class TerminalSettingsBackgroundImageElement extends LitElement {
   constructor() {
     super();
     /** @private {string} */
-    this.key_ = '';
+    this.key_ = "";
     /** @private {string} */
-    this.imagePreviewSrc_ = '';
+    this.imagePreviewSrc_ = "";
     /** @private {string} */
-    this.errorMsg_ = '';
+    this.errorMsg_ = "";
     window.preferenceManager.onPrefixChange.addListener(
         this.profileChanged_.bind(this));
     this.profileChanged_();
@@ -83,7 +83,7 @@ export class TerminalSettingsBackgroundImageElement extends LitElement {
   /** @private */
   profileChanged_() {
     this.key_ = backgroundImageLocalStorageKey(window.preferenceManager);
-    this.imagePreviewSrc_ = window.localStorage.getItem(this.key_) || '';
+    this.imagePreviewSrc_ = window.localStorage.getItem(this.key_) || "";
   }
 
   /**
@@ -95,18 +95,18 @@ export class TerminalSettingsBackgroundImageElement extends LitElement {
 
     const select = html`
       <terminal-button id='bg-select' class="button-left-margin"
-        ariaLabel="${msg('SELECT_LABEL')} ${msg('TERMINAL_NAME_PREF_IMAGE')}"
-        aria-description="${msg('TERMINAL_SETTINGS_BACKGROUND_IMAGE_HELP')}"
+        ariaLabel="${msg("SELECT_LABEL")} ${msg("TERMINAL_NAME_PREF_IMAGE")}"
+        aria-description="${msg("TERMINAL_SETTINGS_BACKGROUND_IMAGE_HELP")}"
         @click="${this.onOpenFile_}">
-        ${msg('SELECT_LABEL')}
+        ${msg("SELECT_LABEL")}
       </terminal-button>
     `;
     const previewRemove = html`
       <img src="${this.imagePreviewSrc_}" @click="${this.onOpenFile_}">
       <terminal-button id="bg-remove" class="button-left-margin"
-          ariaLabel="${msg('REMOVE_LABEL')} ${msg('TERMINAL_NAME_PREF_IMAGE')}"
+          ariaLabel="${msg("REMOVE_LABEL")} ${msg("TERMINAL_NAME_PREF_IMAGE")}"
           @click="${this.onRemove_}">
-       ${msg('REMOVE_LABEL')}
+       ${msg("REMOVE_LABEL")}
       </terminal-button>
     `;
     return html`
@@ -118,14 +118,14 @@ export class TerminalSettingsBackgroundImageElement extends LitElement {
 
   /** @param {!Event} event */
   onOpenFile_(event) {
-    this.errorMsg_ = '';
-    this.shadowRoot.querySelector('#upload').click();
+    this.errorMsg_ = "";
+    this.shadowRoot.querySelector("#upload").click();
   }
 
   /** @param {!Event} event */
   onRemove_(event) {
-    this.imagePreviewSrc_ = '';
-    this.errorMsg_ = '';
+    this.imagePreviewSrc_ = "";
+    this.errorMsg_ = "";
     window.localStorage.removeItem(this.key_);
   }
 
@@ -133,7 +133,7 @@ export class TerminalSettingsBackgroundImageElement extends LitElement {
   onFileChange_(event) {
     const file = event.target.files[0];
     const reader = new FileReader();
-    reader.addEventListener('load', () => {
+    reader.addEventListener("load", () => {
       this.onFileLoad_(reader.result.toString());
     });
     reader.readAsDataURL(file);
@@ -148,7 +148,7 @@ export class TerminalSettingsBackgroundImageElement extends LitElement {
     } catch (e) {
       console.error(e);
       this.errorMsg_ = hterm.messageManager.get(
-          'TERMINAL_SETTINGS_BACKGROUND_IMAGE_ERROR_SIZE');
+          "TERMINAL_SETTINGS_BACKGROUND_IMAGE_ERROR_SIZE");
     }
   }
 }
